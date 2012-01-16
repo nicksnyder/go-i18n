@@ -9,17 +9,17 @@ import (
 )
 
 type Extractor struct {
-	messages []Message
+	msgs []Message
 }
 
 type Message struct {
-	Content     string
 	Context     string
+	Content     string
 	Translation string
 }
 
 func NewExtractor() *Extractor {
-	return &Extractor{messages: make([]Message, 0)}
+	return &Extractor{msgs: make([]Message, 0)}
 }
 
 func (e *Extractor) ExtractFiles(filenames []string) {
@@ -34,6 +34,7 @@ func (e *Extractor) ExtractFile(filename string) {
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err.String())
+		return
 	}
 	for _, decl := range file.Decls {
 		ast.Walk(e, decl)
@@ -51,16 +52,16 @@ func (e *Extractor) Visit(n ast.Node) (v ast.Visitor) {
 		if isNewMessageCall(i.Fun) {
 			content, context, ok := getNewMessageArgs(i.Args)
 			if ok {
-				e.messages = append(e.messages, Message{Content: content, Context: context})
+				e.msgs = append(e.msgs, Message{Content: content, Context: context})
 			}
 		}
 	}
 	return e
 }
 
-// Messages returns the messages extracted.
+// Messages returns the extracted messages.
 func (e *Extractor) Messages() []Message {
-	return e.messages
+	return e.msgs
 }
 
 func isNewMessageCall(e ast.Expr) bool {
