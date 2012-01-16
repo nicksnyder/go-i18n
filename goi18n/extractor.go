@@ -13,8 +13,9 @@ type Extractor struct {
 }
 
 type Message struct {
-	Content string
-	Context string
+	Content     string
+	Context     string
+	Translation string
 }
 
 func NewExtractor() *Extractor {
@@ -93,7 +94,7 @@ func getString(e ast.Expr) (s string, ok bool) {
 	switch i := e.(type) {
 	case *ast.BasicLit:
 		if i.Kind == token.STRING {
-			return i.Value, true
+			return i.Value[1 : len(i.Value)-1], true
 		}
 	}
 	return
