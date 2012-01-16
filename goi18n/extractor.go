@@ -29,7 +29,7 @@ func (e *Extractor) ExtractFiles(filenames []string) {
 }
 
 func (e *Extractor) ExtractFile(filename string) {
-	fmt.Println(filename)
+	fmt.Fprintln(os.Stderr, filename)
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {

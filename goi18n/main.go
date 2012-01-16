@@ -33,3 +33,8 @@ func main() {
 func errorf(format string, a ...interface{}) {
 	fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
+
+func exitf(format string, a ...interface{}) {
+	errorf(format, a...)
+	os.Exit(2)
+}
