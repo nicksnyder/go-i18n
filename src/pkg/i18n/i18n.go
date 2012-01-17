@@ -37,7 +37,7 @@ func AddTranslation(locale, content, context, translation string) string {
 // may have different translations.
 //
 // See the goi18n command line tool for documentation on how to extract messages for translation.
-// http://github.com/nicksnyder/go-i18n/goi18n
+// http://github.com/nicksnyder/go-i18n
 func NewMessage(content, context string) *Message {
 	id := AddTranslation(defaultLocale, content, context, content)
 	return &Message{id: id}

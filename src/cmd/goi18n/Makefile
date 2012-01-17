@@ -1,9 +1,9 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=goi18nextract
+TARG=goi18n
 GOFILES=\
-		main.go\
 		error.go\
 		extractor.go\
+		main.go\
 
 include $(GOROOT)/src/Make.cmd
