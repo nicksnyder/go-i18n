@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-TARG=github.com/nicksnyder/go-i18n/src/pkg/message
+TARG=github.com/nicksnyder/go-i18n/src/pkg/msg
 GOFILES=\
-		message.go
+		msg.go
 
 include $(GOROOT)/src/Make.pkg
