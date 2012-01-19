@@ -3,7 +3,21 @@ package msg
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"io"
+	"os"
 )
+
+// Reader is the interface that provides a method
+// to read messages from an io.Reader.
+type Reader interface {
+	ReadMessages(r io.Reader) ([]Message, os.Error)
+}
+
+// Writer is the interface that provides a method
+// to write messages to an io.Writer.
+type Writer interface {
+	WriteMessages(w io.Writer, msgs []Message) os.Error
+}
 
 // Message represents a serializable message
 // for the purpose of reading from and writing to files.
