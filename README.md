@@ -1,9 +1,7 @@
-go-i18n
-=======
+go-i18n (INCOMPLETE, EXPERIMENTAL, AND UNDER DEVELOPMENT)
+=========================================================
 
 go-i18n is a set of tools that can be used to translate Go programs into multiple lanaguages.
-
-This project is experimental and still under development.
 
 Go versions supported
 ---------------------
