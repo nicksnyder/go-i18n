@@ -6,6 +6,6 @@ import (
 )
 
 func init() {
-	i18n.AddTranslation("es_ES", "Hello world!", "This message is displayed when the program begins", "¡Hola, mundo!")
-	i18n.AddTranslation("es_ES", "Goodbye world.", "This message is displayed when the program ends", "Adiós mundo")
+	i18n.AddTranslation("es_ES", "This message is displayed when the program begins", "Hello world!", "¡Hola, mundo!")
+	i18n.AddTranslation("es_ES", "This message is displayed when the program ends", "Goodbye world.", "Adiós mundo")
 }
