@@ -12,7 +12,7 @@ type Writer struct {
 	crlf     bool
 }
 
-func NewWriter(fieldsep int, crlf bool) *Writer {
+func NewWriter(fieldsep int, crlf bool) msg.Writer {
 	return &Writer{fieldsep: fieldsep, crlf: crlf}
 }
 
@@ -21,7 +21,7 @@ func (w *Writer) WriteMessages(wr io.Writer, msgs []msg.Message) os.Error {
 	defer c.Flush()
 	c.Comma = w.fieldsep
 	c.UseCRLF = w.crlf
-	c.Write([]string{"id", "context", "content", "translation"})
+	c.Write(header)
 	for _, m := range msgs {
 		err := c.Write([]string{m.Id, m.Context, m.Content, m.Translation})
 		if err != nil {

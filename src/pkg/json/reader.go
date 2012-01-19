@@ -16,8 +16,8 @@ func NewReader() msg.Reader {
 	return &Reader{}
 }
 
-func (r *Reader) ReadMessages(ir io.Reader) ([]msg.Message, os.Error) {
-	data, err := ioutil.ReadAll(ir)
+func (r *Reader) ReadMessages(rs io.ReadSeeker) ([]msg.Message, os.Error) {
+	data, err := ioutil.ReadAll(rs)
 	if err != nil {
 		return nil, err
 	}

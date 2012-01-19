@@ -19,9 +19,9 @@ func NewReader() msg.Reader {
 	return &Reader{}
 }
 
-func (r *Reader) ReadMessages(ir io.Reader) ([]msg.Message, os.Error) {
+func (r *Reader) ReadMessages(rs io.ReadSeeker) ([]msg.Message, os.Error) {
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, defaultFilename, ir, 0)
+	file, err := parser.ParseFile(fset, defaultFilename, rs, 0)
 	if err != nil {
 		return nil, err
 	}

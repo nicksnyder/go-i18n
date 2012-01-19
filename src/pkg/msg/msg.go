@@ -8,9 +8,9 @@ import (
 )
 
 // Reader is the interface that provides a method
-// to read messages from an io.Reader.
+// to read messages from an io.ReadSeeker.
 type Reader interface {
-	ReadMessages(r io.Reader) ([]Message, os.Error)
+	ReadMessages(rs io.ReadSeeker) ([]Message, os.Error)
 }
 
 // Writer is the interface that provides a method

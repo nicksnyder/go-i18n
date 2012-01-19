@@ -1,6 +1,7 @@
 package csv
 
 import (
+	"bufio"
 	"github.com/nicksnyder/go-i18n/src/pkg/msg"
 	"io"
 	"csv"
@@ -8,17 +9,36 @@ import (
 )
 
 type Reader struct {
-	fieldsep int
+
 }
 
-func NewReader(fieldsep int) *Reader {
-	return &Reader{fieldsep: fieldsep}
+func NewReader() msg.Reader {
+	return &Reader{}
 }
 
-func (cr *Reader) ReadMessages(r io.Reader) ([]msg.Message, os.Error) {
-	c := csv.NewReader(r)
-	c.Comma = cr.fieldsep
-	c.FieldsPerRecord = 4
+func (r *Reader) ReadMessages(rs io.ReadSeeker) ([]msg.Message, os.Error) {
+	// Peek ahead to detect the separator character that was used to encode the header
+	_, err := rs.Seek(0, len(header[0]))
+	if err != nil {
+		return nil, err
+	}
+
+	// The next rune should be the separator
+	rd, err := bufio.NewReaderSize(rs, 8)
+	if err != nil {
+		return nil, err
+	}
+	fieldsep, _, err := rd.ReadRune()
+
+	// Go back to the beginning of the file to parse as csv
+	_, err = rs.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	c := csv.NewReader(rs)
+	c.Comma = fieldsep
+	c.FieldsPerRecord = len(header)
 	c.TrailingComma = true
 
 	lines, err := c.ReadAll()
