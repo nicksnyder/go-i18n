@@ -20,9 +20,9 @@ func NewBundle() *Bundle {
 	return &Bundle{index: make(map[string]int, 0), messages: make([]Message, 0)}
 }
 
-// AddMessage adds a new Message to the Bundle.
-// If the new Message has a non-empty translation, then it will overwrite any
-// existing Message in the Bundle that has the same id.
+// AddMessage adds a message to the Bundle.
+// If the new message has a non-empty translation, then it will
+// replace any message in the Bundle that has the same id.
 func (b *Bundle) AddMessage(m Message) {
 	if b.filter == TranslatedOnly && m.Translation == "" {
 		return
@@ -32,6 +32,15 @@ func (b *Bundle) AddMessage(m Message) {
 		b.messages[i] = m
 	} else {
 		b.messages = append(b.messages, m)
+	}
+}
+
+// AddMessages adds one or more messages to the Bundle.
+// New messages that have a non-empty translation will replace
+// messages in the Bundle that have the same id.
+func (b *Bundle) AddMessages(msgs []Message) {
+	for i, _ := range msgs {
+		b.AddMessage(msgs[i])
 	}
 }
 
