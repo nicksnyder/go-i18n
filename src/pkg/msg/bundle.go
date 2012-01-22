@@ -2,18 +2,9 @@ package msg
 
 // Bundle is a groups of messages.
 type Bundle struct {
-	filter   Filter
 	index    map[string]int
 	messages []Message
 }
-
-type Filter uint
-
-const (
-	AllMessages Filter = iota
-	TranslatedOnly
-	UntranslatedOnly
-)
 
 // NewBundle creates a new Bundle of Messages.
 func NewBundle() *Bundle {
@@ -24,9 +15,6 @@ func NewBundle() *Bundle {
 // If the new message has a non-empty translation, then it will
 // replace any message in the Bundle that has the same id.
 func (b *Bundle) AddMessage(m Message) {
-	if b.filter == TranslatedOnly && m.Translation == "" {
-		return
-	}
 	m.Id = Id(m.Context, m.Content)
 	if i, found := b.index[m.Id]; found && m.Translation != "" {
 		b.messages[i] = m
@@ -44,16 +32,27 @@ func (b *Bundle) AddMessages(msgs []Message) {
 	}
 }
 
-// Messages returns the messages that match the filter.
-func (b *Bundle) Messages(filter Filter) []Message {
-	if filter == AllMessages {
-		return b.messages
-	}
+// Messages returns all messages in the Bundle.
+func (b *Bundle) Messages() []Message {
+	return b.messages
+}
 
+// Messages returns all translated messages in the Bundle.
+func (b *Bundle) TranslatedMessages() []Message {
 	msgs := make([]Message, 0, len(b.messages))
 	for _, m := range b.messages {
-		if filter == UntranslatedOnly && m.Translation == "" ||
-			filter == TranslatedOnly && m.Translation != "" {
+		if m.Translation != "" {
+			msgs = append(msgs, m)
+		}
+	}
+	return msgs
+}
+
+// Messages returns all untranslated messages in the Bundle.
+func (b *Bundle) UntranslatedMessages() []Message {
+	msgs := make([]Message, 0, len(b.messages))
+	for _, m := range b.messages {
+		if m.Translation == "" {
 			msgs = append(msgs, m)
 		}
 	}
