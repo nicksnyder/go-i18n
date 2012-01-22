@@ -1,24 +1,24 @@
 package extract
 
 import (
-	"csv"
 	"flag"
 	"fmt"
+	"github.com/nicksnyder/go-i18n/src/pkg/msg"
+	"github.com/nicksnyder/go-i18n/src/pkg/csv"
+	"github.com/nicksnyder/go-i18n/src/pkg/goio"
+	"github.com/nicksnyder/go-i18n/src/pkg/json"
 	"io"
-	"json"
 	"os"
 	"utf8"
 )
 
 // Flags
 var (
-	format   string
-	filename string
-	csvdelim string
-	csvcrlf  bool
+	format      string
+	filename    string
+	csvfieldsep string
+	csvcrlf     bool
 )
-
-type formatter func(io.Writer, []Message)
 
 var flags *flag.FlagSet
 
@@ -33,40 +33,56 @@ func Run(args []string) {
 	flags.Usage = usage
 	flags.StringVar(&format, "format", "json", "The format used to output messages. Supported formats: json, csv")
 	flags.StringVar(&filename, "output", "", "The name of the file to write to. If not specified, output is written to stdout.")
-	flags.StringVar(&csvdelim, "csvdelim", ",", "The field delimiter to use for csv files.")
-	flags.BoolVar(&csvcrlf, "csvcrlf", false, `True to use \r\n as the line terminator. Default is \n.`)
+	flags.StringVar(&csvfieldsep, "csvfieldsep", ",", "The field delimiter to use in csv files.")
+	flags.BoolVar(&csvcrlf, "csvcrlf", false, `True to use \r\n as the line terminator in csv files. Default is \n.`)
 	flags.Parse(args)
 
-	files := flags.Args()
-	if len(files) < 1 {
+	filenames := flags.Args()
+	if len(filenames) < 1 {
 		usage()
 	}
 
-	var f formatter
+	var w msg.Writer
 	switch format {
 	case "json":
-		f = jsonFormatter
+		w = json.NewWriter()
 	case "csv":
-		f = csvFormatter
+		w = csv.NewWriter(getCsvFieldSep(), csvcrlf)
 	default:
 		exitf("Unsupported format: %s", format)
 	}
 
-	var w io.Writer
+	var dst io.Writer
 	if filename == "" {
-		w = os.Stdout
+		dst = os.Stdout
 	} else {
 		file, err := os.Create(filename)
 		if err != nil {
 			exitf(err.String())
 		}
 		defer file.Close()
-		w = file
+		dst = file
 	}
 
-	e := NewExtractor()
-	e.ExtractFiles(files)
-	f(w, e.Messages())
+	r := goio.NewReader()
+	msgs := make([]msg.Message, 0)
+	for _, filename := range filenames {
+		file, err := os.Open(filename)
+		if err != nil {
+			errorf(err.String())
+			continue
+		}
+
+		m, err := r.ReadMessages(file)
+		if err != nil {
+			errorf(err.String())
+			continue
+		}
+
+		msgs = append(msgs, m...)
+	}
+
+	w.WriteMessages(dst, msgs)
 }
 
 func errorf(format string, a ...interface{}) {
@@ -78,35 +94,11 @@ func exitf(format string, a ...interface{}) {
 	os.Exit(2)
 }
 
-func jsonFormatter(w io.Writer, msgs []Message) {
-	json, err := json.MarshalIndent(msgs, "", "  ")
-	if err != nil {
-		exitf(err.String())
-	}
-	if _, err := w.Write(json); err != nil {
-		exitf(err.String())
-	}
-}
-
-func csvFormatter(w io.Writer, msgs []Message) {
-	c := csv.NewWriter(w)
-	defer c.Flush()
-	c.Comma = csvDelim()
-	c.UseCRLF = csvcrlf
-	c.Write([]string{"context", "content", "translation"})
-	for _, m := range msgs {
-		err := c.Write([]string{m.Context, m.Content, m.Translation})
-		if err != nil {
-			exitf(err.String())
-		}
-	}
-}
-
-func csvDelim() int {
-	if csvdelim == "tab" {
+func getCsvFieldSep() int {
+	if csvfieldsep == "tab" {
 		return '\t'
 	}
-	rune, size := utf8.DecodeRuneInString(csvdelim)
+	rune, size := utf8.DecodeRuneInString(csvfieldsep)
 	if size > 0 {
 		return rune
 	}
