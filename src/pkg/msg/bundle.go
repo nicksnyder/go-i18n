@@ -16,9 +16,12 @@ func NewBundle() *Bundle {
 // replace any message in the Bundle that has the same id.
 func (b *Bundle) AddMessage(m Message) {
 	m.Id = Id(m.Context, m.Content)
-	if i, found := b.index[m.Id]; found && m.Translation != "" {
-		b.messages[i] = m
+	if i, found := b.index[m.Id]; found {
+		if m.Translation != "" {
+			b.messages[i] = m
+		}
 	} else {
+		b.index[m.Id] = len(b.messages)
 		b.messages = append(b.messages, m)
 	}
 }
