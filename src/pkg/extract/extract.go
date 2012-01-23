@@ -65,7 +65,7 @@ func Run(args []string) {
 	}
 
 	r := goio.NewReader()
-	msgs := make([]msg.Message, 0)
+	bundle := msg.NewBundle()
 	for _, filename := range filenames {
 		file, err := os.Open(filename)
 		if err != nil {
@@ -79,10 +79,10 @@ func Run(args []string) {
 			continue
 		}
 
-		msgs = append(msgs, m...)
+		bundle.AddMessages(m)
 	}
 
-	w.WriteMessages(dst, msgs)
+	w.WriteMessages(dst, bundle.Messages())
 }
 
 func errorf(format string, a ...interface{}) {
