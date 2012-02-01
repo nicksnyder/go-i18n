@@ -1,0 +1,32 @@
+[
+  {
+    "Id": "aec56c18ee4956fc7d55cc1f0a38bea9",
+    "Context": "This message is displayed when the program begins",
+    "Content": "Hello world!",
+    "Translation": ""
+  },
+  {
+    "Id": "bc11635a31571f75b2043b674a970fb7",
+    "Context": "This message is displayed when the program ends",
+    "Content": "Goodbye world.",
+    "Translation": ""
+  },
+  {
+    "Id": "d89800893d556e7f356bb218bcc32a6e",
+    "Context": "Translated in all locales",
+    "Content": "all",
+    "Translation": ""
+  },
+  {
+    "Id": "b253646b0091801193c1b859c201997e",
+    "Context": "Translated in some locales",
+    "Content": "some",
+    "Translation": ""
+  },
+  {
+    "Id": "d3e4ff589a29aa990791f39cbb366d1a",
+    "Context": "Translated in no locales",
+    "Content": "none",
+    "Translation": ""
+  }
+]

@@ -22,6 +22,6 @@ func (r *Reader) ReadMessages(rs io.ReadSeeker) ([]msg.Message, os.Error) {
 		return nil, err
 	}
 	m := make([]msg.Message, 0, 100)
-	err = json.Unmarshal(data, m)
+	err = json.Unmarshal(data, &m)
 	return m, err
 }
