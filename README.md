@@ -7,7 +7,7 @@ Features
 --------
 
 * Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
-* Uses text/template for parameter substitution.
+* Uses [text/template](http://golang.org/pkg/text/template/) for parameter substitution.
 * Translation files are simple JSON.
 
 i18n package
