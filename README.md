@@ -54,6 +54,7 @@ func main() {
 		"Person":    "Bob",
 		"Timeframe": T("{{.Count}} days", 2),
 	}))
+}
 ```
 
 Usually it is a good idea to use generic ids for translations instead of the English string.
