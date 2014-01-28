@@ -8,7 +8,7 @@ Features
 
 * Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 * Uses text/template for parameter substitution.
-* Translation files are easy to parse JSON.
+* Translation files are simple JSON.
 
 i18n package
 ------------
