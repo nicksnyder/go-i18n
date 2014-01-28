@@ -1,26 +1,117 @@
-go-i18n (INCOMPLETE, EXPERIMENTAL, AND UNDER DEVELOPMENT)
-=========================================================
+go-i18n 
+=======
 
-go-i18n is a set of tools that can be used to translate Go programs into multiple lanaguages.
+go-i18n is a Go package (i18n) and a command (goi18n) that can be used to translate Go programs into multiple lanaguages.
 
-Go versions supported
----------------------
+Features
+--------
 
-The project is being developed against the current release of Go:
-http://golang.org/doc/devel/release.html#r60
-
-Installation
-------------
-
-Run the following commands to install the go-i18n tools.
-
-    goinstall -u github.com/nicksnyder/go-i18n/src/pkg/i18n
-    goinstall -u github.com/nicksnyder/go-i18n/src/cmd/goi18n
+* Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
+* Uses text/template for parameter substitution.
+* Translation files are easy to parse JSON.
 
 i18n package
 ------------
 
-The i18n package provides runtime APIs for looking up translated strings. An example is provided in example/
+The i18n package provides runtime APIs for looking up translated strings.
+
+A simple example:
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/nicksnyder/go-i18n/pkg/i18n"
+)
+
+func main() {
+	i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
+	
+	T, err := i18n.Tfunc("ar-AR")
+	if err != nil {
+		T = i18n.MustTfunc("en-US") // fallback
+	}
+	
+	// Regular string with no substitutions.
+	fmt.Println(T("Hello world"))
+	
+	// String with variable substitutions.
+	fmt.Println(T("Hello {{.Person}}", map[string]interface{}{
+		"Person": "Bob",
+	}))
+	
+	// Plural string.
+	fmt.Println(T("You have {{.Count}} unread emails", 2))
+	
+	// Plural string with other substitutions.
+	fmt.Println(T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
+		"Person": "Bob",
+	}))
+
+	// Compound plural string.
+	fmt.Println(T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
+		"Person":    "Bob",
+		"Timeframe": T("{{.Count}} days", 2),
+	}))
+```
+
+Usually it is a good idea to use generic ids for translations instead of the English string.
+
+
+```go
+T("program_greeting")
+```
+
+A more complete example is [here](pkg/i18n/example_test.go).
+
+Translation files
+-----------------
+
+A translation file stores translated and untranslated strings.
+
+Example:
+
+```json
+[
+  {
+    "id": "d_days",
+    "translation": {
+      "one": "{{.Count}} day",
+      "other": "{{.Count}} days"
+    }
+  },
+  {
+    "id": "person_greeting",
+    "translation": "Hello {{.Person}}"
+  },
+  {
+    "id": "person_unread_email_count",
+    "translation": {
+      "one": "{{.Person}} has {{.Count}} unread email.",
+      "other": "{{.Person}} has {{.Count}} unread emails."
+    }
+  },
+  {
+    "id": "person_unread_email_count_timeframe",
+    "translation": {
+      "one": "{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.",
+      "other": "{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}."
+    }
+  },
+  {
+    "id": "program_greeting",
+    "translation": "Hello world"
+  },
+  {
+    "id": "your_unread_email_count",
+    "translation": {
+      "one": "You have {{.Count}} unread email.",
+      "other": "You have {{.Count}} unread emails."
+    }
+  }
+]
+```
 
 goi18n command
 --------------
@@ -29,47 +120,32 @@ The goi18n command provides functionality for managing the translation process.
 
 A typical workflow looks like this:
 
-1. Write Go code using the i18n package.
+1. Add a new string to your source code.
 
-		package main
-		
-		import (
-			"flag"
-			"fmt"
-			"github.com/nicksnyder/go-i18n/src/pkg/i18n"
-		)
-		
-		var (
-			HelloWorld   = i18n.NewMessage("Hello world!", "This message is displayed when the program begins")
-			GoodbyeWorld = i18n.NewMessage("Goodbye world.", "This message is displayed when the program ends")
-		)
-		
-		var locale string
+    ```go
+    T("some_page_title")
+    ```
 
-		func main() {
-			flag.StringVar(&locale, "locale", "", "The locale to use for translated messages.")
-			flag.Parse()	
-			i18n.SetLocale(locale)
-			fmt.Println(HelloWorld.String())
-			fmt.Println(GoodbyeWorld.String())
-		}
+2. Add the string to en-US.all.json
 
-2. Extract the message from the Go source files.
+    ```json
+    [
+      {
+        "id": "settings_title",
+        "translation: "Settings"
+      }
+    ]
+    ```
 
-		goi18n extract -format=json main.go > messages.json
+3. Run goi18n
 
-	or
+    ```
+    goi18n path/to/*.all.json
+    ```
 
-		goi18n extract -format=json -output=messages.json main.go
+4. Send `path/to/*.untranslated.json` to get translated.
+5. Run goi18n again to merge the translations
 
-3. Get the messages translated.
-
-4. Merge the new translations with any existing translations.
-
-		goi18n merge existing/es_ES.json new/es_ES.json
-
-5. Format the translations into Go source files.
-
-		goi18n format es_ES.json fr_FR.json ... # generates es_ES.go fr_FR.go ...
-
-6. Compile your program with the generated source files.
+    ```sh
+    goi18n path/to/*.all.json path/to/*.untranslated.json
+    ```

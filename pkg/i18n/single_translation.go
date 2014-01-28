@@ -1,0 +1,53 @@
+package i18n
+
+type singleTranslation struct {
+	id       string
+	template *template
+}
+
+func (st *singleTranslation) MarshalInterface() interface{} {
+	return map[string]interface{}{
+		"id":          st.id,
+		"translation": st.template,
+	}
+}
+
+func (st *singleTranslation) Id() string {
+	return st.id
+}
+
+func (st *singleTranslation) Template(pc PluralCategory) *template {
+	return st.template
+}
+
+func (st *singleTranslation) UntranslatedCopy() Translation {
+	return &singleTranslation{st.id, mustNewTemplate("")}
+}
+
+func (st *singleTranslation) Normalize(language *Language) Translation {
+	return st
+}
+
+func (st *singleTranslation) Backfill(src Translation) Translation {
+	if st.template == nil || st.template.src == "" {
+		st.template = src.Template(Other)
+	}
+	return st
+}
+
+func (st *singleTranslation) Merge(t Translation) Translation {
+	other, ok := t.(*singleTranslation)
+	if !ok || st.Id() != t.Id() {
+		return t
+	}
+	if other.template != nil && other.template.src != "" {
+		st.template = other.template
+	}
+	return st
+}
+
+func (st *singleTranslation) Incomplete(l *Language) bool {
+	return st.template == nil || st.template.src == ""
+}
+
+var _ = Translation(&singleTranslation{})
