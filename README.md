@@ -68,6 +68,52 @@ T("program_greeting")
 
 A more complete example is [here](pkg/i18n/example_test.go).
 
+goi18n command
+--------------
+
+The goi18n command provides functionality for managing the translation process.
+
+### Installation
+
+Make sure you have [setup GOPATH](http://golang.org/doc/code.html#GOPATH).
+
+    go get -u github.com/nicksnyder/go-i18n/goi18n
+    goi18n -help
+
+### Workflow
+
+A typical workflow looks like this:
+
+1. Add a new string to your source code.
+
+    ```go
+    T("some_page_title")
+    ```
+
+2. Add the string to en-US.all.json
+
+    ```json
+    [
+      {
+        "id": "settings_title",
+        "translation": "Settings"
+      }
+    ]
+    ```
+
+3. Run goi18n
+
+    ```
+    goi18n path/to/*.all.json
+    ```
+
+4. Send `path/to/*.untranslated.json` to get translated.
+5. Run goi18n again to merge the translations
+
+    ```sh
+    goi18n path/to/*.all.json path/to/*.untranslated.json
+    ```
+
 Translation files
 -----------------
 
@@ -116,47 +162,10 @@ Example:
 ]
 ```
 
-goi18n command
---------------
-
-The goi18n command provides functionality for managing the translation process.
-
-A typical workflow looks like this:
-
-1. Add a new string to your source code.
-
-    ```go
-    T("some_page_title")
-    ```
-
-2. Add the string to en-US.all.json
-
-    ```json
-    [
-      {
-        "id": "settings_title",
-        "translation": "Settings"
-      }
-    ]
-    ```
-
-3. Run goi18n
-
-    ```
-    goi18n path/to/*.all.json
-    ```
-
-4. Send `path/to/*.untranslated.json` to get translated.
-5. Run goi18n again to merge the translations
-
-    ```sh
-    goi18n path/to/*.all.json path/to/*.untranslated.json
-    ```
-
 Languages
 ---------
 
-Currently supported
+Currently supports:
 * Arabic
 * English
 * French
