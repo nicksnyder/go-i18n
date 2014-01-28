@@ -150,3 +150,48 @@ A typical workflow looks like this:
     ```sh
     goi18n path/to/*.all.json path/to/*.untranslated.json
     ```
+
+Languages
+---------
+
+Currently supported
+* Arabic
+* English
+* French
+
+More languages are straightforward to add:
+
+1. Lookup the language's [CLDR plural rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
+2. Add the language to [language.go](pkg/i18n/language.go):
+
+    ```go
+	RegisterLanguage(&Language{
+		Code:             "ar",
+		Name:             "العربية",
+		PluralCategories: newSet(Zero, One, Two, Few, Many, Other),
+		IntFunc: func(i int64) PluralCategory {
+			switch i {
+			case 0:
+				return Zero
+			case 1:
+				return One
+			case 2:
+				return Two
+			default:
+				mod100 := i % 100
+				if mod100 >= 3 && mod100 <= 10 {
+					return Few
+				}
+				if mod100 >= 11 {
+					return Many
+				}
+				return Other
+			}
+		},
+		FloatFunc: func(f float64) PluralCategory {
+			return Other
+		},
+	})
+    ```
+
+3. Submit a pull request!
