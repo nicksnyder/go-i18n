@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nicksnyder/go-i18n/pkg/i18n"
+	"github.com/nicksnyder/go-i18n/i18n"
 	"os"
 )
 

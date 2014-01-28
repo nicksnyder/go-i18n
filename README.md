@@ -24,7 +24,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/nicksnyder/go-i18n/pkg/i18n"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 func main() {
@@ -66,7 +66,7 @@ Usually it is a good idea to use generic ids for translations instead of the Eng
 T("program_greeting")
 ```
 
-A more complete example is [here](pkg/i18n/example_test.go).
+A more complete example is [here](i18n/example_test.go).
 
 goi18n command
 --------------
@@ -173,7 +173,7 @@ Currently supports:
 More languages are straightforward to add:
 
 1. Lookup the language's [CLDR plural rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
-2. Add the language to [language.go](pkg/i18n/language.go):
+2. Add the language to [language.go](i18n/language.go):
 
     ```go
 	RegisterLanguage(&Language{
