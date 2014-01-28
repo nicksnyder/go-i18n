@@ -1,11 +1,9 @@
-go-i18n 
+go-i18n [![Build Status](https://secure.travis-ci.org/nicksnyder/go-i18n.png?branch=master)](http://travis-ci.org/nicksnyder/go-i18n)
 =======
 
 go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that can be used to translate Go programs into multiple lanaguages.
 
-go-i18n currently requires Go 1.2.
-
-[![Build Status](https://secure.travis-ci.org/nicksnyder/go-i18n.png?branch=master)](http://travis-ci.org/nicksnyder/go-i18n)
+Requires Go 1.2.
 
 Features
 --------
