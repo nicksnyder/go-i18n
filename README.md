@@ -30,9 +30,9 @@ import (
 func main() {
 	i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
 	
-	localeIdFromUserland = "ar-AR" // e.g. from user preference, accept header, or language cookie
-	defaultLocale = "en-US"        // known valid locale
-	T, _ := i18n.Tfunc(localeIdFromUserland, defaultLocale)
+	localeFromUserland = "ar-AR" // e.g. from user preference, accept header, or language cookie
+	defaultLocale = "en-US"      // known valid locale
+	T, _ := i18n.Tfunc(localeFromUserland, defaultLocale)
 	
 	// Regular string with no substitutions.
 	fmt.Println(T("Hello world"))
