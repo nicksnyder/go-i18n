@@ -30,10 +30,9 @@ import (
 func main() {
 	i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
 	
-	T, err := i18n.Tfunc("ar-AR")
-	if err != nil {
-		T = i18n.MustTfunc("en-US") // fallback
-	}
+	localeIdFromUserland = "ar-AR" // e.g. from user preference, accept header, or language cookie
+	defaultLocale = "en-US"        // known valid locale
+	T, _ := i18n.Tfunc(localeIdFromUserland, defaultLocale)
 	
 	// Regular string with no substitutions.
 	fmt.Println(T("Hello world"))
@@ -60,7 +59,6 @@ func main() {
 ```
 
 Usually it is a good idea to use generic ids for translations instead of the English string.
-
 
 ```go
 T("program_greeting")

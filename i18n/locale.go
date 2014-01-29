@@ -24,3 +24,11 @@ func NewLocale(s string) (*Locale, error) {
 	}
 	return &Locale{id, language}, nil
 }
+
+func mustNewLocale(localeId string) *Locale {
+	locale, err := NewLocale(localeId)
+	if err != nil {
+		panic(err)
+	}
+	return locale
+}

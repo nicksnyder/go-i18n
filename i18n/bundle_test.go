@@ -12,12 +12,77 @@ func TestLoadTranslationFile(t *testing.T) {
 	t.Skipf("not implemented")
 }
 
-func TestParseTranslationFile(t *testing.T) {
+func TestAdd(t *testing.T) {
 	t.Skipf("not implemented")
 }
 
-func TestAdd(t *testing.T) {
-	t.Skipf("not implemented")
+func TestMustTfunc(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected MustTfunc to panic")
+		}
+	}()
+	NewBundle().MustTfunc("invalid")
+}
+
+func TestTfunc(t *testing.T) {
+	b := NewBundle()
+	translationId := "translation_id"
+	englishTranslation := "en-US(translation_id)"
+	b.Add(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{
+		"id":          translationId,
+		"translation": englishTranslation,
+	}))
+	frenchTranslation := "fr-FR(translation_id)"
+	b.Add(mustNewLocale("fr-FR"), testNewTranslation(t, map[string]interface{}{
+		"id":          translationId,
+		"translation": frenchTranslation,
+	}))
+
+	tests := []struct {
+		localeIds []string
+		valid     bool
+		result    string
+	}{
+		{
+			[]string{"invalid"},
+			false,
+			translationId,
+		},
+		{
+			[]string{"invalid", "invalid2"},
+			false,
+			translationId,
+		},
+		{
+			[]string{"invalid", "en-US"},
+			true,
+			englishTranslation,
+		},
+		{
+			[]string{"en-US", "invalid"},
+			true,
+			englishTranslation,
+		},
+		{
+			[]string{"en-US", "fr-FR"},
+			true,
+			englishTranslation,
+		},
+	}
+
+	for _, test := range tests {
+		tf, err := b.Tfunc(test.localeIds[0], test.localeIds[1:]...)
+		if err != nil && test.valid {
+			t.Errorf("Tfunc for %v returned error %s", test.localeIds, err)
+		}
+		if err == nil && !test.valid {
+			t.Errorf("Tfunc for %v returned nil error", test.localeIds)
+		}
+		if result := tf(translationId); result != test.result {
+			t.Errorf("translation was %s; expected %s", result, test.result)
+		}
+	}
 }
 
 /*

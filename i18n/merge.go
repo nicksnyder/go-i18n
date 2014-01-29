@@ -65,14 +65,6 @@ func Merge(translationFiles []string, sourceLocaleId, outdir, format string) err
 	return nil
 }
 
-func mustNewLocale(localeId string) *Locale {
-	locale, err := NewLocale(localeId)
-	if err != nil {
-		panic(err)
-	}
-	return locale
-}
-
 func filter(translations map[string]Translation, filter func(Translation) Translation) []Translation {
 	filtered := make([]Translation, 0, len(translations))
 	for _, translation := range translations {

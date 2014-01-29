@@ -28,12 +28,12 @@ func Add(locale *Locale, translations ...Translation) {
 	defaultBundle.Add(locale, translations...)
 }
 
-func MustTfunc(localeId string) TranslateFunc {
-	return defaultBundle.MustTfunc(localeId)
+func MustTfunc(localeId string, localeIds ...string) TranslateFunc {
+	return defaultBundle.MustTfunc(localeId, localeIds...)
 }
 
-func Tfunc(localeId string) (TranslateFunc, error) {
-	return defaultBundle.Tfunc(localeId)
+func Tfunc(localeId string, localeIds ...string) (TranslateFunc, error) {
+	return defaultBundle.Tfunc(localeId, localeIds...)
 }
 
 func NewBundle() *Bundle {
@@ -116,16 +116,25 @@ func (b *Bundle) Translations() map[string]map[string]Translation {
 	return b.translations
 }
 
-func (b *Bundle) MustTfunc(localeId string) TranslateFunc {
-	tf, err := b.Tfunc(localeId)
+func (b *Bundle) MustTfunc(localeId string, localeIds ...string) TranslateFunc {
+	tf, err := b.Tfunc(localeId, localeIds...)
 	if err != nil {
 		panic(err)
 	}
 	return tf
 }
 
-func (b *Bundle) Tfunc(localeId string) (TranslateFunc, error) {
-	locale, err := NewLocale(localeId)
+func (b *Bundle) Tfunc(localeId string, localeIds ...string) (tf TranslateFunc, err error) {
+	var locale *Locale
+	locale, err = NewLocale(localeId)
+	if err != nil {
+		for _, localeId := range localeIds {
+			locale, err = NewLocale(localeId)
+			if err == nil {
+				break
+			}
+		}
+	}
 	return func(translationId string, args ...interface{}) string {
 		return b.translate(locale, translationId, args...)
 	}, err
