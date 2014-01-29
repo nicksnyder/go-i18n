@@ -160,13 +160,13 @@ Example:
 ]
 ```
 
-Languages
----------
+Supported languages
+-------------------
 
-Currently supports:
 * Arabic (`ar`)
 * English (`en`)
 * French (`fr`)
+* Japanese (`ja`)
 * Spanish (`es`)
 
 More languages are straightforward to add:
