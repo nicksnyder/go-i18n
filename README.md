@@ -164,9 +164,10 @@ Languages
 ---------
 
 Currently supports:
-* Arabic
-* English
-* French
+* Arabic (`ar`)
+* English (`en`)
+* French (`fr`)
+* Spanish (`es`)
 
 More languages are straightforward to add:
 

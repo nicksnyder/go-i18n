@@ -75,6 +75,22 @@ func init() {
 			return Other
 		},
 	})
+
+	RegisterLanguage(&Language{
+		Code:             "es",
+		Name:             "Español",
+		PluralCategories: newSet(One, Other),
+		IntFunc: func(i int64) PluralCategory {
+			if i == 1 {
+				return One
+			}
+			return Other
+		},
+		FloatFunc: func(f float64) PluralCategory {
+			return Other
+		},
+	})
+
 }
 
 var languagesByCode = make(map[string]*Language)
