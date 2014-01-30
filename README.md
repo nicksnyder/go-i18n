@@ -17,54 +17,85 @@ i18n package
 
 The i18n package provides runtime APIs for looking up translated strings.
 
-A simple example:
-
 ```go
-package main
-
-import (
-	"fmt"
-	"github.com/nicksnyder/go-i18n/i18n"
-)
-
-func main() {
-	i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
-	
-	localeFromUserland = "ar-AR" // e.g. from user preference, accept header, or language cookie
-	defaultLocale = "en-US"      // known valid locale
-	T, _ := i18n.Tfunc(localeFromUserland, defaultLocale)
-	
-	// Regular string with no substitutions.
-	fmt.Println(T("Hello world"))
-	
-	// String with variable substitutions.
-	fmt.Println(T("Hello {{.Person}}", map[string]interface{}{
-		"Person": "Bob",
-	}))
-	
-	// Plural string.
-	fmt.Println(T("You have {{.Count}} unread emails", 2))
-	
-	// Plural string with other substitutions.
-	fmt.Println(T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
-		"Person": "Bob",
-	}))
-
-	// Compound plural string.
-	fmt.Println(T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
-		"Person":    "Bob",
-		"Timeframe": T("{{.Count}} days", 2),
-	}))
-}
+import "github.com/nicksnyder/go-i18n/i18n"
 ```
 
-Usually it is a good idea to use generic ids for translations instead of the English string.
+##### Loading translations
+
+Load translation files during your program's initialization.
+The name of a translation file must contain a [language tag](http://en.wikipedia.org/wiki/IETF_language_tag) that is supported by i18n.
+
+```go
+i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
+```
+
+##### Selecting a locale
+
+Tfunc returns a function that can lookup the translation of a string for that locale.
+It accepts multiple locale parameters so you can gracefully fallback to other locales.
+
+```go
+userLocale = "ar-AR"       // e.g. from user preference, accept header, or language cookie
+defaultLocale = "en-US"    // known valid locale
+T, err := i18n.Tfunc(userLocale, defaultLocale)
+```
+
+##### Loading a string translation
+
+Use the translation function to fetch the translation of a string.
+
+```go
+fmt.Println(T("Hello world"))
+```
+
+Usually it is a good idea to identify strings by a generic id rather than the English translation, but the rest of this document will continue to use the English translation for readability.
 
 ```go
 T("program_greeting")
 ```
 
-A more complete example is [here](i18n/example_test.go).
+##### Strings with variables
+
+You can have variable substitutions in your string using [text/template](http://golang.org/pkg/text/template/) syntax.
+
+```go
+T("Hello {{.Person}}", map[string]interface{}{
+	"Person": "Bob",
+}))
+```
+
+##### Plural strings
+
+Each language handles pluralization differently. A few examples:
+* English treats one as singular and all other numbers as plural (e.g. 0 cats, 1 cat, 2 cats).
+* French treats zero and one as singular and all other numbers as pural (e.g. 0 chat, 1 chat, 2 chats)
+* Arabic has six different plural forms!
+
+The translation function handles [all of this logic](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) for you.
+
+```go
+T("You have {{.Count}} unread emails", 2)
+```
+
+With variable substitutions:
+
+```go
+fmt.Println(T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
+	"Person": "Bob",
+}))
+```
+
+Sentences with multiple plural components can be supported with nesting.
+
+```go
+fmt.Println(T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
+	"Person":    "Bob",
+	"Timeframe": T("{{.Count}} days", 2),
+}))
+```
+
+A complete example is [here](i18n/example_test.go).
 
 goi18n command
 --------------
@@ -85,7 +116,7 @@ A typical workflow looks like this:
 1. Add a new string to your source code.
 
     ```go
-    T("some_page_title")
+    T("settings_title")
     ```
 
 2. Add the string to en-US.all.json
