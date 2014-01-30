@@ -227,4 +227,4 @@ More languages are straightforward to add:
 
 License
 -------
-go-i18n is available under the MIT license. See the LICENSE file for more info.
+go-i18n is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
