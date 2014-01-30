@@ -24,7 +24,7 @@ import "github.com/nicksnyder/go-i18n/i18n"
 ##### Loading translations
 
 Load translation files during your program's initialization.
-The name of a translation file must contain a [language tag](http://en.wikipedia.org/wiki/IETF_language_tag) that is supported by i18n.
+The name of a translation file must contain a supported [language tag](http://en.wikipedia.org/wiki/IETF_language_tag).
 
 ```go
 i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
