@@ -36,8 +36,8 @@ Tfunc returns a function that can lookup the translation of a string for that lo
 It accepts multiple locale parameters so you can gracefully fallback to other locales.
 
 ```go
-userLocale = "ar-AR"       // e.g. from user preference, accept header, or language cookie
-defaultLocale = "en-US"    // known valid locale
+userLocale = "ar-AR"     // user preference, accept header, language cookie
+defaultLocale = "en-US"  // known valid locale
 T, err := i18n.Tfunc(userLocale, defaultLocale)
 ```
 
@@ -62,7 +62,7 @@ You can have variable substitutions in your string using [text/template](http://
 ```go
 T("Hello {{.Person}}", map[string]interface{}{
 	"Person": "Bob",
-}))
+})
 ```
 
 ##### Plural strings
@@ -81,18 +81,18 @@ T("You have {{.Count}} unread emails", 2)
 With variable substitutions:
 
 ```go
-fmt.Println(T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
+T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
 	"Person": "Bob",
-}))
+})
 ```
 
 Sentences with multiple plural components can be supported with nesting.
 
 ```go
-fmt.Println(T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
+T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
 	"Person":    "Bob",
 	"Timeframe": T("{{.Count}} days", 2),
-}))
+})
 ```
 
 A complete example is [here](i18n/example_test.go).
