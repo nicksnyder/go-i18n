@@ -90,7 +90,7 @@ T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
 Sentences with multiple plural components can be supported with nesting.
 
 ```go
-T("{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.", 3, map[string]interface{}{
+T("{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}.", 3, map[string]interface{}{
 	"Person":    "Bob",
 	"Timeframe": T("{{.Count}} days", 2),
 })
