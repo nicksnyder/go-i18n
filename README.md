@@ -69,7 +69,8 @@ T("Hello {{.Person}}", map[string]interface{}{
 
 Each language handles pluralization differently. A few examples:
 * English treats one as singular and all other numbers as plural (e.g. 0 cats, 1 cat, 2 cats).
-* French treats zero and one as singular and all other numbers as pural (e.g. 0 chat, 1 chat, 2 chats)
+* French treats zero as singular.
+* Japan has a single plural form for all numbers.
 * Arabic has six different plural forms!
 
 The translation function handles [all of this logic](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) for you.
