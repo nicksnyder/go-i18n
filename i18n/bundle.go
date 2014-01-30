@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 )
 
+// A Bundle holds translations for multiple locales.
 type Bundle struct {
 	translations map[string]map[string]Translation
 }

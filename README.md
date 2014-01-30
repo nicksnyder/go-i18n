@@ -199,6 +199,7 @@ Supported languages
 * Chinese (Traditional) (`zh-Hant`)
 * English (`en`)
 * French (`fr`)
+* German (`de`)
 * Japanese (`ja`)
 * Spanish (`es`)
 

@@ -103,6 +103,21 @@ func init() {
 	})
 
 	RegisterLanguage(&Language{
+		Code:             "de",
+		Name:             "Deutsch",
+		PluralCategories: newSet(One, Other),
+		IntFunc: func(i int64) PluralCategory {
+			if i == 1 {
+				return One
+			}
+			return Other
+		},
+		FloatFunc: func(f float64) PluralCategory {
+			return Other
+		},
+	})
+
+	RegisterLanguage(&Language{
 		Code:             "ja",
 		Name:             "日本語",
 		PluralCategories: newSet(Other),
