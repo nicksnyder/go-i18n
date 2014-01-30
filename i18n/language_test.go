@@ -54,6 +54,50 @@ func TestArabic(t *testing.T) {
 	testFloats(t, language, floatTests)
 }
 
+func TestChineseSimplified(t *testing.T) {
+	intTests := []intPluralTest{
+		{0, Other},
+		{1, Other},
+		{2, Other},
+	}
+
+	floatTests := []floatPluralTest{
+		{0.1, Other},
+		{0.2, Other},
+		{1.1, Other},
+		{1.2, Other},
+		{2.1, Other},
+		{2.2, Other},
+	}
+
+	language := LanguageWithCode("zh-Hans")
+	testInts(t, language, intTests)
+	testIntsAsFloats(t, language, intTests)
+	testFloats(t, language, floatTests)
+}
+
+func TestChineseTraditional(t *testing.T) {
+	intTests := []intPluralTest{
+		{0, Other},
+		{1, Other},
+		{2, Other},
+	}
+
+	floatTests := []floatPluralTest{
+		{0.1, Other},
+		{0.2, Other},
+		{1.1, Other},
+		{1.2, Other},
+		{2.1, Other},
+		{2.2, Other},
+	}
+
+	language := LanguageWithCode("zh-Hant")
+	testInts(t, language, intTests)
+	testIntsAsFloats(t, language, intTests)
+	testFloats(t, language, floatTests)
+}
+
 func TestEnglish(t *testing.T) {
 	intTests := []intPluralTest{
 		{0, Other},
