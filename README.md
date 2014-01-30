@@ -206,33 +206,25 @@ More languages are straightforward to add:
 2. Add the language to [language.go](i18n/language.go):
 
     ```go
-	RegisterLanguage(&Language{
-		Code:             "ar",
-		Name:             "العربية",
-		PluralCategories: newSet(Zero, One, Two, Few, Many, Other),
-		IntFunc: func(i int64) PluralCategory {
-			switch i {
-			case 0:
-				return Zero
-			case 1:
-				return One
-			case 2:
-				return Two
-			default:
-				mod100 := i % 100
-				if mod100 >= 3 && mod100 <= 10 {
-					return Few
-				}
-				if mod100 >= 11 {
-					return Many
-				}
-				return Other
-			}
-		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
-		},
-	})
+    RegisterLanguage(&Language{
+        Code:             "en",
+        Name:             "English",
+        PluralCategories: newSet(One, Other),
+        IntFunc: func(i int64) PluralCategory {
+            if i == 1 {
+                return One
+            }
+            return Other
+        },
+        FloatFunc: func(f float64) PluralCategory {
+            return Other
+        },
+    })
     ```
 
-3. Submit a pull request!
+3. Add a test to [language_test.go](i18n/language_test.go)
+4. Submit a pull request!
+
+License
+-------
+go-i18n is available under the MIT license. See the LICENSE file for more info.
