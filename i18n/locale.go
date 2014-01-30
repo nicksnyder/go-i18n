@@ -10,7 +10,7 @@ type Locale struct {
 	Language *Language
 }
 
-var localeIdRegexp = regexp.MustCompile(`([a-z]{2,3})[_\-][A-Z]{2}`)
+var localeIdRegexp = regexp.MustCompile(`([a-z]{2,3}(?:[_\-][A-Z][a-z]{3})?)[_\-][A-Z]{2}`)
 
 func NewLocale(s string) (*Locale, error) {
 	matches := localeIdRegexp.FindAllStringSubmatch(s, -1)

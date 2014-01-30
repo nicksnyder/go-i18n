@@ -195,6 +195,8 @@ Supported languages
 -------------------
 
 * Arabic (`ar`)
+* Chinese (Simplified) (`zh-Hans`)
+* Chinese (Traditional) (`zh-Hant`)
 * English (`en`)
 * French (`fr`)
 * Japanese (`ja`)

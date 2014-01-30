@@ -2,7 +2,6 @@ package i18n
 
 import (
 	"fmt"
-	"strings"
 )
 
 type Language struct {
@@ -15,6 +14,7 @@ type Language struct {
 
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 func init() {
+	// Alphabetical by English name.
 	RegisterLanguage(&Language{
 		Code:             "ar",
 		Name:             "العربية",
@@ -43,14 +43,25 @@ func init() {
 		},
 	})
 
+	// Chinese (Simplified)
 	RegisterLanguage(&Language{
-		Code:             "en",
-		Name:             "English",
-		PluralCategories: newSet(One, Other),
+		Code:             "zh-Hans",
+		Name:             "汉语",
+		PluralCategories: newSet(Other),
 		IntFunc: func(i int64) PluralCategory {
-			if i == 1 {
-				return One
-			}
+			return Other
+		},
+		FloatFunc: func(f float64) PluralCategory {
+			return Other
+		},
+	})
+
+	// Chinese (Traditional)
+	RegisterLanguage(&Language{
+		Code:             "zh-Hant",
+		Name:             "漢語",
+		PluralCategories: newSet(Other),
+		IntFunc: func(i int64) PluralCategory {
 			return Other
 		},
 		FloatFunc: func(f float64) PluralCategory {
@@ -59,8 +70,8 @@ func init() {
 	})
 
 	RegisterLanguage(&Language{
-		Code:             "es",
-		Name:             "Español",
+		Code:             "en",
+		Name:             "English",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
 			if i == 1 {
@@ -102,12 +113,27 @@ func init() {
 			return Other
 		},
 	})
+
+	RegisterLanguage(&Language{
+		Code:             "es",
+		Name:             "Español",
+		PluralCategories: newSet(One, Other),
+		IntFunc: func(i int64) PluralCategory {
+			if i == 1 {
+				return One
+			}
+			return Other
+		},
+		FloatFunc: func(f float64) PluralCategory {
+			return Other
+		},
+	})
 }
 
 var languagesByCode = make(map[string]*Language)
 
 func LanguageWithCode(code string) *Language {
-	return languagesByCode[strings.ToLower(code)]
+	return languagesByCode[code]
 }
 
 func RegisterLanguage(l *Language) {

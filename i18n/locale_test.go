@@ -11,6 +11,10 @@ func TestNewLocale(t *testing.T) {
 	}{
 		{"en-US", true},
 		{"en_US", true},
+		{"zh-Hans-CN", true},
+		{"zh-Hant-TW", true},
+		{"zh-CN", false},
+		{"zh-TW", false},
 		{"en US", false},
 		{"en-US-en-US", false},
 	}
