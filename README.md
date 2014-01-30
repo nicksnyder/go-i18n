@@ -200,6 +200,7 @@ Supported languages
 * English (`en`)
 * French (`fr`)
 * German (`de`)
+* Italian (`it`)
 * Japanese (`ja`)
 * Spanish (`es`)
 
