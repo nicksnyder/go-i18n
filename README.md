@@ -9,7 +9,7 @@ Features
 --------
 
 * Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
-* Uses [text/template](http://golang.org/pkg/text/template/) for parameter substitution.
+* Uses [text/template](http://golang.org/pkg/text/template/) for strings with variables.
 * Translation files are simple JSON.
 
 i18n package
@@ -57,7 +57,7 @@ T("program_greeting")
 
 ##### Strings with variables
 
-You can have variable substitutions in your string using [text/template](http://golang.org/pkg/text/template/) syntax.
+You can have variables in your string using [text/template](http://golang.org/pkg/text/template/) syntax.
 
 ```go
 T("Hello {{.Person}}", map[string]interface{}{
@@ -78,7 +78,7 @@ The translation function handles [all of this logic](http://www.unicode.org/cldr
 T("You have {{.Count}} unread emails", 2)
 ```
 
-With variable substitutions:
+With variables:
 
 ```go
 T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
