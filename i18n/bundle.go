@@ -8,12 +8,18 @@ import (
 	"path/filepath"
 )
 
+type TranslateFunc func(translationId string, args ...interface{}) string
+
+func IdentityTfunc() TranslateFunc {
+	return func(translationId string, args ...interface{}) string {
+		return translationId
+	}
+}
+
 // A Bundle holds translations for multiple locales.
 type Bundle struct {
 	translations map[string]map[string]Translation
 }
-
-type TranslateFunc func(translationId string, args ...interface{}) string
 
 var defaultBundle = NewBundle()
 
@@ -176,7 +182,7 @@ func (b *Bundle) translate(locale *Locale, translationId string, args ...interfa
 	if isNumber(count) {
 		if data == nil {
 			data = map[string]interface{}{"Count": count}
-		} else if _, ok := data["Count"]; !ok {
+		} else {
 			data["Count"] = count
 		}
 	}
