@@ -6,7 +6,7 @@ import (
 
 type Translation interface {
 	MarshalInterface() interface{}
-	Id() string
+	ID() string
 	Template(PluralCategory) *template
 	UntranslatedCopy() Translation
 	Normalize(language *Language) Translation
@@ -15,11 +15,11 @@ type Translation interface {
 	Incomplete(l *Language) bool
 }
 
-type byId []Translation
+type byID []Translation
 
-func (a byId) Len() int           { return len(a) }
-func (a byId) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byId) Less(i, j int) bool { return a[i].Id() < a[j].Id() }
+func (a byID) Len() int           { return len(a) }
+func (a byID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byID) Less(i, j int) bool { return a[i].ID() < a[j].ID() }
 
 func NewTranslation(data map[string]interface{}) (Translation, error) {
 	id, ok := data["id"].(string)

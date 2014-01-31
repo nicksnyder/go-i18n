@@ -12,7 +12,7 @@ func (pt *pluralTranslation) MarshalInterface() interface{} {
 	}
 }
 
-func (pt *pluralTranslation) Id() string {
+func (pt *pluralTranslation) ID() string {
 	return pt.id
 }
 
@@ -51,7 +51,7 @@ func (pt *pluralTranslation) Backfill(src Translation) Translation {
 
 func (pt *pluralTranslation) Merge(t Translation) Translation {
 	other, ok := t.(*pluralTranslation)
-	if !ok || pt.Id() != t.Id() {
+	if !ok || pt.ID() != t.ID() {
 		return t
 	}
 	for pluralCategory, template := range other.templates {

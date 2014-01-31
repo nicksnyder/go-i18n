@@ -6,7 +6,7 @@ import (
 
 func TestNewLocale(t *testing.T) {
 	tests := []struct {
-		localeId string
+		localeID string
 		valid    bool
 	}{
 		{"en-US", true},
@@ -19,12 +19,12 @@ func TestNewLocale(t *testing.T) {
 		{"en-US-en-US", false},
 	}
 	for _, test := range tests {
-		_, err := NewLocale(test.localeId)
+		_, err := NewLocale(test.localeID)
 		if test.valid && err != nil {
-			t.Errorf("%s should be a valid locale: %s", test.localeId, err)
+			t.Errorf("%s should be a valid locale: %s", test.localeID, err)
 		}
 		if !test.valid && err == nil {
-			t.Errorf("%s should not be a valid locale", test.localeId)
+			t.Errorf("%s should not be a valid locale", test.localeID)
 		}
 	}
 }

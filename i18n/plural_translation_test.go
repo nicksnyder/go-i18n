@@ -50,7 +50,7 @@ func TestPluralTranslationMerge(t *testing.T) {
 
 func TestCopy(t *testing.T) {
 	ls := &LocalizedString{
-		Id:          "id",
+		ID:          "id",
 		Translation: testingTemplate(t, "translation {{.Hello}}"),
 		Translations: map[PluralCategory]*template{
 			One:   testingTemplate(t, "plural {{.One}}"),

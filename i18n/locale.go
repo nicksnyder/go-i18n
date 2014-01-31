@@ -6,7 +6,7 @@ import (
 )
 
 type Locale struct {
-	Id       string
+	ID       string
 	Language *Language
 }
 

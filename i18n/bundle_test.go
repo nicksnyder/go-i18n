@@ -27,32 +27,32 @@ func TestMustTfunc(t *testing.T) {
 
 func TestTfunc(t *testing.T) {
 	b := NewBundle()
-	translationId := "translation_id"
+	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
 	b.Add(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{
-		"id":          translationId,
+		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
 	b.Add(mustNewLocale("fr-FR"), testNewTranslation(t, map[string]interface{}{
-		"id":          translationId,
+		"id":          translationID,
 		"translation": frenchTranslation,
 	}))
 
 	tests := []struct {
-		localeIds []string
+		localeIDs []string
 		valid     bool
 		result    string
 	}{
 		{
 			[]string{"invalid"},
 			false,
-			translationId,
+			translationID,
 		},
 		{
 			[]string{"invalid", "invalid2"},
 			false,
-			translationId,
+			translationID,
 		},
 		{
 			[]string{"invalid", "en-US"},
@@ -72,14 +72,14 @@ func TestTfunc(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tf, err := b.Tfunc(test.localeIds[0], test.localeIds[1:]...)
+		tf, err := b.Tfunc(test.localeIDs[0], test.localeIDs[1:]...)
 		if err != nil && test.valid {
-			t.Errorf("Tfunc for %v returned error %s", test.localeIds, err)
+			t.Errorf("Tfunc for %v returned error %s", test.localeIDs, err)
 		}
 		if err == nil && !test.valid {
-			t.Errorf("Tfunc for %v returned nil error", test.localeIds)
+			t.Errorf("Tfunc for %v returned nil error", test.localeIDs)
 		}
-		if result := tf(translationId); result != test.result {
+		if result := tf(translationID); result != test.result {
 			t.Errorf("translation was %s; expected %s", result, test.result)
 		}
 	}
@@ -96,14 +96,14 @@ func bundleFixture(t *testing.T) *Bundle {
 		Locale: l,
 		localizedStrings: map[string]*LocalizedString{
 			"a": &LocalizedString{
-				Id: "a",
+				ID: "a",
 			},
 			"b": &LocalizedString{
-				Id:          "b",
+				ID:          "b",
 				Translation: "translation(b)",
 			},
 			"c": &LocalizedString{
-				Id: "c",
+				ID: "c",
 				Translations: map[PluralCategory]*PluralTranslation{
 					Zero:  NewPluralTranslation("zero(c)"),
 					One:   NewPluralTranslation("one(c)"),
@@ -114,7 +114,7 @@ func bundleFixture(t *testing.T) *Bundle {
 				},
 			},
 			"d": &LocalizedString{
-				Id: "d",
+				ID: "d",
 				Translations: map[PluralCategory]*PluralTranslation{
 					Zero: NewPluralTranslation("zero(d)"),
 					One:  NewPluralTranslation("one(d)"),

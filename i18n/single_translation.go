@@ -12,7 +12,7 @@ func (st *singleTranslation) MarshalInterface() interface{} {
 	}
 }
 
-func (st *singleTranslation) Id() string {
+func (st *singleTranslation) ID() string {
 	return st.id
 }
 
@@ -37,7 +37,7 @@ func (st *singleTranslation) Backfill(src Translation) Translation {
 
 func (st *singleTranslation) Merge(t Translation) Translation {
 	other, ok := t.(*singleTranslation)
-	if !ok || st.Id() != t.Id() {
+	if !ok || st.ID() != t.ID() {
 		return t
 	}
 	if other.template != nil && other.template.src != "" {

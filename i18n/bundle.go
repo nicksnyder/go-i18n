@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 )
 
-type TranslateFunc func(translationId string, args ...interface{}) string
+type TranslateFunc func(translationID string, args ...interface{}) string
 
 func IdentityTfunc() TranslateFunc {
-	return func(translationId string, args ...interface{}) string {
-		return translationId
+	return func(translationID string, args ...interface{}) string {
+		return translationID
 	}
 }
 
@@ -35,12 +35,12 @@ func Add(locale *Locale, translations ...Translation) {
 	defaultBundle.Add(locale, translations...)
 }
 
-func MustTfunc(localeId string, localeIds ...string) TranslateFunc {
-	return defaultBundle.MustTfunc(localeId, localeIds...)
+func MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+	return defaultBundle.MustTfunc(localeID, localeIDs...)
 }
 
-func Tfunc(localeId string, localeIds ...string) (TranslateFunc, error) {
-	return defaultBundle.Tfunc(localeId, localeIds...)
+func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
+	return defaultBundle.Tfunc(localeID, localeIDs...)
 }
 
 func NewBundle() *Bundle {
@@ -106,15 +106,15 @@ func parseTranslationFile(filename string) ([]Translation, error) {
 }
 
 func (b *Bundle) Add(locale *Locale, translations ...Translation) {
-	if b.translations[locale.Id] == nil {
-		b.translations[locale.Id] = make(map[string]Translation, len(translations))
+	if b.translations[locale.ID] == nil {
+		b.translations[locale.ID] = make(map[string]Translation, len(translations))
 	}
-	currentTranslations := b.translations[locale.Id]
+	currentTranslations := b.translations[locale.ID]
 	for _, newTranslation := range translations {
-		if currentTranslation := currentTranslations[newTranslation.Id()]; currentTranslation != nil {
-			currentTranslations[newTranslation.Id()] = currentTranslation.Merge(newTranslation)
+		if currentTranslation := currentTranslations[newTranslation.ID()]; currentTranslation != nil {
+			currentTranslations[newTranslation.ID()] = currentTranslation.Merge(newTranslation)
 		} else {
-			currentTranslations[newTranslation.Id()] = newTranslation
+			currentTranslations[newTranslation.ID()] = newTranslation
 		}
 	}
 }
@@ -123,43 +123,43 @@ func (b *Bundle) Translations() map[string]map[string]Translation {
 	return b.translations
 }
 
-func (b *Bundle) MustTfunc(localeId string, localeIds ...string) TranslateFunc {
-	tf, err := b.Tfunc(localeId, localeIds...)
+func (b *Bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+	tf, err := b.Tfunc(localeID, localeIDs...)
 	if err != nil {
 		panic(err)
 	}
 	return tf
 }
 
-func (b *Bundle) Tfunc(localeId string, localeIds ...string) (tf TranslateFunc, err error) {
+func (b *Bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
 	var locale *Locale
-	locale, err = NewLocale(localeId)
+	locale, err = NewLocale(localeID)
 	if err != nil {
-		for _, localeId := range localeIds {
-			locale, err = NewLocale(localeId)
+		for _, localeID := range localeIDs {
+			locale, err = NewLocale(localeID)
 			if err == nil {
 				break
 			}
 		}
 	}
-	return func(translationId string, args ...interface{}) string {
-		return b.translate(locale, translationId, args...)
+	return func(translationID string, args ...interface{}) string {
+		return b.translate(locale, translationID, args...)
 	}, err
 }
 
-func (b *Bundle) translate(locale *Locale, translationId string, args ...interface{}) string {
+func (b *Bundle) translate(locale *Locale, translationID string, args ...interface{}) string {
 	if locale == nil {
-		return translationId
+		return translationID
 	}
 
-	translations := b.translations[locale.Id]
+	translations := b.translations[locale.ID]
 	if translations == nil {
-		return translationId
+		return translationID
 	}
 
-	translation := translations[translationId]
+	translation := translations[translationID]
 	if translation == nil {
-		return translationId
+		return translationID
 	}
 
 	var count interface{}
@@ -171,7 +171,7 @@ func (b *Bundle) translate(locale *Locale, translationId string, args ...interfa
 	pluralCategory, _ := locale.Language.PluralCategory(count)
 	template := translation.Template(pluralCategory)
 	if template == nil {
-		return translationId
+		return translationID
 	}
 
 	var data map[string]interface{}
@@ -189,7 +189,7 @@ func (b *Bundle) translate(locale *Locale, translationId string, args ...interfa
 
 	s := template.Execute(data)
 	if s == "" {
-		return translationId
+		return translationID
 	}
 	return s
 }
