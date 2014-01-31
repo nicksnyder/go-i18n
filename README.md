@@ -100,7 +100,7 @@ A complete example is [here](i18n/example_test.go).
 
 ##### Strings in templates
 
-You can call the translation function inside of a [text/template](http://golang.org/pkg/text/template/#Template.Funcs) or [html/template](http://golang.org/pkg/html/template/#Template.Funcs) by using the `.Funcs()` method on the template to register the translation function.
+You can call the `.Funcs()` method on a [text/template](http://golang.org/pkg/text/template/#Template.Funcs) or [html/template](http://golang.org/pkg/html/template/#Template.Funcs) to register the translation function for usage inside of that template.
 
 A complete example is [here](i18n/exampletemplate_test.go).
 
