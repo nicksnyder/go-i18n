@@ -34,7 +34,7 @@ func Example_template() {
 		"Timeframe": T("d_days", 1),
 	})
 
-	// output:
+	// Output:
 	// Hello world
 	// Hello Bob
 	// You have 0 unread emails.
