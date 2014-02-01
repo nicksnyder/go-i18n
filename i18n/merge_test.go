@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestMerge(t *testing.T) {
+func TestMergeExecute(t *testing.T) {
 	resetDir(t, "testdata/output")
 	files := []string{
 		"testdata/input/en-US.one.json",
@@ -17,7 +17,13 @@ func TestMerge(t *testing.T) {
 		"testdata/input/ar-AR.two.json",
 	}
 
-	if err := Merge(files, "en-US", "testdata/output", "json"); err != nil {
+	mc := &MergeCommand{
+		TranslationFiles: files,
+		SourceLocaleID:   "en-US",
+		Outdir:           "testdata/output",
+		Format:           "json",
+	}
+	if err := mc.Execute(); err != nil {
 		t.Fatal(err)
 	}
 

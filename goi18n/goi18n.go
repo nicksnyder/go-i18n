@@ -61,11 +61,18 @@ Options:
 
 func main() {
 	flag.Usage = usage
-	sourceLocale := *flag.String("sourceLocale", "en-US", "")
-	outdir := *flag.String("outdir", ".", "")
-	format := *flag.String("format", "json", "")
+	sourceLocale := flag.String("sourceLocale", "en-US", "")
+	outdir := flag.String("outdir", ".", "")
+	format := flag.String("format", "json", "")
 	flag.Parse()
-	if err := i18n.Merge(flag.Args(), sourceLocale, outdir, format); err != nil {
+
+	mc := &i18n.MergeCommand{
+		TranslationFiles: flag.Args(),
+		SourceLocaleID:   *sourceLocale,
+		Outdir:           *outdir,
+		Format:           *format,
+	}
+	if err := mc.Execute(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
