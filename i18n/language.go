@@ -4,19 +4,26 @@ import (
 	"fmt"
 )
 
+// Language is a human language as defined by RFC 5646.
+//
+// Languages are identified by a 2 character language code
+// optionally followed by a dash and a 4 character script subtag (e.g. en, zh-Hant)
+//
+// Languages should implement CLDR plural rules as defined here:
+// http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 type Language struct {
-	Code             string
+	ID               string
 	Name             string
 	PluralCategories map[PluralCategory]struct{}
 	IntFunc          func(int64) PluralCategory
 	FloatFunc        func(float64) PluralCategory
 }
 
-// http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 // Alphabetical by English name.
 var languages = map[string]*Language{
+	// Arabic
 	"ar": &Language{
-		Code:             "ar",
+		ID:               "ar",
 		Name:             "العربية",
 		PluralCategories: newSet(Zero, One, Two, Few, Many, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -45,7 +52,7 @@ var languages = map[string]*Language{
 
 	// Chinese (Simplified)
 	"zh-Hans": &Language{
-		Code:             "zh-Hans",
+		ID:               "zh-Hans",
 		Name:             "汉语",
 		PluralCategories: newSet(Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -58,7 +65,7 @@ var languages = map[string]*Language{
 
 	// Chinese (Traditional)
 	"zh-Hant": &Language{
-		Code:             "zh-Hant",
+		ID:               "zh-Hant",
 		Name:             "漢語",
 		PluralCategories: newSet(Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -70,7 +77,7 @@ var languages = map[string]*Language{
 	},
 
 	"en": &Language{
-		Code:             "en",
+		ID:               "en",
 		Name:             "English",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -84,8 +91,9 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// French
 	"fr": &Language{
-		Code:             "fr",
+		ID:               "fr",
 		Name:             "Français",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -102,8 +110,9 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// German
 	"de": &Language{
-		Code:             "de",
+		ID:               "de",
 		Name:             "Deutsch",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -117,8 +126,9 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// Italian
 	"it": &Language{
-		Code:             "it",
+		ID:               "it",
 		Name:             "Italiano",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -132,8 +142,9 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// Japanese
 	"ja": &Language{
-		Code:             "ja",
+		ID:               "ja",
 		Name:             "日本語",
 		PluralCategories: newSet(Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -144,8 +155,9 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// Spanish
 	"es": &Language{
-		Code:             "es",
+		ID:               "es",
 		Name:             "Español",
 		PluralCategories: newSet(One, Other),
 		IntFunc: func(i int64) PluralCategory {
@@ -160,16 +172,15 @@ var languages = map[string]*Language{
 	},
 }
 
-func LanguageWithCode(code string) *Language {
-	return languages[code]
+// LanguageWithID returns the language identified by id
+// or nil if the language is not registered.
+func LanguageWithID(id string) *Language {
+	return languages[id]
 }
 
+// RegisterLanguage adds l to the collection of available languages.
 func RegisterLanguage(l *Language) {
-	languages[l.Code] = l
-}
-
-func (l *Language) String() string {
-	return l.Name
+	languages[l.ID] = l
 }
 
 func (l *Language) pluralCategory(count interface{}) (PluralCategory, error) {

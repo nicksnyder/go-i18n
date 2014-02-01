@@ -5,6 +5,7 @@ import (
 	"regexp"
 )
 
+// Locale represents a locale with specific language (e.g. en-US, en-GB).
 type Locale struct {
 	ID       string
 	Language *Language
@@ -23,7 +24,7 @@ func NewLocale(s string) (*Locale, error) {
 		return nil, fmt.Errorf("%d locales found in string %s", count, s)
 	}
 	id, languageCode := matches[0][0], matches[0][1]
-	language := LanguageWithCode(languageCode)
+	language := LanguageWithID(languageCode)
 	if language == nil {
 		return nil, fmt.Errorf("unknown language code %s", languageCode)
 	}

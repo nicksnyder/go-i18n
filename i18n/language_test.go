@@ -48,22 +48,22 @@ func TestArabic(t *testing.T) {
 		{3.3, Other},
 	}
 
-	language := LanguageWithCode("ar")
+	language := LanguageWithID("ar")
 	testInts(t, language, intTests)
 	testIntsAsFloats(t, language, intTests)
 	testFloats(t, language, floatTests)
 }
 
 func TestChineseSimplified(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithCode("zh-Hans"))
+	testEverythingIsOther(t, LanguageWithID("zh-Hans"))
 }
 
 func TestChineseTraditional(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithCode("zh-Hant"))
+	testEverythingIsOther(t, LanguageWithID("zh-Hant"))
 }
 
 func TestEnglish(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithCode("en"))
+	testOneIsSpecial(t, LanguageWithID("en"))
 }
 
 func TestFrench(t *testing.T) {
@@ -84,26 +84,26 @@ func TestFrench(t *testing.T) {
 		{2.2, Other},
 	}
 
-	language := LanguageWithCode("fr")
+	language := LanguageWithID("fr")
 	testInts(t, language, intTests)
 	testIntsAsFloats(t, language, intTests)
 	testFloats(t, language, floatTests)
 }
 
 func TestGerman(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithCode("de"))
+	testOneIsSpecial(t, LanguageWithID("de"))
 }
 
 func TestItalian(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithCode("it"))
+	testOneIsSpecial(t, LanguageWithID("it"))
 }
 
 func TestJapanese(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithCode("ja"))
+	testEverythingIsOther(t, LanguageWithID("ja"))
 }
 
 func TestSpanish(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithCode("es"))
+	testOneIsSpecial(t, LanguageWithID("es"))
 }
 
 // Tests that a language treats one as special and all other numbers the same.

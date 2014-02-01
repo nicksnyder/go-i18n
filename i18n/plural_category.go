@@ -4,8 +4,11 @@ import (
 	"fmt"
 )
 
+// PluralCategory represents a language pluralization form as defined here:
+// http://cldr.unicode.org/index/cldr-spec/plural-rules
 type PluralCategory string
 
+// Enumeration of all valid PluralCategory
 const (
 	Invalid PluralCategory = "invalid"
 	Zero                   = "zero"
@@ -16,6 +19,8 @@ const (
 	Other                  = "other"
 )
 
+// NewPluralCategory returns converts src to a PluralCategory
+// or returns Invalid and a non-nil error if src is not a valid PluralCategory.
 func NewPluralCategory(src string) (PluralCategory, error) {
 	switch src {
 	case "zero":
