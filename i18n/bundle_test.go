@@ -22,11 +22,11 @@ func TestMustTfunc(t *testing.T) {
 			t.Errorf("expected MustTfunc to panic")
 		}
 	}()
-	NewBundle().MustTfunc("invalid")
+	newBundle().MustTfunc("invalid")
 }
 
 func TestTfunc(t *testing.T) {
-	b := NewBundle()
+	b := newBundle()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
 	b.Add(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{

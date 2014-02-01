@@ -26,7 +26,7 @@ func Merge(translationFiles []string, sourceLocaleID, outdir, format string) err
 		return err
 	}
 
-	bundle := NewBundle()
+	bundle := newBundle()
 	for _, tf := range translationFiles {
 		if err := bundle.LoadTranslationFile(tf); err != nil {
 			return fmt.Errorf("failed to load translation file %s because %s\n", tf, err)

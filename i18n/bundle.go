@@ -16,12 +16,11 @@ func IdentityTfunc() TranslateFunc {
 	}
 }
 
-// A Bundle holds translations for multiple locales.
-type Bundle struct {
+type bundle struct {
 	translations map[string]map[string]Translation
 }
 
-var defaultBundle = NewBundle()
+var defaultBundle = newBundle()
 
 func MustLoadTranslationFile(filename string) {
 	defaultBundle.MustLoadTranslationFile(filename)
@@ -43,19 +42,19 @@ func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
 	return defaultBundle.Tfunc(localeID, localeIDs...)
 }
 
-func NewBundle() *Bundle {
-	return &Bundle{
+func newBundle() *bundle {
+	return &bundle{
 		translations: make(map[string]map[string]Translation),
 	}
 }
 
-func (b *Bundle) MustLoadTranslationFile(filename string) {
+func (b *bundle) MustLoadTranslationFile(filename string) {
 	if err := b.LoadTranslationFile(filename); err != nil {
 		panic(err)
 	}
 }
 
-func (b *Bundle) LoadTranslationFile(filename string) error {
+func (b *bundle) LoadTranslationFile(filename string) error {
 	locale, err := NewLocale(filename)
 	if err != nil {
 		return err
@@ -105,7 +104,7 @@ func parseTranslationFile(filename string) ([]Translation, error) {
 	return translations, nil
 }
 
-func (b *Bundle) Add(locale *Locale, translations ...Translation) {
+func (b *bundle) Add(locale *Locale, translations ...Translation) {
 	if b.translations[locale.ID] == nil {
 		b.translations[locale.ID] = make(map[string]Translation, len(translations))
 	}
@@ -119,11 +118,11 @@ func (b *Bundle) Add(locale *Locale, translations ...Translation) {
 	}
 }
 
-func (b *Bundle) Translations() map[string]map[string]Translation {
+func (b *bundle) Translations() map[string]map[string]Translation {
 	return b.translations
 }
 
-func (b *Bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+func (b *bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
 	tf, err := b.Tfunc(localeID, localeIDs...)
 	if err != nil {
 		panic(err)
@@ -131,7 +130,7 @@ func (b *Bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
 	return tf
 }
 
-func (b *Bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
+func (b *bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
 	var locale *Locale
 	locale, err = NewLocale(localeID)
 	if err != nil {
@@ -147,7 +146,7 @@ func (b *Bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, 
 	}, err
 }
 
-func (b *Bundle) translate(locale *Locale, translationID string, args ...interface{}) string {
+func (b *bundle) translate(locale *Locale, translationID string, args ...interface{}) string {
 	if locale == nil {
 		return translationID
 	}
