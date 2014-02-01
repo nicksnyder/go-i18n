@@ -152,7 +152,7 @@ func testEverythingIsOther(t *testing.T, l *Language) {
 
 func testInts(t *testing.T, language *Language, intTests []intPluralTest) {
 	for _, test := range intTests {
-		if pc := language.Int64PluralCategory(test.i); pc != test.pc {
+		if pc := language.int64PluralCategory(test.i); pc != test.pc {
 			t.Errorf("Int64PluralCategory(%d) returned %s; expected %s", test.i, pc, test.pc)
 		}
 	}
@@ -161,7 +161,7 @@ func testInts(t *testing.T, language *Language, intTests []intPluralTest) {
 func testIntsAsFloats(t *testing.T, language *Language, intTests []intPluralTest) {
 	for _, test := range intTests {
 		f := float64(test.i)
-		if pc := language.Float64PluralCategory(f); pc != test.pc {
+		if pc := language.float64PluralCategory(f); pc != test.pc {
 			t.Errorf("Float64PluralCategory(%f) returned %s; expected %s", f, pc, test.pc)
 		}
 	}
@@ -169,7 +169,7 @@ func testIntsAsFloats(t *testing.T, language *Language, intTests []intPluralTest
 
 func testFloats(t *testing.T, language *Language, floatTests []floatPluralTest) {
 	for _, test := range floatTests {
-		if pc := language.Float64PluralCategory(test.f); pc != test.pc {
+		if pc := language.float64PluralCategory(test.f); pc != test.pc {
 			t.Errorf("Float64PluralCategory(%f) returned %s; expected %s", test.f, pc, test.pc)
 		}
 	}

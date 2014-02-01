@@ -13,9 +13,9 @@ type Language struct {
 }
 
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-func init() {
-	// Alphabetical by English name.
-	RegisterLanguage(&Language{
+// Alphabetical by English name.
+var languages = map[string]*Language{
+	"ar": &Language{
 		Code:             "ar",
 		Name:             "العربية",
 		PluralCategories: newSet(Zero, One, Two, Few, Many, Other),
@@ -41,10 +41,10 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
 	// Chinese (Simplified)
-	RegisterLanguage(&Language{
+	"zh-Hans": &Language{
 		Code:             "zh-Hans",
 		Name:             "汉语",
 		PluralCategories: newSet(Other),
@@ -54,10 +54,10 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
 	// Chinese (Traditional)
-	RegisterLanguage(&Language{
+	"zh-Hant": &Language{
 		Code:             "zh-Hant",
 		Name:             "漢語",
 		PluralCategories: newSet(Other),
@@ -67,9 +67,9 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"en": &Language{
 		Code:             "en",
 		Name:             "English",
 		PluralCategories: newSet(One, Other),
@@ -82,9 +82,9 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"fr": &Language{
 		Code:             "fr",
 		Name:             "Français",
 		PluralCategories: newSet(One, Other),
@@ -100,9 +100,9 @@ func init() {
 			}
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"de": &Language{
 		Code:             "de",
 		Name:             "Deutsch",
 		PluralCategories: newSet(One, Other),
@@ -115,9 +115,9 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"it": &Language{
 		Code:             "it",
 		Name:             "Italiano",
 		PluralCategories: newSet(One, Other),
@@ -130,9 +130,9 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"ja": &Language{
 		Code:             "ja",
 		Name:             "日本語",
 		PluralCategories: newSet(Other),
@@ -142,9 +142,9 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 
-	RegisterLanguage(&Language{
+	"es": &Language{
 		Code:             "es",
 		Name:             "Español",
 		PluralCategories: newSet(One, Other),
@@ -157,52 +157,50 @@ func init() {
 		FloatFunc: func(f float64) PluralCategory {
 			return Other
 		},
-	})
+	},
 }
 
-var languagesByCode = make(map[string]*Language)
-
 func LanguageWithCode(code string) *Language {
-	return languagesByCode[code]
+	return languages[code]
 }
 
 func RegisterLanguage(l *Language) {
-	languagesByCode[l.Code] = l
+	languages[l.Code] = l
 }
 
 func (l *Language) String() string {
 	return l.Name
 }
 
-func (l *Language) PluralCategory(count interface{}) (PluralCategory, error) {
+func (l *Language) pluralCategory(count interface{}) (PluralCategory, error) {
 	switch v := count.(type) {
 	case int:
-		return l.Int64PluralCategory(int64(v)), nil
+		return l.int64PluralCategory(int64(v)), nil
 	case int8:
-		return l.Int64PluralCategory(int64(v)), nil
+		return l.int64PluralCategory(int64(v)), nil
 	case int16:
-		return l.Int64PluralCategory(int64(v)), nil
+		return l.int64PluralCategory(int64(v)), nil
 	case int32:
-		return l.Int64PluralCategory(int64(v)), nil
+		return l.int64PluralCategory(int64(v)), nil
 	case int64:
-		return l.Int64PluralCategory(v), nil
+		return l.int64PluralCategory(v), nil
 	case float32:
-		return l.Float64PluralCategory(float64(v)), nil
+		return l.float64PluralCategory(float64(v)), nil
 	case float64:
-		return l.Float64PluralCategory(v), nil
+		return l.float64PluralCategory(v), nil
 	default:
 		return Invalid, fmt.Errorf("can't convert %#v to PluralCategory", v)
 	}
 }
 
-func (l *Language) Int64PluralCategory(i int64) PluralCategory {
+func (l *Language) int64PluralCategory(i int64) PluralCategory {
 	if i < 0 {
 		i = -i
 	}
 	return l.IntFunc(i)
 }
 
-func (l *Language) Float64PluralCategory(f float64) PluralCategory {
+func (l *Language) float64PluralCategory(f float64) PluralCategory {
 	if f < 0 {
 		f = -f
 	}

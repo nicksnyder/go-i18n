@@ -167,7 +167,7 @@ func (b *bundle) translate(locale *Locale, translationID string, args ...interfa
 		args = args[1:]
 	}
 
-	pluralCategory, _ := locale.Language.PluralCategory(count)
+	pluralCategory, _ := locale.Language.pluralCategory(count)
 	template := translation.Template(pluralCategory)
 	if template == nil {
 		return translationID
