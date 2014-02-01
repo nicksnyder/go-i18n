@@ -1,4 +1,5 @@
-// Package i18n provides support for translating your Go application into multiple languages.
+// Package i18n provides support for translating your Go application into multiple languages
+// including variable substitution and CLDR plurals.
 // It is intended to be used in conjunction with the goi18n command,
 // although that is not strictly required.
 //
