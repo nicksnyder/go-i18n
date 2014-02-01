@@ -9,7 +9,7 @@ import (
 // Languages are identified by a 2 character language code
 // optionally followed by a dash and a 4 character script subtag (e.g. en, zh-Hant)
 //
-// Languages should implement CLDR plural rules as defined here:
+// Languages implement CLDR plural rules as defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 type Language struct {
 	ID               string

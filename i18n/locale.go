@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-// Locale represents a locale with specific language (e.g. en-US, en-GB).
+// Locale is a language and a geographic region (e.g. en-US, en-GB).
 type Locale struct {
 	ID       string
 	Language *Language
@@ -15,7 +15,7 @@ type Locale struct {
 var languageTagRegexp = regexp.MustCompile(`([a-z]{2,3}(?:[_\-][A-Z][a-z]{3})?)[_\-][A-Z]{2}`)
 
 // NewLocale searches s for a valid language tag as defined by RFC 5646.
-// http://en.wikipedia.org/wiki/IETF_language_tag
+//
 // It returns an error if s doesn't contain exactly one language tag or
 // if the language represented by the tag is not supported by this package.
 func NewLocale(s string) (*Locale, error) {

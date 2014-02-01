@@ -23,8 +23,9 @@ func (a byID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byID) Less(i, j int) bool { return a[i].ID() < a[j].ID() }
 
 // NewTranslation reflects on data to create a new Translation.
+//
 // data["id"] must be a string and data["translation"] must be either a string
-// for a non-plural translation and a map[string]interface{} for a plural translation.
+// for a non-plural translation or a map[string]interface{} for a plural translation.
 func NewTranslation(data map[string]interface{}) (Translation, error) {
 	id, ok := data["id"].(string)
 	if !ok {

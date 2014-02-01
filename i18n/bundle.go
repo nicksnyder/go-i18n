@@ -9,8 +9,10 @@ import (
 )
 
 // TranslateFunc returns the translation of the string identified by translationID.
+//
 // If translationID is a non-plural form, then the first variadic argument may be a map[string]interface{}
 // that contains template data for the string (if any).
+//
 // If translationID is a plural form, then the first variadic argument must be a number type
 // (int, int8, int16, int32, int64, float32, float64) and the second variadic argument may be a
 // map[string]interface like the non-plural form.
@@ -36,13 +38,16 @@ func MustLoadTranslationFile(filename string) {
 }
 
 // LoadTranslationFile loads the translations from filename into memory.
-// The locale that the translations are associated with is parsed from filename.
+//
+// The locale that the translations are associated with is parsed from the filename.
+//
 // Generally you should load translation files once during your program's initialization.
 func LoadTranslationFile(filename string) error {
 	return defaultBundle.LoadTranslationFile(filename)
 }
 
-// Add adds translations to locale.
+// Add adds translations for a locale.
+//
 // Add is useful if your translations are in a format not supported by LoadTranslationFile.
 func Add(locale *Locale, translations ...Translation) {
 	defaultBundle.Add(locale, translations...)
