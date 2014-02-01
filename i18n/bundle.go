@@ -49,8 +49,8 @@ func LoadTranslationFile(filename string) error {
 // Add adds translations for a locale.
 //
 // Add is useful if your translations are in a format not supported by LoadTranslationFile.
-func Add(locale *Locale, translations ...Translation) {
-	defaultBundle.Add(locale, translations...)
+func AddTranslation(locale *Locale, translations ...Translation) {
+	defaultBundle.AddTranslation(locale, translations...)
 }
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
@@ -86,7 +86,7 @@ func (b *bundle) LoadTranslationFile(filename string) error {
 		return err
 	}
 
-	b.Add(locale, translations...)
+	b.AddTranslation(locale, translations...)
 	return nil
 }
 
@@ -125,7 +125,7 @@ func parseTranslationFile(filename string) ([]Translation, error) {
 	return translations, nil
 }
 
-func (b *bundle) Add(locale *Locale, translations ...Translation) {
+func (b *bundle) AddTranslation(locale *Locale, translations ...Translation) {
 	if b.translations[locale.ID] == nil {
 		b.translations[locale.ID] = make(map[string]Translation, len(translations))
 	}

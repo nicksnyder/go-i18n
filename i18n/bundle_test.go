@@ -12,7 +12,7 @@ func TestLoadTranslationFile(t *testing.T) {
 	t.Skipf("not implemented")
 }
 
-func TestAdd(t *testing.T) {
+func TestAddTranslation(t *testing.T) {
 	t.Skipf("not implemented")
 }
 
@@ -29,12 +29,12 @@ func TestTfunc(t *testing.T) {
 	b := newBundle()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
-	b.Add(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
-	b.Add(mustNewLocale("fr-FR"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(mustNewLocale("fr-FR"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": frenchTranslation,
 	}))
