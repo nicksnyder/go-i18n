@@ -1,8 +1,12 @@
 package i18n
 
+import (
+	"github.com/nicksnyder/go-i18n/i18n/plural"
+)
+
 type pluralTranslation struct {
 	id        string
-	templates map[PluralCategory]*template
+	templates map[plural.Category]*template
 }
 
 func (pt *pluralTranslation) MarshalInterface() interface{} {
@@ -16,12 +20,12 @@ func (pt *pluralTranslation) ID() string {
 	return pt.id
 }
 
-func (pt *pluralTranslation) Template(pc PluralCategory) *template {
+func (pt *pluralTranslation) Template(pc plural.Category) *template {
 	return pt.templates[pc]
 }
 
 func (pt *pluralTranslation) UntranslatedCopy() Translation {
-	return &pluralTranslation{pt.id, make(map[PluralCategory]*template)}
+	return &pluralTranslation{pt.id, make(map[plural.Category]*template)}
 }
 
 func (pt *pluralTranslation) Normalize(l *Language) Translation {
@@ -43,7 +47,7 @@ func (pt *pluralTranslation) Normalize(l *Language) Translation {
 func (pt *pluralTranslation) Backfill(src Translation) Translation {
 	for pc, t := range pt.templates {
 		if t == nil || t.src == "" {
-			pt.templates[pc] = src.Template(Other)
+			pt.templates[pc] = src.Template(plural.Other)
 		}
 	}
 	return pt

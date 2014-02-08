@@ -1,5 +1,9 @@
 package i18n
 
+import (
+	"github.com/nicksnyder/go-i18n/i18n/plural"
+)
+
 type singleTranslation struct {
 	id       string
 	template *template
@@ -16,7 +20,7 @@ func (st *singleTranslation) ID() string {
 	return st.id
 }
 
-func (st *singleTranslation) Template(pc PluralCategory) *template {
+func (st *singleTranslation) Template(pc plural.Category) *template {
 	return st.template
 }
 
@@ -30,7 +34,7 @@ func (st *singleTranslation) Normalize(language *Language) Translation {
 
 func (st *singleTranslation) Backfill(src Translation) Translation {
 	if st.template == nil || st.template.src == "" {
-		st.template = src.Template(Other)
+		st.template = src.Template(plural.Other)
 	}
 	return st
 }

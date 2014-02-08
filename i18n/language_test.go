@@ -1,51 +1,52 @@
 package i18n
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/plural"
 	"testing"
 )
 
 type intPluralTest struct {
 	i  int64
-	pc PluralCategory
+	pc plural.Category
 }
 
 type floatPluralTest struct {
 	f  float64
-	pc PluralCategory
+	pc plural.Category
 }
 
 func TestArabic(t *testing.T) {
 	intTests := []intPluralTest{
-		{0, Zero},
-		{1, One},
-		{2, Two},
-		{3, Few},
-		{10, Few},
-		{103, Few},
-		{110, Few},
-		{11, Many},
-		{99, Many},
-		{111, Many},
-		{199, Many},
-		{100, Other},
-		{102, Other},
-		{200, Other},
-		{202, Other},
+		{0, plural.Zero},
+		{1, plural.One},
+		{2, plural.Two},
+		{3, plural.Few},
+		{10, plural.Few},
+		{103, plural.Few},
+		{110, plural.Few},
+		{11, plural.Many},
+		{99, plural.Many},
+		{111, plural.Many},
+		{199, plural.Many},
+		{100, plural.Other},
+		{102, plural.Other},
+		{200, plural.Other},
+		{202, plural.Other},
 	}
 
 	floatTests := []floatPluralTest{
-		{0.1, Other},
-		{0.2, Other},
-		{0.3, Other},
-		{1.1, Other},
-		{1.2, Other},
-		{1.3, Other},
-		{2.1, Other},
-		{2.2, Other},
-		{2.3, Other},
-		{3.1, Other},
-		{3.2, Other},
-		{3.3, Other},
+		{0.1, plural.Other},
+		{0.2, plural.Other},
+		{0.3, plural.Other},
+		{1.1, plural.Other},
+		{1.2, plural.Other},
+		{1.3, plural.Other},
+		{2.1, plural.Other},
+		{2.2, plural.Other},
+		{2.3, plural.Other},
+		{3.1, plural.Other},
+		{3.2, plural.Other},
+		{3.3, plural.Other},
 	}
 
 	language := LanguageWithID("ar")
@@ -68,20 +69,20 @@ func TestEnglish(t *testing.T) {
 
 func TestFrench(t *testing.T) {
 	intTests := []intPluralTest{
-		{0, One},
-		{1, One},
-		{2, Other},
+		{0, plural.One},
+		{1, plural.One},
+		{2, plural.Other},
 	}
 
 	floatTests := []floatPluralTest{
-		{0.1, One},
-		{0.2, One},
-		{0.9, One},
-		{1.1, One},
-		{1.2, One},
-		{1.9, One},
-		{2.1, Other},
-		{2.2, Other},
+		{0.1, plural.One},
+		{0.2, plural.One},
+		{0.9, plural.One},
+		{1.1, plural.One},
+		{1.2, plural.One},
+		{1.9, plural.One},
+		{2.1, plural.Other},
+		{2.2, plural.Other},
 	}
 
 	language := LanguageWithID("fr")
@@ -109,18 +110,18 @@ func TestSpanish(t *testing.T) {
 // Tests that a language treats one as special and all other numbers the same.
 func testOneIsSpecial(t *testing.T, l *Language) {
 	intTests := []intPluralTest{
-		{0, Other},
-		{1, One},
-		{2, Other},
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
 	}
 
 	floatTests := []floatPluralTest{
-		{0.1, Other},
-		{0.2, Other},
-		{1.1, Other},
-		{1.2, Other},
-		{2.1, Other},
-		{2.2, Other},
+		{0.1, plural.Other},
+		{0.2, plural.Other},
+		{1.1, plural.Other},
+		{1.2, plural.Other},
+		{2.1, plural.Other},
+		{2.2, plural.Other},
 	}
 
 	testInts(t, l, intTests)
@@ -131,18 +132,18 @@ func testOneIsSpecial(t *testing.T, l *Language) {
 // Tests that a language treats all numbers the same.
 func testEverythingIsOther(t *testing.T, l *Language) {
 	intTests := []intPluralTest{
-		{0, Other},
-		{1, Other},
-		{2, Other},
+		{0, plural.Other},
+		{1, plural.Other},
+		{2, plural.Other},
 	}
 
 	floatTests := []floatPluralTest{
-		{0.1, Other},
-		{0.2, Other},
-		{1.1, Other},
-		{1.2, Other},
-		{2.1, Other},
-		{2.2, Other},
+		{0.1, plural.Other},
+		{0.2, plural.Other},
+		{1.1, plural.Other},
+		{1.2, plural.Other},
+		{2.1, plural.Other},
+		{2.2, plural.Other},
 	}
 
 	testInts(t, l, intTests)

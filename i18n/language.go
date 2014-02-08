@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"fmt"
+	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
 // Language is a human language as defined by RFC 5646.
@@ -14,9 +15,9 @@ import (
 type Language struct {
 	ID               string
 	Name             string
-	PluralCategories map[PluralCategory]struct{}
-	IntFunc          func(int64) PluralCategory
-	FloatFunc        func(float64) PluralCategory
+	PluralCategories map[plural.Category]struct{}
+	IntFunc          func(int64) plural.Category
+	FloatFunc        func(float64) plural.Category
 }
 
 // Alphabetical by English name.
@@ -25,28 +26,28 @@ var languages = map[string]*Language{
 	"ar": &Language{
 		ID:               "ar",
 		Name:             "العربية",
-		PluralCategories: newSet(Zero, One, Two, Few, Many, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.Zero, plural.One, plural.Two, plural.Few, plural.Many, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			switch i {
 			case 0:
-				return Zero
+				return plural.Zero
 			case 1:
-				return One
+				return plural.One
 			case 2:
-				return Two
+				return plural.Two
 			default:
 				mod100 := i % 100
 				if mod100 >= 3 && mod100 <= 10 {
-					return Few
+					return plural.Few
 				}
 				if mod100 >= 11 {
-					return Many
+					return plural.Many
 				}
-				return Other
+				return plural.Other
 			}
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -54,12 +55,12 @@ var languages = map[string]*Language{
 	"zh-Hans": &Language{
 		ID:               "zh-Hans",
 		Name:             "汉语",
-		PluralCategories: newSet(Other),
-		IntFunc: func(i int64) PluralCategory {
-			return Other
+		PluralCategories: newSet(plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -67,27 +68,27 @@ var languages = map[string]*Language{
 	"zh-Hant": &Language{
 		ID:               "zh-Hant",
 		Name:             "漢語",
-		PluralCategories: newSet(Other),
-		IntFunc: func(i int64) PluralCategory {
-			return Other
+		PluralCategories: newSet(plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
 	"en": &Language{
 		ID:               "en",
 		Name:             "English",
-		PluralCategories: newSet(One, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			if i == 1 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -95,18 +96,18 @@ var languages = map[string]*Language{
 	"fr": &Language{
 		ID:               "fr",
 		Name:             "Français",
-		PluralCategories: newSet(One, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			if i == 0 || i == 1 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
+		FloatFunc: func(f float64) plural.Category {
 			if f >= 0 && f < 2 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
 	},
 
@@ -114,15 +115,15 @@ var languages = map[string]*Language{
 	"de": &Language{
 		ID:               "de",
 		Name:             "Deutsch",
-		PluralCategories: newSet(One, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			if i == 1 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -130,15 +131,15 @@ var languages = map[string]*Language{
 	"it": &Language{
 		ID:               "it",
 		Name:             "Italiano",
-		PluralCategories: newSet(One, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			if i == 1 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -146,12 +147,12 @@ var languages = map[string]*Language{
 	"ja": &Language{
 		ID:               "ja",
 		Name:             "日本語",
-		PluralCategories: newSet(Other),
-		IntFunc: func(i int64) PluralCategory {
-			return Other
+		PluralCategories: newSet(plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 
@@ -159,15 +160,15 @@ var languages = map[string]*Language{
 	"es": &Language{
 		ID:               "es",
 		Name:             "Español",
-		PluralCategories: newSet(One, Other),
-		IntFunc: func(i int64) PluralCategory {
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
 			if i == 1 {
-				return One
+				return plural.One
 			}
-			return Other
+			return plural.Other
 		},
-		FloatFunc: func(f float64) PluralCategory {
-			return Other
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
 		},
 	},
 }
@@ -183,7 +184,7 @@ func RegisterLanguage(l *Language) {
 	languages[l.ID] = l
 }
 
-func (l *Language) pluralCategory(count interface{}) (PluralCategory, error) {
+func (l *Language) pluralCategory(count interface{}) (plural.Category, error) {
 	switch v := count.(type) {
 	case int:
 		return l.int64PluralCategory(int64(v)), nil
@@ -200,18 +201,18 @@ func (l *Language) pluralCategory(count interface{}) (PluralCategory, error) {
 	case float64:
 		return l.float64PluralCategory(v), nil
 	default:
-		return Invalid, fmt.Errorf("can't convert %#v to PluralCategory", v)
+		return plural.Invalid, fmt.Errorf("can't convert %#v to plural.Category", v)
 	}
 }
 
-func (l *Language) int64PluralCategory(i int64) PluralCategory {
+func (l *Language) int64PluralCategory(i int64) plural.Category {
 	if i < 0 {
 		i = -i
 	}
 	return l.IntFunc(i)
 }
 
-func (l *Language) float64PluralCategory(f float64) PluralCategory {
+func (l *Language) float64PluralCategory(f float64) plural.Category {
 	if f < 0 {
 		f = -f
 	}
@@ -225,8 +226,8 @@ func isInt64(f float64) bool {
 	return f == float64(int64(f))
 }
 
-func newSet(pluralCategories ...PluralCategory) map[PluralCategory]struct{} {
-	set := make(map[PluralCategory]struct{}, len(pluralCategories))
+func newSet(pluralCategories ...plural.Category) map[plural.Category]struct{} {
+	set := make(map[plural.Category]struct{}, len(pluralCategories))
 	for _, pc := range pluralCategories {
 		set[pc] = struct{}{}
 	}
