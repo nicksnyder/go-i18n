@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"testing"
 )
@@ -30,12 +31,12 @@ func TestTfunc(t *testing.T) {
 	b := newBundle()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
-	b.AddTranslation(mustNewLocale("en-US"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(locale.MustNew("en-US"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
-	b.AddTranslation(mustNewLocale("fr-FR"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(locale.MustNew("fr-FR"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": frenchTranslation,
 	}))

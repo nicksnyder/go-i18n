@@ -1,10 +1,10 @@
-package i18n
+package locale
 
 import (
 	"testing"
 )
 
-func TestNewLocale(t *testing.T) {
+func TestNew(t *testing.T) {
 	tests := []struct {
 		localeID string
 		valid    bool
@@ -19,7 +19,7 @@ func TestNewLocale(t *testing.T) {
 		{"en-US-en-US", false},
 	}
 	for _, test := range tests {
-		_, err := NewLocale(test.localeID)
+		_, err := New(test.localeID)
 		if test.valid && err != nil {
 			t.Errorf("%s should be a valid locale: %s", test.localeID, err)
 		}

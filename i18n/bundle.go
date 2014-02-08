@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	//	"launchpad.net/goyaml"
+	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
 )
@@ -50,7 +51,7 @@ func LoadTranslationFile(filename string) error {
 // Add adds translations for a locale.
 //
 // Add is useful if your translations are in a format not supported by LoadTranslationFile.
-func AddTranslation(locale *Locale, translations ...translation.Translation) {
+func AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
 	defaultBundle.AddTranslation(locale, translations...)
 }
 
@@ -77,7 +78,7 @@ func (b *bundle) MustLoadTranslationFile(filename string) {
 }
 
 func (b *bundle) LoadTranslationFile(filename string) error {
-	locale, err := NewLocale(filename)
+	locale, err := locale.New(filename)
 	if err != nil {
 		return err
 	}
@@ -126,7 +127,7 @@ func parseTranslationFile(filename string) ([]translation.Translation, error) {
 	return translations, nil
 }
 
-func (b *bundle) AddTranslation(locale *Locale, translations ...translation.Translation) {
+func (b *bundle) AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
 	if b.translations[locale.ID] == nil {
 		b.translations[locale.ID] = make(map[string]translation.Translation, len(translations))
 	}
@@ -153,22 +154,22 @@ func (b *bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
 }
 
 func (b *bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
-	var locale *Locale
-	locale, err = NewLocale(localeID)
+	var l *locale.Locale
+	l, err = locale.New(localeID)
 	if err != nil {
 		for _, localeID := range localeIDs {
-			locale, err = NewLocale(localeID)
+			l, err = locale.New(localeID)
 			if err == nil {
 				break
 			}
 		}
 	}
 	return func(translationID string, args ...interface{}) string {
-		return b.translate(locale, translationID, args...)
+		return b.translate(l, translationID, args...)
 	}, err
 }
 
-func (b *bundle) translate(locale *Locale, translationID string, args ...interface{}) string {
+func (b *bundle) translate(locale *locale.Locale, translationID string, args ...interface{}) string {
 	if locale == nil {
 		return translationID
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	//"launchpad.net/goyaml"
+	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
 	"reflect"
@@ -25,7 +26,7 @@ func (mc *MergeCommand) Execute() error {
 		return fmt.Errorf("need at least one translation file to parse")
 	}
 
-	if _, err := NewLocale(mc.SourceLocaleID); err != nil {
+	if _, err := locale.New(mc.SourceLocaleID); err != nil {
 		return fmt.Errorf("invalid source locale %s: %s", mc.SourceLocaleID, err)
 	}
 
@@ -51,7 +52,7 @@ func (mc *MergeCommand) Execute() error {
 	}
 
 	for localeID, localeTranslations := range bundle.translations {
-		locale := mustNewLocale(localeID)
+		locale := locale.MustNew(localeID)
 		all := filter(localeTranslations, func(t translation.Translation) translation.Translation {
 			return t.Normalize(locale.Language)
 		})
