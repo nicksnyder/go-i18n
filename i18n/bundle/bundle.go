@@ -10,14 +10,7 @@ import (
 	"path/filepath"
 )
 
-// TranslateFunc returns the translation of the string identified by translationID.
-//
-// If translationID is a non-plural form, then the first variadic argument may be a map[string]interface{}
-// that contains template data for the string (if any).
-//
-// If translationID is a plural form, then the first variadic argument must be a number type
-// (int, int8, int16, int32, int64, float32, float64) and the second variadic argument may be a
-// map[string]interface like the non-plural form.
+// Copy of i18n.TranslateFunc to avoid circular dependency.
 type TranslateFunc func(translationID string, args ...interface{}) string
 
 type Bundle struct {

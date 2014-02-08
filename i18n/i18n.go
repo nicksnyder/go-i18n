@@ -6,11 +6,21 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
+// TranslateFunc returns the translation of the string identified by translationID.
+//
+// If translationID is a non-plural form, then the first variadic argument may be a map[string]interface{}
+// that contains template data for the string (if any).
+//
+// If translationID is a plural form, then the first variadic argument must be a number type
+// (int, int8, int16, int32, int64, float32, float64) and the second variadic argument may be a
+// map[string]interface like the non-plural form.
+type TranslateFunc func(translationID string, args ...interface{}) string
+
 // IdentityTfunc returns a TranslateFunc that always returns the translationID passed to it.
 //
 // It is a useful placeholder when parsing a text/template or html/template
 // before the actual Tfunc is available.
-func IdentityTfunc() bundle.TranslateFunc {
+func IdentityTfunc() TranslateFunc {
 	return func(translationID string, args ...interface{}) string {
 		return translationID
 	}
@@ -41,11 +51,12 @@ func AddTranslation(locale *locale.Locale, translations ...translation.Translati
 }
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
-func MustTfunc(localeID string, localeIDs ...string) bundle.TranslateFunc {
-	return defaultBundle.MustTfunc(localeID, localeIDs...)
+func MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+	return TranslateFunc(defaultBundle.MustTfunc(localeID, localeIDs...))
 }
 
 // Tfunc returns a TranslateFunc that will be bound to the first valid locale from its parameters.
-func Tfunc(localeID string, localeIDs ...string) (bundle.TranslateFunc, error) {
-	return defaultBundle.Tfunc(localeID, localeIDs...)
+func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
+	tf, err := defaultBundle.Tfunc(localeID, localeIDs...)
+	return TranslateFunc(tf), err
 }
