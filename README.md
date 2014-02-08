@@ -11,6 +11,7 @@ Features
 * Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 * Uses [text/template](http://golang.org/pkg/text/template/) for strings with variables.
 * Translation files are simple JSON.
+* Is [documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n).
 
 i18n package
 ------------
@@ -214,26 +215,30 @@ Supported languages
 More languages are straightforward to add:
 
 1. Lookup the language's [CLDR plural rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
-2. Add the language to [language.go](i18n/language.go):
+2. Add the language to [language.go](i18n/language/language.go):
 
     ```go
-    RegisterLanguage(&Language{
-        Code:             "en",
-        Name:             "English",
-        PluralCategories: newSet(One, Other),
-        IntFunc: func(i int64) PluralCategory {
-            if i == 1 {
-                return One
-            }
-            return Other
+    var languages = map[string]*Language{
+        // ...
+        "en": &Language{
+            ID:               "en",
+            Name:             "English",
+            PluralCategories: newSet(plural.One, plural.Other),
+            IntFunc: func(i int64) plural.Category {
+                if i == 1 {
+                    return plural.One
+                }
+                return plural.Other
+            },
+            FloatFunc: func(f float64) plural.Category {
+                return plural.Other
+            },
         },
-        FloatFunc: func(f float64) PluralCategory {
-            return Other
-        },
-    })
+        // ...
+    }
     ```
 
-3. Add a test to [language_test.go](i18n/language_test.go)
+3. Add a test to [language_test.go](i18n/language/language_test.go)
 4. Submit a pull request!
 
 License
