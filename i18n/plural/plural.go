@@ -1,3 +1,4 @@
+// Package plural defines CLDR plural categories.
 package plural
 
 import (

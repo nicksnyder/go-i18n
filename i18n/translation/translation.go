@@ -1,3 +1,4 @@
+// Package translation defines the interface for a translation.
 package translation
 
 import (
@@ -8,6 +9,8 @@ import (
 
 // Translation is the interface that represents a translated string.
 type Translation interface {
+	// MarshalInterface returns the object that should be used
+	// to serialize the translation.
 	MarshalInterface() interface{}
 	ID() string
 	Template(plural.Category) *template
@@ -18,6 +21,7 @@ type Translation interface {
 	Incomplete(l *language.Language) bool
 }
 
+// SortableByID implements sort.Interface for a slice of translations.
 type SortableByID []Translation
 
 func (a SortableByID) Len() int           { return len(a) }

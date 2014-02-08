@@ -1,3 +1,6 @@
+// The goi18n command processes translation files.
+//     go get -u github.com/nicksnyder/go-i18n/goi18n
+//     goi18n -help
 package main
 
 import (

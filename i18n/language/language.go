@@ -1,3 +1,4 @@
+// Package language defines languages that implement CLDR pluralization.
 package language
 
 import (
@@ -185,6 +186,8 @@ func Register(l *Language) {
 	languages[l.ID] = l
 }
 
+// PluralCategory returns the plural category for count as defined by
+// the language's CLDR plural rules.
 func (l *Language) PluralCategory(count interface{}) (plural.Category, error) {
 	switch v := count.(type) {
 	case int:

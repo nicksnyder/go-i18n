@@ -1,3 +1,4 @@
+// Package bundle manages translations for multiple locales.
 package bundle
 
 import (
@@ -10,7 +11,7 @@ import (
 	"path/filepath"
 )
 
-// Copy of i18n.TranslateFunc to avoid circular dependency.
+// TranslateFunc is a copy of i18n.TranslateFunc to avoid a circular dependency.
 type TranslateFunc func(translationID string, args ...interface{}) string
 
 type Bundle struct {

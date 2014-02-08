@@ -1,3 +1,4 @@
+// Package locale parses locale strings.
 package locale
 
 import (
@@ -32,6 +33,7 @@ func New(s string) (*Locale, error) {
 	return &Locale{id, language}, nil
 }
 
+// MustNew is similar to New except that it panics if an error happens.
 func MustNew(s string) *Locale {
 	locale, err := New(s)
 	if err != nil {
