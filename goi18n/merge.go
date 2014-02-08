@@ -1,4 +1,4 @@
-package i18n
+package main
 
 import (
 	"encoding/json"
@@ -13,38 +13,36 @@ import (
 	"sort"
 )
 
-// MergeCommand implements the merge functionality of the goi18n command.
-type MergeCommand struct {
-	TranslationFiles []string
-	SourceLocaleID   string
-	Outdir           string
-	Format           string
+type mergeCommand struct {
+	translationFiles []string
+	sourceLocaleID   string
+	outdir           string
+	format           string
 }
 
-// Execute executes the merge command.
-func (mc *MergeCommand) Execute() error {
-	if len(mc.TranslationFiles) < 1 {
+func (mc *mergeCommand) execute() error {
+	if len(mc.translationFiles) < 1 {
 		return fmt.Errorf("need at least one translation file to parse")
 	}
 
-	if _, err := locale.New(mc.SourceLocaleID); err != nil {
-		return fmt.Errorf("invalid source locale %s: %s", mc.SourceLocaleID, err)
+	if _, err := locale.New(mc.sourceLocaleID); err != nil {
+		return fmt.Errorf("invalid source locale %s: %s", mc.sourceLocaleID, err)
 	}
 
-	marshal, err := newMarshalFunc(mc.Format)
+	marshal, err := newMarshalFunc(mc.format)
 	if err != nil {
 		return err
 	}
 
 	bundle := bundle.New()
-	for _, tf := range mc.TranslationFiles {
+	for _, tf := range mc.translationFiles {
 		if err := bundle.LoadTranslationFile(tf); err != nil {
 			return fmt.Errorf("failed to load translation file %s because %s\n", tf, err)
 		}
 	}
 
 	translations := bundle.Translations()
-	sourceTranslations := translations[mc.SourceLocaleID]
+	sourceTranslations := translations[mc.sourceLocaleID]
 	for translationID, src := range sourceTranslations {
 		for _, localeTranslations := range translations {
 			if dst := localeTranslations[translationID]; dst == nil || reflect.TypeOf(src) != reflect.TypeOf(dst) {
@@ -77,13 +75,13 @@ func (mc *MergeCommand) Execute() error {
 
 type marshalFunc func(interface{}) ([]byte, error)
 
-func (mc *MergeCommand) writeFile(label string, translations []translation.Translation, localeID string, marshal marshalFunc) error {
+func (mc *mergeCommand) writeFile(label string, translations []translation.Translation, localeID string, marshal marshalFunc) error {
 	sort.Sort(translation.SortableByID(translations))
 	buf, err := marshal(marshalInterface(translations))
 	if err != nil {
-		return fmt.Errorf("failed to marshal %s strings to %s because %s", localeID, mc.Format, err)
+		return fmt.Errorf("failed to marshal %s strings to %s because %s", localeID, mc.format, err)
 	}
-	filename := filepath.Join(mc.Outdir, fmt.Sprintf("%s.%s.%s", localeID, label, mc.Format))
+	filename := filepath.Join(mc.outdir, fmt.Sprintf("%s.%s.%s", localeID, label, mc.format))
 	if err := ioutil.WriteFile(filename, buf, 0666); err != nil {
 		return fmt.Errorf("failed to write %s because %s", filename, err)
 	}

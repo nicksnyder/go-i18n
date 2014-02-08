@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nicksnyder/go-i18n/i18n"
 	"os"
 )
 
@@ -66,13 +65,13 @@ func main() {
 	format := flag.String("format", "json", "")
 	flag.Parse()
 
-	mc := &i18n.MergeCommand{
-		TranslationFiles: flag.Args(),
-		SourceLocaleID:   *sourceLocale,
-		Outdir:           *outdir,
-		Format:           *format,
+	mc := &mergeCommand{
+		translationFiles: flag.Args(),
+		sourceLocaleID:   *sourceLocale,
+		outdir:           *outdir,
+		format:           *format,
 	}
-	if err := mc.Execute(); err != nil {
+	if err := mc.execute(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}

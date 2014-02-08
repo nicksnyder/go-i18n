@@ -1,4 +1,4 @@
-package i18n
+package main
 
 import (
 	"bytes"
@@ -17,13 +17,13 @@ func TestMergeExecute(t *testing.T) {
 		"testdata/input/ar-AR.two.json",
 	}
 
-	mc := &MergeCommand{
-		TranslationFiles: files,
-		SourceLocaleID:   "en-US",
-		Outdir:           "testdata/output",
-		Format:           "json",
+	mc := &mergeCommand{
+		translationFiles: files,
+		sourceLocaleID:   "en-US",
+		outdir:           "testdata/output",
+		format:           "json",
 	}
-	if err := mc.Execute(); err != nil {
+	if err := mc.execute(); err != nil {
 		t.Fatal(err)
 	}
 
