@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	//"launchpad.net/goyaml"
+	"github.com/nicksnyder/go-i18n/i18n/bundle"
 	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
@@ -35,23 +36,24 @@ func (mc *MergeCommand) Execute() error {
 		return err
 	}
 
-	bundle := newBundle()
+	bundle := bundle.New()
 	for _, tf := range mc.TranslationFiles {
 		if err := bundle.LoadTranslationFile(tf); err != nil {
 			return fmt.Errorf("failed to load translation file %s because %s\n", tf, err)
 		}
 	}
 
-	sourceTranslations := bundle.translations[mc.SourceLocaleID]
+	translations := bundle.Translations()
+	sourceTranslations := translations[mc.SourceLocaleID]
 	for translationID, src := range sourceTranslations {
-		for _, localeTranslations := range bundle.translations {
+		for _, localeTranslations := range translations {
 			if dst := localeTranslations[translationID]; dst == nil || reflect.TypeOf(src) != reflect.TypeOf(dst) {
 				localeTranslations[translationID] = src.UntranslatedCopy()
 			}
 		}
 	}
 
-	for localeID, localeTranslations := range bundle.translations {
+	for localeID, localeTranslations := range translations {
 		locale := locale.MustNew(localeID)
 		all := filter(localeTranslations, func(t translation.Translation) translation.Translation {
 			return t.Normalize(locale.Language)

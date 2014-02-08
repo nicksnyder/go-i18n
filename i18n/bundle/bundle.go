@@ -1,4 +1,4 @@
-package i18n
+package bundle
 
 import (
 	"encoding/json"
@@ -20,64 +20,23 @@ import (
 // map[string]interface like the non-plural form.
 type TranslateFunc func(translationID string, args ...interface{}) string
 
-// IdentityTfunc returns a TranslateFunc that always returns the translationID passed to it.
-func IdentityTfunc() TranslateFunc {
-	return func(translationID string, args ...interface{}) string {
-		return translationID
-	}
-}
-
-type bundle struct {
+type Bundle struct {
 	translations map[string]map[string]translation.Translation
 }
 
-var defaultBundle = newBundle()
-
-// MustLoadTranslationFile is similar to LoadTranslationFile
-// except it panics if an error happens.
-func MustLoadTranslationFile(filename string) {
-	defaultBundle.MustLoadTranslationFile(filename)
-}
-
-// LoadTranslationFile loads the translations from filename into memory.
-//
-// The locale that the translations are associated with is parsed from the filename.
-//
-// Generally you should load translation files once during your program's initialization.
-func LoadTranslationFile(filename string) error {
-	return defaultBundle.LoadTranslationFile(filename)
-}
-
-// Add adds translations for a locale.
-//
-// Add is useful if your translations are in a format not supported by LoadTranslationFile.
-func AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
-	defaultBundle.AddTranslation(locale, translations...)
-}
-
-// MustTfunc is similar to Tfunc except it panics if an error happens.
-func MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
-	return defaultBundle.MustTfunc(localeID, localeIDs...)
-}
-
-// Tfunc returns a TranslateFunc that will be bound to the first valid locale from its parameters.
-func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
-	return defaultBundle.Tfunc(localeID, localeIDs...)
-}
-
-func newBundle() *bundle {
-	return &bundle{
+func New() *Bundle {
+	return &Bundle{
 		translations: make(map[string]map[string]translation.Translation),
 	}
 }
 
-func (b *bundle) MustLoadTranslationFile(filename string) {
+func (b *Bundle) MustLoadTranslationFile(filename string) {
 	if err := b.LoadTranslationFile(filename); err != nil {
 		panic(err)
 	}
 }
 
-func (b *bundle) LoadTranslationFile(filename string) error {
+func (b *Bundle) LoadTranslationFile(filename string) error {
 	locale, err := locale.New(filename)
 	if err != nil {
 		return err
@@ -127,7 +86,7 @@ func parseTranslationFile(filename string) ([]translation.Translation, error) {
 	return translations, nil
 }
 
-func (b *bundle) AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
+func (b *Bundle) AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
 	if b.translations[locale.ID] == nil {
 		b.translations[locale.ID] = make(map[string]translation.Translation, len(translations))
 	}
@@ -141,11 +100,11 @@ func (b *bundle) AddTranslation(locale *locale.Locale, translations ...translati
 	}
 }
 
-func (b *bundle) Translations() map[string]map[string]translation.Translation {
+func (b *Bundle) Translations() map[string]map[string]translation.Translation {
 	return b.translations
 }
 
-func (b *bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+func (b *Bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
 	tf, err := b.Tfunc(localeID, localeIDs...)
 	if err != nil {
 		panic(err)
@@ -153,7 +112,7 @@ func (b *bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
 	return tf
 }
 
-func (b *bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
+func (b *Bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
 	var l *locale.Locale
 	l, err = locale.New(localeID)
 	if err != nil {
@@ -169,7 +128,7 @@ func (b *bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, 
 	}, err
 }
 
-func (b *bundle) translate(locale *locale.Locale, translationID string, args ...interface{}) string {
+func (b *Bundle) translate(locale *locale.Locale, translationID string, args ...interface{}) string {
 	if locale == nil {
 		return translationID
 	}

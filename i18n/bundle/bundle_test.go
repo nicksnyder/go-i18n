@@ -1,4 +1,4 @@
-package i18n
+package bundle
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n/locale"
@@ -24,11 +24,11 @@ func TestMustTfunc(t *testing.T) {
 			t.Errorf("expected MustTfunc to panic")
 		}
 	}()
-	newBundle().MustTfunc("invalid")
+	New().MustTfunc("invalid")
 }
 
 func TestTfunc(t *testing.T) {
-	b := newBundle()
+	b := New()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
 	b.AddTranslation(locale.MustNew("en-US"), testNewTranslation(t, map[string]interface{}{
