@@ -1,7 +1,10 @@
 // The goi18n command formats and merges translation files.
+//
 //     go get -u github.com/nicksnyder/go-i18n/goi18n
 //     goi18n -help
-// Help documentation
+//
+// Help documentation:
+//
 //     goi18n formats and merges translation files.
 //     
 //     Usage:
