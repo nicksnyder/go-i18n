@@ -1,4 +1,4 @@
-package i18n
+package translation
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n/plural"

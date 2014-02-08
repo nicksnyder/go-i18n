@@ -1,4 +1,4 @@
-package i18n
+package translation
 
 import (
 	"fmt"
@@ -18,11 +18,11 @@ type Translation interface {
 	Incomplete(l *language.Language) bool
 }
 
-type byID []Translation
+type SortableByID []Translation
 
-func (a byID) Len() int           { return len(a) }
-func (a byID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byID) Less(i, j int) bool { return a[i].ID() < a[j].ID() }
+func (a SortableByID) Len() int           { return len(a) }
+func (a SortableByID) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a SortableByID) Less(i, j int) bool { return a[i].ID() < a[j].ID() }
 
 // NewTranslation reflects on data to create a new Translation.
 //

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	//	"launchpad.net/goyaml"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
 )
 
@@ -26,7 +27,7 @@ func IdentityTfunc() TranslateFunc {
 }
 
 type bundle struct {
-	translations map[string]map[string]Translation
+	translations map[string]map[string]translation.Translation
 }
 
 var defaultBundle = newBundle()
@@ -49,7 +50,7 @@ func LoadTranslationFile(filename string) error {
 // Add adds translations for a locale.
 //
 // Add is useful if your translations are in a format not supported by LoadTranslationFile.
-func AddTranslation(locale *Locale, translations ...Translation) {
+func AddTranslation(locale *Locale, translations ...translation.Translation) {
 	defaultBundle.AddTranslation(locale, translations...)
 }
 
@@ -65,7 +66,7 @@ func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
 
 func newBundle() *bundle {
 	return &bundle{
-		translations: make(map[string]map[string]Translation),
+		translations: make(map[string]map[string]translation.Translation),
 	}
 }
 
@@ -90,7 +91,7 @@ func (b *bundle) LoadTranslationFile(filename string) error {
 	return nil
 }
 
-func parseTranslationFile(filename string) ([]Translation, error) {
+func parseTranslationFile(filename string) ([]translation.Translation, error) {
 	var unmarshalFunc func([]byte, interface{}) error
 	switch format := filepath.Ext(filename); format {
 	case ".json":
@@ -114,9 +115,9 @@ func parseTranslationFile(filename string) ([]Translation, error) {
 		}
 	}
 
-	translations := make([]Translation, 0, len(translationsData))
+	translations := make([]translation.Translation, 0, len(translationsData))
 	for i, translationData := range translationsData {
-		t, err := NewTranslation(translationData)
+		t, err := translation.NewTranslation(translationData)
 		if err != nil {
 			return nil, fmt.Errorf("unable to parse translation #%d in %s because %s\n%v", i, filename, err, translationData)
 		}
@@ -125,9 +126,9 @@ func parseTranslationFile(filename string) ([]Translation, error) {
 	return translations, nil
 }
 
-func (b *bundle) AddTranslation(locale *Locale, translations ...Translation) {
+func (b *bundle) AddTranslation(locale *Locale, translations ...translation.Translation) {
 	if b.translations[locale.ID] == nil {
-		b.translations[locale.ID] = make(map[string]Translation, len(translations))
+		b.translations[locale.ID] = make(map[string]translation.Translation, len(translations))
 	}
 	currentTranslations := b.translations[locale.ID]
 	for _, newTranslation := range translations {
@@ -139,7 +140,7 @@ func (b *bundle) AddTranslation(locale *Locale, translations ...Translation) {
 	}
 }
 
-func (b *bundle) Translations() map[string]map[string]Translation {
+func (b *bundle) Translations() map[string]map[string]translation.Translation {
 	return b.translations
 }
 

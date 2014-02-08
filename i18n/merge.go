@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	//"launchpad.net/goyaml"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -51,14 +52,14 @@ func (mc *MergeCommand) Execute() error {
 
 	for localeID, localeTranslations := range bundle.translations {
 		locale := mustNewLocale(localeID)
-		all := filter(localeTranslations, func(t Translation) Translation {
+		all := filter(localeTranslations, func(t translation.Translation) translation.Translation {
 			return t.Normalize(locale.Language)
 		})
 		if err := mc.writeFile("all", all, localeID, marshal); err != nil {
 			return err
 		}
 
-		untranslated := filter(localeTranslations, func(t Translation) Translation {
+		untranslated := filter(localeTranslations, func(t translation.Translation) translation.Translation {
 			if t.Incomplete(locale.Language) {
 				return t.Normalize(locale.Language).Backfill(sourceTranslations[t.ID()])
 			}
@@ -73,8 +74,8 @@ func (mc *MergeCommand) Execute() error {
 
 type marshalFunc func(interface{}) ([]byte, error)
 
-func (mc *MergeCommand) writeFile(label string, translations []Translation, localeID string, marshal marshalFunc) error {
-	sort.Sort(byID(translations))
+func (mc *MergeCommand) writeFile(label string, translations []translation.Translation, localeID string, marshal marshalFunc) error {
+	sort.Sort(translation.SortableByID(translations))
 	buf, err := marshal(marshalInterface(translations))
 	if err != nil {
 		return fmt.Errorf("failed to marshal %s strings to %s because %s", localeID, mc.Format, err)
@@ -86,8 +87,8 @@ func (mc *MergeCommand) writeFile(label string, translations []Translation, loca
 	return nil
 }
 
-func filter(translations map[string]Translation, filter func(Translation) Translation) []Translation {
-	filtered := make([]Translation, 0, len(translations))
+func filter(translations map[string]translation.Translation, filter func(translation.Translation) translation.Translation) []translation.Translation {
+	filtered := make([]translation.Translation, 0, len(translations))
 	for _, translation := range translations {
 		if t := filter(translation); t != nil {
 			filtered = append(filtered, t)
@@ -113,7 +114,7 @@ func newMarshalFunc(format string) (marshalFunc, error) {
 	return nil, fmt.Errorf("unsupported format: %s\n", format)
 }
 
-func marshalInterface(translations []Translation) []interface{} {
+func marshalInterface(translations []translation.Translation) []interface{} {
 	mi := make([]interface{}, len(translations))
 	for i, translation := range translations {
 		mi[i] = translation.MarshalInterface()

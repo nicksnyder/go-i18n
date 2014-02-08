@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"testing"
 )
 
@@ -83,6 +84,14 @@ func TestTfunc(t *testing.T) {
 			t.Errorf("translation was %s; expected %s", result, test.result)
 		}
 	}
+}
+
+func testNewTranslation(t *testing.T, data map[string]interface{}) translation.Translation {
+	translation, err := translation.NewTranslation(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return translation
 }
 
 /*
