@@ -11,7 +11,7 @@
 //
 // Fetching a translation
 //
-// Use Tfunc or MustTfunc to fetch a TranslateFunc that can be used to translate a string into a specific locale.
+// Use Tfunc or MustTfunc to fetch a TranslateFunc that will return the translated string for a specific locale.
 // The TranslateFunc will be bound to the first valid locale passed to Tfunc.
 //     userLocale = "ar-AR"     // user preference, accept header, language cookie
 //     defaultLocale = "en-US"  // known valid locale
