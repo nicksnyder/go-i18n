@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"fmt"
+	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
@@ -11,10 +12,10 @@ type Translation interface {
 	ID() string
 	Template(plural.Category) *template
 	UntranslatedCopy() Translation
-	Normalize(language *Language) Translation
+	Normalize(language *language.Language) Translation
 	Backfill(src Translation) Translation
 	Merge(Translation) Translation
-	Incomplete(l *Language) bool
+	Incomplete(l *language.Language) bool
 }
 
 type byID []Translation

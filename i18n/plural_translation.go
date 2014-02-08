@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
@@ -28,7 +29,7 @@ func (pt *pluralTranslation) UntranslatedCopy() Translation {
 	return &pluralTranslation{pt.id, make(map[plural.Category]*template)}
 }
 
-func (pt *pluralTranslation) Normalize(l *Language) Translation {
+func (pt *pluralTranslation) Normalize(l *language.Language) Translation {
 	// Delete plural categories that don't belong to this language.
 	for pc := range pt.templates {
 		if _, ok := l.PluralCategories[pc]; !ok {
@@ -66,7 +67,7 @@ func (pt *pluralTranslation) Merge(t Translation) Translation {
 	return pt
 }
 
-func (pt *pluralTranslation) Incomplete(l *Language) bool {
+func (pt *pluralTranslation) Incomplete(l *language.Language) bool {
 	for pc := range l.PluralCategories {
 		if t := pt.templates[pc]; t == nil || t.src == "" {
 			return true

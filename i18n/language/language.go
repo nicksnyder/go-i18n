@@ -1,16 +1,17 @@
-package i18n
+package language
 
 import (
 	"fmt"
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
-// Language is a human language as defined by RFC 5646.
+// Language is a written human language.
 //
-// Languages are identified by a 2 character language code
+// A Language is identified by a 2 character language code
 // optionally followed by a dash and a 4 character script subtag (e.g. en, zh-Hant)
+// as defined by RFC 5646.
 //
-// Languages implement CLDR plural rules as defined here:
+// A Language implements CLDR plural rules as defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 type Language struct {
 	ID               string
@@ -179,12 +180,12 @@ func LanguageWithID(id string) *Language {
 	return languages[id]
 }
 
-// RegisterLanguage adds l to the collection of available languages.
-func RegisterLanguage(l *Language) {
+// Register adds Language l to the collection of available languages.
+func Register(l *Language) {
 	languages[l.ID] = l
 }
 
-func (l *Language) pluralCategory(count interface{}) (plural.Category, error) {
+func (l *Language) PluralCategory(count interface{}) (plural.Category, error) {
 	switch v := count.(type) {
 	case int:
 		return l.int64PluralCategory(int64(v)), nil

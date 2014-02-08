@@ -2,13 +2,14 @@ package i18n
 
 import (
 	"fmt"
+	"github.com/nicksnyder/go-i18n/i18n/language"
 	"regexp"
 )
 
 // Locale is a language and a geographic region (e.g. en-US, en-GB).
 type Locale struct {
 	ID       string
-	Language *Language
+	Language *language.Language
 }
 
 // Matches strings like aa-CC, and aa-Bbbb-CC.
@@ -24,7 +25,7 @@ func NewLocale(s string) (*Locale, error) {
 		return nil, fmt.Errorf("%d locales found in string %s", count, s)
 	}
 	id, languageCode := matches[0][0], matches[0][1]
-	language := LanguageWithID(languageCode)
+	language := language.LanguageWithID(languageCode)
 	if language == nil {
 		return nil, fmt.Errorf("unknown language code %s", languageCode)
 	}

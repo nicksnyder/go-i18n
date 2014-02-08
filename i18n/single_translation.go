@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
@@ -28,7 +29,7 @@ func (st *singleTranslation) UntranslatedCopy() Translation {
 	return &singleTranslation{st.id, mustNewTemplate("")}
 }
 
-func (st *singleTranslation) Normalize(language *Language) Translation {
+func (st *singleTranslation) Normalize(language *language.Language) Translation {
 	return st
 }
 
@@ -50,7 +51,7 @@ func (st *singleTranslation) Merge(t Translation) Translation {
 	return st
 }
 
-func (st *singleTranslation) Incomplete(l *Language) bool {
+func (st *singleTranslation) Incomplete(l *language.Language) bool {
 	return st.template == nil || st.template.src == ""
 }
 
