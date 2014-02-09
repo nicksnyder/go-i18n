@@ -203,6 +203,7 @@ Supported languages
 -------------------
 
 * Arabic (`ar`)
+* Catalan (`ca`)
 * Chinese (Simplified) (`zh-Hans`)
 * Chinese (Traditional) (`zh-Hant`)
 * English (`en`)

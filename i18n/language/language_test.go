@@ -55,6 +55,10 @@ func TestArabic(t *testing.T) {
 	testFloats(t, language, floatTests)
 }
 
+func TestCatalan(t *testing.T) {
+	testOneIsSpecial(t, LanguageWithID("ca"))
+}
+
 func TestChineseSimplified(t *testing.T) {
 	testEverythingIsOther(t, LanguageWithID("zh-Hans"))
 }

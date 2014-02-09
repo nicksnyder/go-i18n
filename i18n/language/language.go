@@ -53,6 +53,22 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// Catalan
+	"ca": &Language{
+		ID:               "ca",
+		Name:             "Català",
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			if i == 1 {
+				return plural.One
+			}
+			return plural.Other
+		},
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
+		},
+	},
+
 	// Chinese (Simplified)
 	"zh-Hans": &Language{
 		ID:               "zh-Hans",
