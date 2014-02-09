@@ -84,6 +84,21 @@ func TestCzech(t *testing.T) {
 	testFloats(t, language, floatTests)
 }
 
+func TestDanish(t *testing.T) {
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.1, 1.9, plural.One)
+	floatTests = appendFloatTests(floatTests, 2.0, 10.0, plural.Other)
+
+	language := LanguageWithID("da")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
+}
+
 func TestEnglish(t *testing.T) {
 	intTests := []intPluralTest{
 		{0, plural.Other},

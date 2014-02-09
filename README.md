@@ -207,6 +207,7 @@ Supported languages
 * Chinese (Simplified) (`zh-Hans`)
 * Chinese (Traditional) (`zh-Hant`)
 * Czech (`cs`)
+* Danish (`da`)
 * English (`en`)
 * French (`fr`)
 * German (`de`)
