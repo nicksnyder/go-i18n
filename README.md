@@ -206,6 +206,7 @@ Supported languages
 * Catalan (`ca`)
 * Chinese (Simplified) (`zh-Hans`)
 * Chinese (Traditional) (`zh-Hant`)
+* Czech (`cs`)
 * English (`en`)
 * French (`fr`)
 * German (`de`)

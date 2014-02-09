@@ -15,11 +15,12 @@ import (
 // A Language implements CLDR plural rules as defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 type Language struct {
-	ID               string
-	Name             string
-	PluralCategories map[plural.Category]struct{}
-	IntFunc          func(int64) plural.Category
-	FloatFunc        func(float64) plural.Category
+	ID                string
+	Name              string
+	PluralCategories  map[plural.Category]struct{}
+	IntFunc           func(int64) plural.Category
+	FloatFunc         func(float64) plural.Category
+	MayCastFloatToInt bool
 }
 
 // Alphabetical by English name.
@@ -51,6 +52,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: true,
 	},
 
 	// Catalan
@@ -67,6 +69,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// Chinese (Simplified)
@@ -80,6 +83,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// Chinese (Traditional)
@@ -93,8 +97,30 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
+	// Czech
+	"cs": &Language{
+		ID:               "cs",
+		Name:             "Čeština",
+		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			if i == 1 {
+				return plural.One
+			}
+			if i >= 2 && i <= 4 {
+				return plural.Few
+			}
+			return plural.Other
+		},
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Many
+		},
+		MayCastFloatToInt: false,
+	},
+
+	// English
 	"en": &Language{
 		ID:               "en",
 		Name:             "English",
@@ -108,6 +134,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// French
@@ -127,6 +154,7 @@ var languages = map[string]*Language{
 			}
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// German
@@ -143,6 +171,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// Italian
@@ -159,6 +188,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// Japanese
@@ -172,6 +202,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: false,
 	},
 
 	// Spanish
@@ -188,6 +219,7 @@ var languages = map[string]*Language{
 		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
+		MayCastFloatToInt: true,
 	},
 }
 
@@ -236,7 +268,7 @@ func (l *Language) float64PluralCategory(f float64) plural.Category {
 	if f < 0 {
 		f = -f
 	}
-	if isInt64(f) {
+	if l.MayCastFloatToInt && isInt64(f) {
 		return l.IntFunc(int64(f))
 	}
 	return l.FloatFunc(f)

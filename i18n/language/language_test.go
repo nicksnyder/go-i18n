@@ -34,20 +34,10 @@ func TestArabic(t *testing.T) {
 		{202, plural.Other},
 	}
 
-	floatTests := []floatPluralTest{
-		{0.1, plural.Other},
-		{0.2, plural.Other},
-		{0.3, plural.Other},
-		{1.1, plural.Other},
-		{1.2, plural.Other},
-		{1.3, plural.Other},
-		{2.1, plural.Other},
-		{2.2, plural.Other},
-		{2.3, plural.Other},
-		{3.1, plural.Other},
-		{3.2, plural.Other},
-		{3.3, plural.Other},
-	}
+	floatTests := appendFloatTests(nil, 0.1, 0.9, plural.Other)
+	floatTests = appendFloatTests(floatTests, 1.1, 1.9, plural.Other)
+	floatTests = appendFloatTests(floatTests, 2.1, 2.9, plural.Other)
+	floatTests = appendFloatTests(floatTests, 3.1, 3.9, plural.Other)
 
 	language := LanguageWithID("ar")
 	testInts(t, language, intTests)
@@ -56,7 +46,17 @@ func TestArabic(t *testing.T) {
 }
 
 func TestCatalan(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithID("ca"))
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.0, 10.0, plural.Other)
+
+	language := LanguageWithID("ca")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
 }
 
 func TestChineseSimplified(t *testing.T) {
@@ -67,8 +67,35 @@ func TestChineseTraditional(t *testing.T) {
 	testAlwaysOther(t, LanguageWithID("zh-Hant"))
 }
 
+func TestCzech(t *testing.T) {
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Few},
+		{3, plural.Few},
+		{4, plural.Few},
+		{5, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.0, 10.0, plural.Many)
+
+	language := LanguageWithID("cs")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
+}
+
 func TestEnglish(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithID("en"))
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.0, 10.0, plural.Other)
+
+	language := LanguageWithID("en")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
 }
 
 func TestFrench(t *testing.T) {
@@ -78,29 +105,40 @@ func TestFrench(t *testing.T) {
 		{2, plural.Other},
 	}
 
-	floatTests := []floatPluralTest{
-		{0.1, plural.One},
-		{0.2, plural.One},
-		{0.9, plural.One},
-		{1.1, plural.One},
-		{1.2, plural.One},
-		{1.9, plural.One},
-		{2.1, plural.Other},
-		{2.2, plural.Other},
-	}
+	floatTests := appendFloatTests(nil, 0.0, 1.9, plural.One)
+	floatTests = appendFloatTests(floatTests, 2.0, 10.0, plural.Other)
 
 	language := LanguageWithID("fr")
 	testInts(t, language, intTests)
-	testIntsAsFloats(t, language, intTests)
 	testFloats(t, language, floatTests)
 }
 
 func TestGerman(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithID("de"))
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.0, 10.0, plural.Other)
+
+	language := LanguageWithID("de")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
 }
 
 func TestItalian(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithID("it"))
+	intTests := []intPluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Other},
+	}
+
+	floatTests := appendFloatTests(nil, 0.0, 10.0, plural.Other)
+
+	language := LanguageWithID("it")
+	testInts(t, language, intTests)
+	testFloats(t, language, floatTests)
 }
 
 func TestJapanese(t *testing.T) {
@@ -108,51 +146,25 @@ func TestJapanese(t *testing.T) {
 }
 
 func TestSpanish(t *testing.T) {
-	testOneIsSpecial(t, LanguageWithID("es"))
-}
-
-// Tests that a language treats one as special and all other numbers the same.
-func testOneIsSpecial(t *testing.T, l *Language) {
 	intTests := []intPluralTest{
 		{0, plural.Other},
 		{1, plural.One},
 		{2, plural.Other},
 	}
 
-	floatTests := []floatPluralTest{
-		{0.1, plural.Other},
-		{0.2, plural.Other},
-		{1.1, plural.Other},
-		{1.2, plural.Other},
-		{2.1, plural.Other},
-		{2.2, plural.Other},
-	}
+	floatTests := appendFloatTests(nil, 0.0, 0.9, plural.Other)
+	floatTests = appendFloatTests(floatTests, 1.1, 10.0, plural.Other)
 
-	testInts(t, l, intTests)
-	testIntsAsFloats(t, l, intTests)
-	testFloats(t, l, floatTests)
+	language := LanguageWithID("es")
+	testInts(t, language, intTests)
+	testIntsAsFloats(t, language, intTests)
+	testFloats(t, language, floatTests)
 }
 
 // Tests that a language treats all numbers the same.
 func testAlwaysOther(t *testing.T, l *Language) {
-	intTests := []intPluralTest{
-		{0, plural.Other},
-		{1, plural.Other},
-		{2, plural.Other},
-	}
-
-	floatTests := []floatPluralTest{
-		{0.1, plural.Other},
-		{0.2, plural.Other},
-		{1.1, plural.Other},
-		{1.2, plural.Other},
-		{2.1, plural.Other},
-		{2.2, plural.Other},
-	}
-
-	testInts(t, l, intTests)
-	testIntsAsFloats(t, l, intTests)
-	testFloats(t, l, floatTests)
+	testInts(t, l, appendIntTests(nil, 0, 10, plural.Other))
+	testFloats(t, l, appendFloatTests(nil, 0.0, 10.0, plural.Other))
 }
 
 func testInts(t *testing.T, language *Language, intTests []intPluralTest) {
@@ -178,4 +190,21 @@ func testFloats(t *testing.T, language *Language, floatTests []floatPluralTest) 
 			t.Errorf("Float64PluralCategory(%f) returned %s; expected %s", test.f, pc, test.pc)
 		}
 	}
+}
+
+func appendIntTests(tests []intPluralTest, from, to int64, pc plural.Category) []intPluralTest {
+	for i := from; i <= to; i++ {
+		tests = append(tests, intPluralTest{i, pc})
+	}
+	return tests
+}
+
+func appendFloatTests(tests []floatPluralTest, from, to float64, pc plural.Category) []floatPluralTest {
+	stride := 0.1
+	iterations := int64((to - from) / stride)
+	for i := int64(0); i < iterations; i++ {
+		tests = append(tests, floatPluralTest{from + float64(i)*stride, pc})
+	}
+	tests = append(tests, floatPluralTest{to, pc})
+	return tests
 }
