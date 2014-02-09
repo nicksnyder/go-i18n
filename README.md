@@ -208,6 +208,7 @@ Supported languages
 * Chinese (Traditional) (`zh-Hant`)
 * Czech (`cs`)
 * Danish (`da`)
+* Dutch (`nl`)
 * English (`en`)
 * French (`fr`)
 * German (`de`)

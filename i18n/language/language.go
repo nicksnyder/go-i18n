@@ -14,6 +14,7 @@ import (
 //
 // A Language implements CLDR plural rules as defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+// http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type Language struct {
 	ID                string
 	Name              string
@@ -138,6 +139,23 @@ var languages = map[string]*Language{
 			return plural.Other
 		},
 		MayCastFloatToInt: true,
+	},
+
+	// Dutch
+	"nl": &Language{
+		ID:               "nl",
+		Name:             "Nederlands",
+		PluralCategories: newSet(plural.One, plural.Other),
+		IntFunc: func(i int64) plural.Category {
+			if i == 1 {
+				return plural.One
+			}
+			return plural.Other
+		},
+		FloatFunc: func(f float64) plural.Category {
+			return plural.Other
+		},
+		MayCastFloatToInt: false,
 	},
 
 	// English
