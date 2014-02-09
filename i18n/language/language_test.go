@@ -60,11 +60,11 @@ func TestCatalan(t *testing.T) {
 }
 
 func TestChineseSimplified(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithID("zh-Hans"))
+	testAlwaysOther(t, LanguageWithID("zh-Hans"))
 }
 
 func TestChineseTraditional(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithID("zh-Hant"))
+	testAlwaysOther(t, LanguageWithID("zh-Hant"))
 }
 
 func TestEnglish(t *testing.T) {
@@ -104,7 +104,7 @@ func TestItalian(t *testing.T) {
 }
 
 func TestJapanese(t *testing.T) {
-	testEverythingIsOther(t, LanguageWithID("ja"))
+	testAlwaysOther(t, LanguageWithID("ja"))
 }
 
 func TestSpanish(t *testing.T) {
@@ -134,7 +134,7 @@ func testOneIsSpecial(t *testing.T, l *Language) {
 }
 
 // Tests that a language treats all numbers the same.
-func testEverythingIsOther(t *testing.T, l *Language) {
+func testAlwaysOther(t *testing.T, l *Language) {
 	intTests := []intPluralTest{
 		{0, plural.Other},
 		{1, plural.Other},
