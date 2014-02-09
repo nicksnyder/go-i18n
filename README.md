@@ -11,7 +11,7 @@ Features
 * Implements [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 * Uses [text/template](http://golang.org/pkg/text/template/) for strings with variables.
 * Translation files are simple JSON.
-* Is [documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n).
+* [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
 i18n package
 ------------
