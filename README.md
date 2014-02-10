@@ -135,7 +135,7 @@ A typical workflow looks like this:
       {
         "id": "settings_title",
         "translation": "Settings"
-      },
+      }
     ]
     ```
 
