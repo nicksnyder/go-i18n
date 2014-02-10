@@ -11,6 +11,17 @@
     }
   },
   {
+    "id": "my_height_in_meters",
+    "translation": {
+      "few": "",
+      "many": "",
+      "one": "",
+      "other": "",
+      "two": "",
+      "zero": ""
+    }
+  },
+  {
     "id": "person_greeting",
     "translation": "new arabic translation of person_greeting"
   },

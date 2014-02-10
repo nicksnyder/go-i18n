@@ -18,6 +18,7 @@ func Example() {
 	fmt.Println(T("your_unread_email_count", 0))
 	fmt.Println(T("your_unread_email_count", 1))
 	fmt.Println(T("your_unread_email_count", 2))
+	fmt.Println(T("my_height_in_meters", "1.7"))
 
 	fmt.Println(T("person_unread_email_count", 0, map[string]interface{}{
 		"Person": "Bob",
@@ -48,6 +49,7 @@ func Example() {
 	// You have 0 unread emails.
 	// You have 1 unread email.
 	// You have 2 unread emails.
+	// I am 1.7 meters tall.
 	// Bob has 0 unread emails.
 	// Bob has 1 unread email.
 	// Bob has 2 unread emails.

@@ -11,6 +11,17 @@
     }
   },
   {
+    "id": "my_height_in_meters",
+    "translation": {
+      "few": "I am {{.Count}} meters tall.",
+      "many": "I am {{.Count}} meters tall.",
+      "one": "I am {{.Count}} meters tall.",
+      "other": "I am {{.Count}} meters tall.",
+      "two": "I am {{.Count}} meters tall.",
+      "zero": "I am {{.Count}} meters tall."
+    }
+  },
+  {
     "id": "person_unread_email_count_timeframe",
     "translation": {
       "few": "{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}.",

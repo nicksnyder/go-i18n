@@ -33,7 +33,8 @@
 //
 // TranslateFunc supports the pluralization of strings using the CLDR pluralization rules defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-//     T("You have {{.Count}} unread emails", 2)
+//     T("You have {{.Count}} unread emails.", 2)
+//     T("I am {{.Count}} meters tall.", "1.7")
 //
 // Plural strings may also have variables.
 //     T("{{.Person}} has {{.Count}} unread emails", 2, map[string]interface{}{
