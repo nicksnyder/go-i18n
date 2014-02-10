@@ -2,7 +2,6 @@
 package language
 
 import (
-	"fmt"
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
@@ -16,12 +15,10 @@ import (
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type Language struct {
-	ID                string
-	Name              string
-	PluralCategories  map[plural.Category]struct{}
-	IntFunc           func(int64) plural.Category
-	FloatFunc         func(float64) plural.Category
-	MayCastFloatToInt bool
+	ID               string
+	Name             string
+	PluralCategories map[plural.Category]struct{}
+	PluralFunc       func(*plural.Operands) plural.Category
 }
 
 // Alphabetical by English name.
@@ -31,29 +28,28 @@ var languages = map[string]*Language{
 		ID:               "ar",
 		Name:             "العربية",
 		PluralCategories: newSet(plural.Zero, plural.One, plural.Two, plural.Few, plural.Many, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			switch i {
-			case 0:
-				return plural.Zero
-			case 1:
-				return plural.One
-			case 2:
-				return plural.Two
-			default:
-				mod100 := i % 100
-				if mod100 >= 3 && mod100 <= 10 {
-					return plural.Few
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.W == 0 {
+				// Integer case
+				switch ops.I {
+				case 0:
+					return plural.Zero
+				case 1:
+					return plural.One
+				case 2:
+					return plural.Two
+				default:
+					mod100 := ops.I % 100
+					if mod100 >= 3 && mod100 <= 10 {
+						return plural.Few
+					}
+					if mod100 >= 11 {
+						return plural.Many
+					}
 				}
-				if mod100 >= 11 {
-					return plural.Many
-				}
-				return plural.Other
 			}
-		},
-		FloatFunc: func(f float64) plural.Category {
 			return plural.Other
 		},
-		MayCastFloatToInt: true,
 	},
 
 	// Catalan
@@ -61,44 +57,34 @@ var languages = map[string]*Language{
 		ID:               "ca",
 		Name:             "Català",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Chinese (Simplified)
+	// TODO: inconsistent with pt-BR
 	"zh-Hans": &Language{
 		ID:               "zh-Hans",
 		Name:             "汉语",
 		PluralCategories: newSet(plural.Other),
-		IntFunc: func(i int64) plural.Category {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Chinese (Traditional)
+	// TODO: inconsistent with pt-BR
 	"zh-Hant": &Language{
 		ID:               "zh-Hant",
 		Name:             "漢語",
 		PluralCategories: newSet(plural.Other),
-		IntFunc: func(i int64) plural.Category {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Czech
@@ -106,19 +92,18 @@ var languages = map[string]*Language{
 		ID:               "cs",
 		Name:             "Čeština",
 		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
-			if i >= 2 && i <= 4 {
+			if ops.I >= 2 && ops.I <= 4 && ops.V == 0 {
 				return plural.Few
+			}
+			if ops.V > 0 {
+				return plural.Many
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Many
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Danish
@@ -126,19 +111,12 @@ var languages = map[string]*Language{
 		ID:               "da",
 		Name:             "Dansk",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 || (ops.I == 0 && ops.T != 0) {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			if f > 0 && f < 2 {
-				return plural.One
-			}
-			return plural.Other
-		},
-		MayCastFloatToInt: true,
 	},
 
 	// Dutch
@@ -146,16 +124,12 @@ var languages = map[string]*Language{
 		ID:               "nl",
 		Name:             "Nederlands",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// English
@@ -163,16 +137,12 @@ var languages = map[string]*Language{
 		ID:               "en",
 		Name:             "English",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// French
@@ -180,19 +150,12 @@ var languages = map[string]*Language{
 		ID:               "fr",
 		Name:             "Français",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 0 || i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 0 || ops.I == 1 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			if f >= 0 && f < 2 {
-				return plural.One
-			}
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// German
@@ -200,16 +163,12 @@ var languages = map[string]*Language{
 		ID:               "de",
 		Name:             "Deutsch",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Italian
@@ -217,16 +176,12 @@ var languages = map[string]*Language{
 		ID:               "it",
 		Name:             "Italiano",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: false,
 	},
 
 	// Japanese
@@ -234,13 +189,35 @@ var languages = map[string]*Language{
 		ID:               "ja",
 		Name:             "日本語",
 		PluralCategories: newSet(plural.Other),
-		IntFunc: func(i int64) plural.Category {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
+	},
+
+	// Portuguese (European)
+	"pt": &Language{
+		ID:               "pt",
+		Name:             "Português",
+		PluralCategories: newSet(plural.One, plural.Other),
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.V == 0 {
+				return plural.One
+			}
 			return plural.Other
 		},
-		MayCastFloatToInt: false,
+	},
+
+	// Portuguese (Brazilian)
+	"pt-BR": &Language{
+		ID:               "pt-BR",
+		Name:             "Português Brasileiro",
+		PluralCategories: newSet(plural.One, plural.Other),
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if (ops.I == 1 && ops.V == 0) || (ops.I == 0 && ops.T == 1) {
+				return plural.One
+			}
+			return plural.Other
+		},
 	},
 
 	// Spanish
@@ -248,16 +225,12 @@ var languages = map[string]*Language{
 		ID:               "es",
 		Name:             "Español",
 		PluralCategories: newSet(plural.One, plural.Other),
-		IntFunc: func(i int64) plural.Category {
-			if i == 1 {
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.I == 1 && ops.W == 0 {
 				return plural.One
 			}
 			return plural.Other
 		},
-		FloatFunc: func(f float64) plural.Category {
-			return plural.Other
-		},
-		MayCastFloatToInt: true,
 	},
 }
 
@@ -272,48 +245,14 @@ func Register(l *Language) {
 	languages[l.ID] = l
 }
 
-// PluralCategory returns the plural category for count as defined by
+// PluralCategory returns the plural category for number as defined by
 // the language's CLDR plural rules.
-func (l *Language) PluralCategory(count interface{}) (plural.Category, error) {
-	switch v := count.(type) {
-	case int:
-		return l.int64PluralCategory(int64(v)), nil
-	case int8:
-		return l.int64PluralCategory(int64(v)), nil
-	case int16:
-		return l.int64PluralCategory(int64(v)), nil
-	case int32:
-		return l.int64PluralCategory(int64(v)), nil
-	case int64:
-		return l.int64PluralCategory(v), nil
-	case float32:
-		return l.float64PluralCategory(float64(v)), nil
-	case float64:
-		return l.float64PluralCategory(v), nil
-	default:
-		return plural.Invalid, fmt.Errorf("can't convert %#v to plural.Category", v)
+func (l *Language) PluralCategory(number interface{}) (plural.Category, error) {
+	ops, err := plural.NewOperands(number)
+	if err != nil {
+		return plural.Invalid, err
 	}
-}
-
-func (l *Language) int64PluralCategory(i int64) plural.Category {
-	if i < 0 {
-		i = -i
-	}
-	return l.IntFunc(i)
-}
-
-func (l *Language) float64PluralCategory(f float64) plural.Category {
-	if f < 0 {
-		f = -f
-	}
-	if l.MayCastFloatToInt && isInt64(f) {
-		return l.IntFunc(int64(f))
-	}
-	return l.FloatFunc(f)
-}
-
-func isInt64(f float64) bool {
-	return f == float64(int64(f))
+	return l.PluralFunc(ops), nil
 }
 
 func newSet(pluralCategories ...plural.Category) map[plural.Category]struct{} {

@@ -61,11 +61,11 @@ import (
 // TranslateFunc returns the translation of the string identified by translationID.
 //
 // If translationID is a non-plural form, then the first variadic argument may be a map[string]interface{}
-// that contains template data for the string (if any).
+// that contains template data.
 //
-// If translationID is a plural form, then the first variadic argument must be a number type
-// (int, int8, int16, int32, int64, float32, float64) and the second variadic argument may be a
-// map[string]interface like the non-plural form.
+// If translationID is a plural form, then the first variadic argument must be an integer type
+// (int, int8, int16, int32, int64) or a float formatted as a string (e.g. "123.45").
+// The second variadic argument may be a map[string]interface that contains template data.
 type TranslateFunc func(translationID string, args ...interface{}) string
 
 // IdentityTfunc returns a TranslateFunc that always returns the translationID passed to it.

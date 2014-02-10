@@ -214,6 +214,8 @@ Supported languages
 * German (`de`)
 * Italian (`it`)
 * Japanese (`ja`)
+* Portuguese (`pt`)
+* Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
 
 More languages are straightforward to add:

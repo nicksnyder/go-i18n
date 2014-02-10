@@ -38,10 +38,16 @@ func NewOperands(v interface{}) (*Operands, error) {
 }
 
 func newOperandsInt64(i int64) *Operands {
+	if i < 0 {
+		i = -i
+	}
 	return &Operands{float64(i), i, 0, 0, 0, 0}
 }
 
 func newOperandsString(s string) (*Operands, error) {
+	if s[0] == '-' {
+		s = s[1:]
+	}
 	n, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		return nil, err
