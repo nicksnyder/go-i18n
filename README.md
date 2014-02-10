@@ -78,6 +78,7 @@ The translation function handles [all of this logic](http://www.unicode.org/cldr
 
 ```go
 T("You have {{.Count}} unread emails", 2)
+T("I am {{.Count}} meters tall.", "1.7")
 ```
 
 With variables:
@@ -134,7 +135,7 @@ A typical workflow looks like this:
       {
         "id": "settings_title",
         "translation": "Settings"
-      }
+      },
     ]
     ```
 
@@ -165,6 +166,13 @@ Example:
     "translation": {
       "one": "{{.Count}} day",
       "other": "{{.Count}} days"
+    }
+  },
+  {
+    "id": "my_height_in_meters",
+    "translation": {
+      "one": "I am {{.Count}} meter tall.",
+      "other": "I am {{.Count}} meters tall."
     }
   },
   {
