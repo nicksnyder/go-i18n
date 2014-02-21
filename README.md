@@ -238,13 +238,10 @@ More languages are straightforward to add:
             ID:               "en",
             Name:             "English",
             PluralCategories: newSet(plural.One, plural.Other),
-            IntFunc: func(i int64) plural.Category {
-                if i == 1 {
+            PluralFunc: func(ops *plural.Operands) plural.Category {
+                if ops.I == 1 && ops.V == 0 {
                     return plural.One
                 }
-                return plural.Other
-            },
-            FloatFunc: func(f float64) plural.Category {
                 return plural.Other
             },
         },
