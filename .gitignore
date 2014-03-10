@@ -1,3 +1,4 @@
 *.a
 _*
 output/
+.DS_Store
