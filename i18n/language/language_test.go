@@ -97,16 +97,10 @@ func TestCatalan(t *testing.T) {
 	runTests(t, LanguageWithID("ca"), tests)
 }
 
-func TestChineseSimplified(t *testing.T) {
+func TestChinese(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, plural.Other)
 	tests = appendFloatTests(tests, 0, 10, plural.Other)
-	runTests(t, LanguageWithID("zh-Hans"), tests)
-}
-
-func TestChineseTraditional(t *testing.T) {
-	tests := appendIntTests(nil, 0, 10, plural.Other)
-	tests = appendFloatTests(tests, 0, 10, plural.Other)
-	runTests(t, LanguageWithID("zh-Hant"), tests)
+	runTests(t, LanguageWithID("zh"), tests)
 }
 
 func TestCzech(t *testing.T) {

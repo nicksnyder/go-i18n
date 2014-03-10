@@ -212,8 +212,7 @@ Supported languages
 
 * Arabic (`ar`)
 * Catalan (`ca`)
-* Chinese (Simplified) (`zh-Hans`)
-* Chinese (Traditional) (`zh-Hant`)
+* Chinese (simplified and traditional) (`zh`)
 * Czech (`cs`)
 * Danish (`da`)
 * Dutch (`nl`)

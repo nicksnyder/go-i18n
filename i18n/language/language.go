@@ -7,9 +7,11 @@ import (
 
 // Language is a written human language.
 //
-// A Language is identified by a 2 character language code
-// optionally followed by a dash and a 4 character script subtag (e.g. en, zh-Hant)
-// as defined by RFC 5646.
+// Languages are identified by tags defined by RFC 5646.
+//
+// Typically language tags are a 2 character language code (ISO 639-1)
+// optionally followed by a dash and a 2 character country code (ISO 3166-1).
+// (e.g. en, pt-BR)
 //
 // A Language implements CLDR plural rules as defined here:
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
@@ -26,7 +28,6 @@ var languages = map[string]*Language{
 	// Arabic
 	"ar": &Language{
 		ID:               "ar",
-		Name:             "العربية",
 		PluralCategories: newSet(plural.Zero, plural.One, plural.Two, plural.Few, plural.Many, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.W == 0 {
@@ -55,7 +56,6 @@ var languages = map[string]*Language{
 	// Catalan
 	"ca": &Language{
 		ID:               "ca",
-		Name:             "Català",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -65,22 +65,11 @@ var languages = map[string]*Language{
 		},
 	},
 
-	// Chinese (Simplified)
-	// TODO: inconsistent with pt-BR
-	"zh-Hans": &Language{
-		ID:               "zh-Hans",
-		Name:             "汉语",
-		PluralCategories: newSet(plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			return plural.Other
-		},
-	},
-
-	// Chinese (Traditional)
-	// TODO: inconsistent with pt-BR
-	"zh-Hant": &Language{
-		ID:               "zh-Hant",
-		Name:             "漢語",
+	// Chinese
+	// There is no need to distinguish between simplified and traditional
+	// since they have the same pluralization.
+	"zh": &Language{
+		ID:               "zh",
 		PluralCategories: newSet(plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			return plural.Other
@@ -90,7 +79,6 @@ var languages = map[string]*Language{
 	// Czech
 	"cs": &Language{
 		ID:               "cs",
-		Name:             "Čeština",
 		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -109,7 +97,6 @@ var languages = map[string]*Language{
 	// Danish
 	"da": &Language{
 		ID:               "da",
-		Name:             "Dansk",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 || (ops.I == 0 && ops.T != 0) {
@@ -122,7 +109,6 @@ var languages = map[string]*Language{
 	// Dutch
 	"nl": &Language{
 		ID:               "nl",
-		Name:             "Nederlands",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -135,7 +121,6 @@ var languages = map[string]*Language{
 	// English
 	"en": &Language{
 		ID:               "en",
-		Name:             "English",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -148,7 +133,6 @@ var languages = map[string]*Language{
 	// French
 	"fr": &Language{
 		ID:               "fr",
-		Name:             "Français",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 0 || ops.I == 1 {
@@ -161,7 +145,6 @@ var languages = map[string]*Language{
 	// German
 	"de": &Language{
 		ID:               "de",
-		Name:             "Deutsch",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -174,7 +157,6 @@ var languages = map[string]*Language{
 	// Italian
 	"it": &Language{
 		ID:               "it",
-		Name:             "Italiano",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -187,7 +169,6 @@ var languages = map[string]*Language{
 	// Japanese
 	"ja": &Language{
 		ID:               "ja",
-		Name:             "日本語",
 		PluralCategories: newSet(plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			return plural.Other
@@ -197,7 +178,6 @@ var languages = map[string]*Language{
 	// Portuguese (European)
 	"pt": &Language{
 		ID:               "pt",
-		Name:             "Português",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.V == 0 {
@@ -210,7 +190,6 @@ var languages = map[string]*Language{
 	// Portuguese (Brazilian)
 	"pt-BR": &Language{
 		ID:               "pt-BR",
-		Name:             "Português Brasileiro",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if (ops.I == 1 && ops.V == 0) || (ops.I == 0 && ops.T == 1) {
@@ -223,7 +202,6 @@ var languages = map[string]*Language{
 	// Spanish
 	"es": &Language{
 		ID:               "es",
-		Name:             "Español",
 		PluralCategories: newSet(plural.One, plural.Other),
 		PluralFunc: func(ops *plural.Operands) plural.Category {
 			if ops.I == 1 && ops.W == 0 {
@@ -253,6 +231,10 @@ func (l *Language) PluralCategory(number interface{}) (plural.Category, error) {
 		return plural.Invalid, err
 	}
 	return l.PluralFunc(ops), nil
+}
+
+func (l *Language) String() string {
+	return l.ID
 }
 
 func newSet(pluralCategories ...plural.Category) map[plural.Category]struct{} {

@@ -1,30 +1,37 @@
 package locale
 
 import (
+	"github.com/nicksnyder/go-i18n/i18n/language"
 	"testing"
 )
 
 func TestNew(t *testing.T) {
 	tests := []struct {
 		localeID string
-		valid    bool
+		lang     *language.Language
 	}{
-		{"en-US", true},
-		{"en_US", true},
-		{"zh-Hans-CN", true},
-		{"zh-Hant-TW", true},
-		{"zh-CN", false},
-		{"zh-TW", false},
-		{"en US", false},
-		{"en-US-en-US", false},
+		{"en-US", language.LanguageWithID("en")},
+		{"en_US", language.LanguageWithID("en")},
+		{"zh-CN", language.LanguageWithID("zh")},
+		{"zh-TW", language.LanguageWithID("zh")},
+		{"pt-BR", language.LanguageWithID("pt-BR")},
+		{"pt_BR", language.LanguageWithID("pt-BR")},
+		{"pt-PT", language.LanguageWithID("pt")},
+		{"pt_PT", language.LanguageWithID("pt")},
+		{"zh-Hans-CN", nil},
+		{"zh-Hant-TW", nil},
+		{"xx-Yyen-US", nil},
+		{"en US", nil},
+		{"en-US-en-US", nil},
+		{".en-US..en-US.", nil},
 	}
 	for _, test := range tests {
-		_, err := New(test.localeID)
-		if test.valid && err != nil {
-			t.Errorf("%s should be a valid locale: %s", test.localeID, err)
+		loc, err := New(test.localeID)
+		if loc == nil && test.lang != nil {
+			t.Errorf("New(%q) = <nil>, %q; expected %q, <nil>", test.localeID, err, test.lang)
 		}
-		if !test.valid && err == nil {
-			t.Errorf("%s should not be a valid locale", test.localeID)
+		if loc != nil && loc.Language != test.lang {
+			t.Errorf("New(%q) = %q; expected %q", test.localeID, loc.Language, test.lang)
 		}
 	}
 }
