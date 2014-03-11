@@ -34,7 +34,7 @@ i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
 ##### Selecting a locale
 
 Tfunc returns a function that can lookup the translation of a string for that locale.
-It accepts multiple locale parameters so you can gracefully fallback to other locales.
+It accepts one or more locale parameters so you can gracefully fallback to other locales.
 
 ```go
 userLocale = "ar-AR"     // user preference, accept header, language cookie
