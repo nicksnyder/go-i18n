@@ -190,6 +190,24 @@ func TestJapanese(t *testing.T) {
 	runTests(t, LanguageWithID("ja"), tests)
 }
 
+func TestLithuanian(t *testing.T) {
+	tests := []pluralTest{
+		{0, plural.Other},
+		{1, plural.One},
+		{2, plural.Few},
+		{3, plural.Few},
+		{9, plural.Few},
+		{10, plural.Other},
+		{11, plural.Other},
+		{"0.1", plural.Many},
+		{"0.7", plural.Many},
+		{"1.0", plural.One},
+		{"2.0", plural.Few},
+		{"10.0", plural.Other},
+	}
+	runTests(t, LanguageWithID("lt"), tests)
+}
+
 func TestPortuguese(t *testing.T) {
 	tests := []pluralTest{
 		{0, plural.Other},
