@@ -268,7 +268,7 @@ func appendFloatTests(tests []pluralTest, from, to float64, pc plural.Category) 
 func runTests(t *testing.T, language *Language, tests []pluralTest) {
 	for _, test := range tests {
 		if pc, err := language.PluralCategory(test.num); pc != test.pc {
-			t.Errorf("PluralCategory(%#v) returned %s, %v; expected %s", test.num, pc, err, test.pc)
+			t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", language.ID, test.num, pc, err, test.pc)
 		}
 	}
 }
