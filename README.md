@@ -221,6 +221,7 @@ Supported languages
 * German (`de`)
 * Italian (`it`)
 * Japanese (`ja`)
+* Lithuanian (`lt`)
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)

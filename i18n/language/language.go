@@ -175,6 +175,29 @@ var languages = map[string]*Language{
 		},
 	},
 
+	// Lithuanian
+	"lt": &Language{
+		ID:               "lt",
+		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
+		PluralFunc: func(ops *plural.Operands) plural.Category {
+			if ops.F != 0 {
+				return plural.Many
+			}
+			mod100 := ops.I % 100
+			if mod100 < 11 || mod100 > 19 {
+				switch ops.I % 10 {
+				case 0:
+					return plural.Other
+				case 1:
+					return plural.One
+				default:
+					return plural.Few
+				}
+			}
+			return plural.Other
+		},
+	},
+
 	// Portuguese (European)
 	"pt": &Language{
 		ID:               "pt",
