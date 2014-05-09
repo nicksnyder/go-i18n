@@ -236,7 +236,6 @@ More languages are straightforward to add:
         // ...
         "en": &Language{
             ID:               "en",
-            Name:             "English",
             PluralCategories: newSet(plural.One, plural.Other),
             PluralFunc: func(ops *plural.Operands) plural.Category {
                 if ops.I == 1 && ops.V == 0 {
@@ -250,7 +249,8 @@ More languages are straightforward to add:
     ```
 
 3. Add a test to [language_test.go](i18n/language/language_test.go)
-4. Submit a pull request!
+4. Update this README with the new language.
+5. Submit a pull request!
 
 License
 -------
