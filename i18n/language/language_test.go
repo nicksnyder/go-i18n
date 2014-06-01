@@ -2,54 +2,9 @@ package language
 
 import (
 	"fmt"
-	"testing"
-
 	"github.com/nicksnyder/go-i18n/i18n/plural"
+	"testing"
 )
-
-func TestParse(t *testing.T) {
-	tests := []struct {
-		src  string
-		lang *Language
-	}{
-		{"en", languages["en"]},
-		{"en-US", languages["en"]},
-		{"en_US", languages["en"]},
-		{"en-GB", languages["en"]},
-		{"zh-CN", languages["zh"]},
-		{"zh-TW", languages["zh"]},
-		{"pt-BR", languages["pt-BR"]},
-		{"pt_BR", languages["pt-BR"]},
-		{"pt-PT", languages["pt"]},
-		{"pt_PT", languages["pt"]},
-		{"zh-Hans-CN", languages["zh"]},
-		{"zh-Hant-TW", languages["zh"]},
-		{"en-US-en-US", languages["en"]},
-		{".en-US..en-US.", languages["en"]},
-		{"zh, en-gb;q=0.8, en;q=0.7", languages["zh"]},
-		{"zh,en-gb;q=0.8,en;q=0.7", languages["zh"]},
-		{"xx, en-gb;q=0.8, en;q=0.7", languages["en"]},
-		{"xx,en-gb;q=0.8,en;q=0.7", languages["en"]},
-		{"xx-YY,xx;q=0.8,en-US,en;q=0.8,de;q=0.6,nl;q=0.4", languages["en"]},
-		{"/foo/es/en.json", languages["en"]},
-		{"xx-Yyen-US", nil},
-		{"en US", nil},
-		{"", nil},
-		{"-", nil},
-		{"_", nil},
-		{"-en", nil},
-		{"_en", nil},
-		{"-en-", nil},
-		{"_en_", nil},
-		{"xx", nil},
-	}
-	for _, test := range tests {
-		lang := Parse(test.src)
-		if lang != test.lang {
-			t.Errorf("Parse(%q) = %q expected %q", test.src, lang, test.lang)
-		}
-	}
-}
 
 type pluralTest struct {
 	num interface{}
@@ -124,7 +79,7 @@ func TestArabic(t *testing.T) {
 	tests = appendFloatTests(tests, 2.1, 2.9, plural.Other)
 	tests = appendFloatTests(tests, 3.1, 3.9, plural.Other)
 	tests = appendFloatTests(tests, 4.1, 4.9, plural.Other)
-	runTests(t, languages["ar"], tests)
+	runTests(t, LanguageWithID("ar"), tests)
 }
 
 func TestCatalan(t *testing.T) {
@@ -139,13 +94,13 @@ func TestCatalan(t *testing.T) {
 	}
 	tests = appendIntTests(tests, 2, 10, plural.Other)
 	tests = appendFloatTests(tests, 0, 10, plural.Other)
-	runTests(t, languages["ca"], tests)
+	runTests(t, LanguageWithID("ca"), tests)
 }
 
 func TestChinese(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, plural.Other)
 	tests = appendFloatTests(tests, 0, 10, plural.Other)
-	runTests(t, languages["zh"], tests)
+	runTests(t, LanguageWithID("zh"), tests)
 }
 
 func TestCzech(t *testing.T) {
@@ -164,7 +119,7 @@ func TestCzech(t *testing.T) {
 		{"5", plural.Other},
 	}
 	tests = appendFloatTests(tests, 0, 10, plural.Many)
-	runTests(t, languages["cs"], tests)
+	runTests(t, LanguageWithID("cs"), tests)
 }
 
 func TestDanish(t *testing.T) {
@@ -175,7 +130,7 @@ func TestDanish(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.1, 1.9, plural.One)
 	tests = appendFloatTests(tests, 2.0, 10.0, plural.Other)
-	runTests(t, languages["da"], tests)
+	runTests(t, LanguageWithID("da"), tests)
 }
 
 func TestDutch(t *testing.T) {
@@ -185,7 +140,7 @@ func TestDutch(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, plural.Other)
-	runTests(t, languages["nl"], tests)
+	runTests(t, LanguageWithID("nl"), tests)
 }
 
 func TestEnglish(t *testing.T) {
@@ -195,7 +150,7 @@ func TestEnglish(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, plural.Other)
-	runTests(t, languages["en"], tests)
+	runTests(t, LanguageWithID("en"), tests)
 }
 
 func TestFrench(t *testing.T) {
@@ -206,7 +161,7 @@ func TestFrench(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.0, 1.9, plural.One)
 	tests = appendFloatTests(tests, 2.0, 10.0, plural.Other)
-	runTests(t, languages["fr"], tests)
+	runTests(t, LanguageWithID("fr"), tests)
 }
 
 func TestGerman(t *testing.T) {
@@ -216,7 +171,7 @@ func TestGerman(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, plural.Other)
-	runTests(t, languages["de"], tests)
+	runTests(t, LanguageWithID("de"), tests)
 }
 
 func TestItalian(t *testing.T) {
@@ -226,13 +181,13 @@ func TestItalian(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, plural.Other)
-	runTests(t, languages["it"], tests)
+	runTests(t, LanguageWithID("it"), tests)
 }
 
 func TestJapanese(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, plural.Other)
 	tests = appendFloatTests(tests, 0, 10, plural.Other)
-	runTests(t, languages["ja"], tests)
+	runTests(t, LanguageWithID("ja"), tests)
 }
 
 func TestLithuanian(t *testing.T) {
@@ -250,7 +205,7 @@ func TestLithuanian(t *testing.T) {
 		{"2.0", plural.Few},
 		{"10.0", plural.Other},
 	}
-	runTests(t, languages["lt"], tests)
+	runTests(t, LanguageWithID("lt"), tests)
 }
 
 func TestPortuguese(t *testing.T) {
@@ -260,7 +215,7 @@ func TestPortuguese(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, plural.Other)
-	runTests(t, languages["pt"], tests)
+	runTests(t, LanguageWithID("pt"), tests)
 }
 
 func TestPortugueseBrazilian(t *testing.T) {
@@ -276,7 +231,7 @@ func TestPortugueseBrazilian(t *testing.T) {
 		{2, plural.Other},
 	}
 	tests = appendFloatTests(tests, 2.0, 10.0, plural.Other)
-	runTests(t, languages["pt-BR"], tests)
+	runTests(t, LanguageWithID("pt-BR"), tests)
 }
 
 func TestSpanish(t *testing.T) {
@@ -290,7 +245,7 @@ func TestSpanish(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.0, 0.9, plural.Other)
 	tests = appendFloatTests(tests, 1.1, 10.0, plural.Other)
-	runTests(t, languages["es"], tests)
+	runTests(t, LanguageWithID("es"), tests)
 }
 
 func appendIntTests(tests []pluralTest, from, to int, pc plural.Category) []pluralTest {

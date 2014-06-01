@@ -1,4 +1,4 @@
-// Package bundle manages translations for multiple languages.
+// Package bundle manages translations for multiple locales.
 package bundle
 
 import (
@@ -6,51 +6,42 @@ import (
 	"fmt"
 	"io/ioutil"
 	//	"launchpad.net/goyaml"
-
-	"path/filepath"
-
-	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
+	"path/filepath"
 )
 
 // TranslateFunc is a copy of i18n.TranslateFunc to avoid a circular dependency.
 type TranslateFunc func(translationID string, args ...interface{}) string
 
-// Bundle stores the translations for multiple languages.
 type Bundle struct {
 	translations map[string]map[string]translation.Translation
 }
 
-// New returns an empty bundle.
 func New() *Bundle {
 	return &Bundle{
 		translations: make(map[string]map[string]translation.Translation),
 	}
 }
 
-// MustLoadTranslationFile is similar to LoadTranslationFile
-// except it panics if an error happens.
 func (b *Bundle) MustLoadTranslationFile(filename string) {
 	if err := b.LoadTranslationFile(filename); err != nil {
 		panic(err)
 	}
 }
 
-// LoadTranslationFile loads the translations from filename into memory.
-//
-// The language that the translations are associated with is parsed from the filename (e.g. en-US.json).
-//
-// Generally you should load translation files once during your program's initialization.
 func (b *Bundle) LoadTranslationFile(filename string) error {
-	language := language.Parse(filename)
-	if language == nil {
-		return fmt.Errorf("no language found in %q", filename)
+	locale, err := locale.New(filename)
+	if err != nil {
+		return err
 	}
+
 	translations, err := parseTranslationFile(filename)
 	if err != nil {
 		return err
 	}
-	b.AddTranslation(language, translations...)
+
+	b.AddTranslation(locale, translations...)
 	return nil
 }
 
@@ -89,14 +80,11 @@ func parseTranslationFile(filename string) ([]translation.Translation, error) {
 	return translations, nil
 }
 
-// AddTranslation adds translations for a language.
-//
-// It is useful if your translations are in a format not supported by LoadTranslationFile.
-func (b *Bundle) AddTranslation(lang *language.Language, translations ...translation.Translation) {
-	if b.translations[lang.ID] == nil {
-		b.translations[lang.ID] = make(map[string]translation.Translation, len(translations))
+func (b *Bundle) AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
+	if b.translations[locale.ID] == nil {
+		b.translations[locale.ID] = make(map[string]translation.Translation, len(translations))
 	}
-	currentTranslations := b.translations[lang.ID]
+	currentTranslations := b.translations[locale.ID]
 	for _, newTranslation := range translations {
 		if currentTranslation := currentTranslations[newTranslation.ID()]; currentTranslation != nil {
 			currentTranslations[newTranslation.ID()] = currentTranslation.Merge(newTranslation)
@@ -106,48 +94,40 @@ func (b *Bundle) AddTranslation(lang *language.Language, translations ...transla
 	}
 }
 
-// Translations returns all translations in the bundle.
 func (b *Bundle) Translations() map[string]map[string]translation.Translation {
 	return b.translations
 }
 
-// MustTfunc is similar to Tfunc except it panics if an error happens.
-func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
-	tf, err := b.Tfunc(languageSource, languageSources...)
+func (b *Bundle) MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+	tf, err := b.Tfunc(localeID, localeIDs...)
 	if err != nil {
 		panic(err)
 	}
 	return tf
 }
 
-// Tfunc returns a TranslateFunc that will be bound to the first valid language from its parameters.
-//
-// It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) Tfunc(languageSource string, languageSources ...string) (TranslateFunc, error) {
-	lang := language.Parse(languageSource)
-	if lang == nil {
-		for _, languageSource := range languageSources {
-			lang = language.Parse(languageSource)
-			if lang != nil {
+func (b *Bundle) Tfunc(localeID string, localeIDs ...string) (tf TranslateFunc, err error) {
+	var l *locale.Locale
+	l, err = locale.New(localeID)
+	if err != nil {
+		for _, localeID := range localeIDs {
+			l, err = locale.New(localeID)
+			if err == nil {
 				break
 			}
 		}
 	}
-	var err error
-	if lang == nil {
-		err = fmt.Errorf("no supported languages found %#v", append(languageSources, languageSource))
-	}
 	return func(translationID string, args ...interface{}) string {
-		return b.translate(lang, translationID, args...)
+		return b.translate(l, translationID, args...)
 	}, err
 }
 
-func (b *Bundle) translate(lang *language.Language, translationID string, args ...interface{}) string {
-	if lang == nil {
+func (b *Bundle) translate(locale *locale.Locale, translationID string, args ...interface{}) string {
+	if locale == nil {
 		return translationID
 	}
 
-	translations := b.translations[lang.ID]
+	translations := b.translations[locale.ID]
 	if translations == nil {
 		return translationID
 	}
@@ -163,7 +143,7 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 		args = args[1:]
 	}
 
-	pluralCategory, _ := lang.PluralCategory(count)
+	pluralCategory, _ := locale.Language.PluralCategory(count)
 	template := translation.Template(pluralCategory)
 	if template == nil {
 		return translationID

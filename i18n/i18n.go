@@ -11,11 +11,11 @@
 //
 // Fetching a translation
 //
-// Use Tfunc or MustTfunc to fetch a TranslateFunc that will return the translated string for a specific language.
-// The TranslateFunc will be bound to the first valid language passed to Tfunc.
-//     userlanguage = "ar-AR"     // user preference, accept header, language cookie
-//     defaultlanguage = "en-US"  // known valid language
-//     T, err := i18n.Tfunc(userlanguage, defaultlanguage)
+// Use Tfunc or MustTfunc to fetch a TranslateFunc that will return the translated string for a specific locale.
+// The TranslateFunc will be bound to the first valid locale passed to Tfunc.
+//     userLocale = "ar-AR"     // user preference, accept header, language cookie
+//     defaultLocale = "en-US"  // known valid locale
+//     T, err := i18n.Tfunc(userLocale, defaultLocale)
 //     fmt.Println(T("Hello world"))
 //
 // Usually it is a good idea to identify strings by a generic id rather than the English translation,
@@ -55,7 +55,7 @@ package i18n
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n/bundle"
-	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/locale"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
@@ -89,29 +89,27 @@ func MustLoadTranslationFile(filename string) {
 
 // LoadTranslationFile loads the translations from filename into memory.
 //
-// The language that the translations are associated with is parsed from the filename (e.g. en-US.json).
+// The locale that the translations are associated with is parsed from the filename.
 //
 // Generally you should load translation files once during your program's initialization.
 func LoadTranslationFile(filename string) error {
 	return defaultBundle.LoadTranslationFile(filename)
 }
 
-// AddTranslation adds translations for a language.
+// AddTranslation adds translations for a locale.
 //
 // It is useful if your translations are in a format not supported by LoadTranslationFile.
-func AddTranslation(lang *language.Language, translations ...translation.Translation) {
-	defaultBundle.AddTranslation(lang, translations...)
+func AddTranslation(locale *locale.Locale, translations ...translation.Translation) {
+	defaultBundle.AddTranslation(locale, translations...)
 }
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
-func MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
-	return TranslateFunc(defaultBundle.MustTfunc(languageSource, languageSources...))
+func MustTfunc(localeID string, localeIDs ...string) TranslateFunc {
+	return TranslateFunc(defaultBundle.MustTfunc(localeID, localeIDs...))
 }
 
-// Tfunc returns a TranslateFunc that will be bound to the first valid language from its parameters.
-//
-// It can parse languages from Accept-Language headers (RFC 2616).
-func Tfunc(languageSource string, languageSources ...string) (TranslateFunc, error) {
-	tf, err := defaultBundle.Tfunc(languageSource, languageSources...)
+// Tfunc returns a TranslateFunc that will be bound to the first valid locale from its parameters.
+func Tfunc(localeID string, localeIDs ...string) (TranslateFunc, error) {
+	tf, err := defaultBundle.Tfunc(localeID, localeIDs...)
 	return TranslateFunc(tf), err
 }
