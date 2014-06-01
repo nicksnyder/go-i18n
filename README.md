@@ -31,15 +31,18 @@ The name of a translation file must contain a supported [language tag](http://en
 i18n.MustLoadTranslationFile("path/to/fr-FR.all.json")
 ```
 
-##### Selecting a locale
+##### Selecting a language
 
-Tfunc returns a function that can lookup the translation of a string for that locale.
-It accepts one or more locale parameters so you can gracefully fallback to other locales.
+Tfunc returns a function that can lookup the translation of a string for a given language.
+It accepts one or more language sources so you can gracefully fallback to other languages.
 
 ```go
-userLocale = "ar-AR"     // user preference, accept header, language cookie
-defaultLocale = "en-US"  // known valid locale
-T, err := i18n.Tfunc(userLocale, defaultLocale)
+func handleRequest(w http.ResponseWriter, r *http.Request) {
+	cookieLang := r.Cookie("lang")
+	al := r.Header.Get("Accept-Language")
+	defaultLang = "en-US"  // known valid language
+	T, err := i18n.Tfunc(cookieLang, al, defaultLang)
+}
 ```
 
 ##### Loading a string translation

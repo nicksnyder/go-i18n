@@ -2,6 +2,9 @@
 package language
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
@@ -235,10 +238,48 @@ var languages = map[string]*Language{
 	},
 }
 
-// LanguageWithID returns the language identified by id
-// or nil if the language is not registered.
-func LanguageWithID(id string) *Language {
-	return languages[id]
+// Parse returns the first supported language found in lang or nil none exists.
+//
+// It can parse language tags, Accept-Language headers, and filenames.
+func Parse(lang string) *Language {
+	start := 0
+	for end, chr := range lang {
+		switch chr {
+		case ',', ';', '.':
+			if found := lookup(lang[start:end]); found != nil {
+				return found
+			}
+			start = end + 1
+		case '/', '\\':
+			start = end + 1
+		}
+	}
+	if start > 0 {
+		// We already know the entire string isn't a valid language.
+		return nil
+	}
+	return lookup(lang)
+}
+
+// MustParse is similar to Parse except it panics instead of retuning nil.
+func MustParse(lang string) *Language {
+	l := Parse(lang)
+	if l == nil {
+		panic(fmt.Errorf("unable to parse language from %q", lang))
+	}
+	return l
+}
+
+func lookup(languageID string) *Language {
+	languageID = strings.TrimSpace(languageID)
+	languageID = strings.Replace(languageID, "_", "-", -1)
+	if found := languages[languageID]; found != nil {
+		return found
+	}
+	if end := strings.LastIndex(languageID, "-"); end >= 0 {
+		return lookup(languageID[:end])
+	}
+	return nil
 }
 
 // Register adds Language l to the collection of available languages.

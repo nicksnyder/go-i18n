@@ -1,9 +1,10 @@
 package bundle
 
 import (
-	"github.com/nicksnyder/go-i18n/i18n/locale"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"testing"
+
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 func TestMustLoadTranslationFile(t *testing.T) {
@@ -31,20 +32,20 @@ func TestTfunc(t *testing.T) {
 	b := New()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
-	b.AddTranslation(locale.MustNew("en-US"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(language.MustParse("en-US"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
-	b.AddTranslation(locale.MustNew("fr-FR"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(language.MustParse("fr-FR"), testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": frenchTranslation,
 	}))
 
 	tests := []struct {
-		localeIDs []string
-		valid     bool
-		result    string
+		languageIDs []string
+		valid       bool
+		result      string
 	}{
 		{
 			[]string{"invalid"},
@@ -74,12 +75,12 @@ func TestTfunc(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tf, err := b.Tfunc(test.localeIDs[0], test.localeIDs[1:]...)
+		tf, err := b.Tfunc(test.languageIDs[0], test.languageIDs[1:]...)
 		if err != nil && test.valid {
-			t.Errorf("Tfunc for %v returned error %s", test.localeIDs, err)
+			t.Errorf("Tfunc for %v returned error %s", test.languageIDs, err)
 		}
 		if err == nil && !test.valid {
-			t.Errorf("Tfunc for %v returned nil error", test.localeIDs)
+			t.Errorf("Tfunc for %v returned nil error", test.languageIDs)
 		}
 		if result := tf(translationID); result != test.result {
 			t.Errorf("translation was %s; expected %s", result, test.result)
