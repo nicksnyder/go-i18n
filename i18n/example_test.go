@@ -6,7 +6,7 @@ import (
 )
 
 func Example() {
-	i18n.MustLoadTranslationFile("../goi18n/testdata/expected/en-US.all.json")
+	i18n.MustLoadTranslationFile("../goi18n/testdata/expected/en-us.all.json")
 
 	T, _ := i18n.Tfunc("en-US")
 

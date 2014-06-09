@@ -22,7 +22,7 @@ var tmpl = template.Must(template.New("").Funcs(funcMap).Parse(`
 `))
 
 func Example_template() {
-	i18n.MustLoadTranslationFile("../goi18n/testdata/expected/en-US.all.json")
+	i18n.MustLoadTranslationFile("../goi18n/testdata/expected/en-us.all.json")
 
 	T, _ := i18n.Tfunc("en-US")
 	tmpl.Funcs(map[string]interface{}{
