@@ -3,8 +3,8 @@ package translation
 
 import (
 	"fmt"
+
 	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
 // Translation is the interface that represents a translated string.
@@ -13,7 +13,7 @@ type Translation interface {
 	// to serialize the translation.
 	MarshalInterface() interface{}
 	ID() string
-	Template(plural.Category) *template
+	Template(language.Plural) *template
 	UntranslatedCopy() Translation
 	Normalize(language *language.Language) Translation
 	Backfill(src Translation) Translation
@@ -45,9 +45,9 @@ func NewTranslation(data map[string]interface{}) (Translation, error) {
 		}
 		return &singleTranslation{id, tmpl}, nil
 	case map[string]interface{}:
-		templates := make(map[plural.Category]*template, len(translation))
+		templates := make(map[language.Plural]*template, len(translation))
 		for k, v := range translation {
-			pc, err := plural.NewCategory(k)
+			pc, err := language.NewPlural(k)
 			if err != nil {
 				return nil, err
 			}

@@ -2,7 +2,6 @@ package translation
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
 type singleTranslation struct {
@@ -21,7 +20,7 @@ func (st *singleTranslation) ID() string {
 	return st.id
 }
 
-func (st *singleTranslation) Template(pc plural.Category) *template {
+func (st *singleTranslation) Template(pc language.Plural) *template {
 	return st.template
 }
 
@@ -35,7 +34,7 @@ func (st *singleTranslation) Normalize(language *language.Language) Translation 
 
 func (st *singleTranslation) Backfill(src Translation) Translation {
 	if st.template == nil || st.template.src == "" {
-		st.template = src.Template(plural.Other)
+		st.template = src.Template(language.Other)
 	}
 	return st
 }

@@ -1,9 +1,10 @@
 package bundle
 
 import (
-	"github.com/nicksnyder/go-i18n/i18n/locale"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"testing"
+
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 func TestMustLoadTranslationFile(t *testing.T) {
@@ -31,20 +32,25 @@ func TestTfunc(t *testing.T) {
 	b := New()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
-	b.AddTranslation(locale.MustNew("en-US"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(language.MustParse("en-US")[0], testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
-	b.AddTranslation(locale.MustNew("fr-FR"), testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(language.MustParse("fr-FR")[0], testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": frenchTranslation,
 	}))
+	spanishTranslation := "es(translation_id)"
+	b.AddTranslation(language.MustParse("es")[0], testNewTranslation(t, map[string]interface{}{
+		"id":          translationID,
+		"translation": spanishTranslation,
+	}))
 
 	tests := []struct {
-		localeIDs []string
-		valid     bool
-		result    string
+		languageIDs []string
+		valid       bool
+		result      string
 	}{
 		{
 			[]string{"invalid"},
@@ -71,18 +77,28 @@ func TestTfunc(t *testing.T) {
 			true,
 			englishTranslation,
 		},
+		{
+			[]string{"invalid", "es"},
+			true,
+			spanishTranslation,
+		},
+		{
+			[]string{"zh-CN,fr-XX,es"},
+			true,
+			spanishTranslation,
+		},
 	}
 
-	for _, test := range tests {
-		tf, err := b.Tfunc(test.localeIDs[0], test.localeIDs[1:]...)
+	for i, test := range tests {
+		tf, err := b.Tfunc(test.languageIDs[0], test.languageIDs[1:]...)
 		if err != nil && test.valid {
-			t.Errorf("Tfunc for %v returned error %s", test.localeIDs, err)
+			t.Errorf("Tfunc(%v) = error{%q}; expected no error", test.languageIDs, err)
 		}
 		if err == nil && !test.valid {
-			t.Errorf("Tfunc for %v returned nil error", test.localeIDs)
+			t.Errorf("Tfunc(%v) = nil error; expected error", test.languageIDs)
 		}
 		if result := tf(translationID); result != test.result {
-			t.Errorf("translation was %s; expected %s", result, test.result)
+			t.Errorf("translation %d was %s; expected %s", i, result, test.result)
 		}
 	}
 }

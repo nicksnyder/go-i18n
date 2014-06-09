@@ -2,268 +2,83 @@
 package language
 
 import (
-	"github.com/nicksnyder/go-i18n/i18n/plural"
+	"fmt"
+	"strings"
 )
 
 // Language is a written human language.
-//
-// Languages are identified by tags defined by RFC 5646.
-//
-// Typically language tags are a 2 character language code (ISO 639-1)
-// optionally followed by a dash and a 2 character country code (ISO 3166-1).
-// (e.g. en, pt-BR)
-//
-// A Language implements CLDR plural rules as defined here:
-// http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-// http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type Language struct {
-	ID               string
-	Name             string
-	PluralCategories map[plural.Category]struct{}
-	PluralFunc       func(*plural.Operands) plural.Category
-}
-
-// Alphabetical by English name.
-var languages = map[string]*Language{
-	// Arabic
-	"ar": &Language{
-		ID:               "ar",
-		PluralCategories: newSet(plural.Zero, plural.One, plural.Two, plural.Few, plural.Many, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.W == 0 {
-				// Integer case
-				switch ops.I {
-				case 0:
-					return plural.Zero
-				case 1:
-					return plural.One
-				case 2:
-					return plural.Two
-				default:
-					mod100 := ops.I % 100
-					if mod100 >= 3 && mod100 <= 10 {
-						return plural.Few
-					}
-					if mod100 >= 11 {
-						return plural.Many
-					}
-				}
-			}
-			return plural.Other
-		},
-	},
-
-	// Catalan
-	"ca": &Language{
-		ID:               "ca",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Chinese
-	// There is no need to distinguish between simplified and traditional
-	// since they have the same pluralization.
-	"zh": &Language{
-		ID:               "zh",
-		PluralCategories: newSet(plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			return plural.Other
-		},
-	},
-
-	// Czech
-	"cs": &Language{
-		ID:               "cs",
-		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			if ops.I >= 2 && ops.I <= 4 && ops.V == 0 {
-				return plural.Few
-			}
-			if ops.V > 0 {
-				return plural.Many
-			}
-			return plural.Other
-		},
-	},
-
-	// Danish
-	"da": &Language{
-		ID:               "da",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 || (ops.I == 0 && ops.T != 0) {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Dutch
-	"nl": &Language{
-		ID:               "nl",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// English
-	"en": &Language{
-		ID:               "en",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// French
-	"fr": &Language{
-		ID:               "fr",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 0 || ops.I == 1 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// German
-	"de": &Language{
-		ID:               "de",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Italian
-	"it": &Language{
-		ID:               "it",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Japanese
-	"ja": &Language{
-		ID:               "ja",
-		PluralCategories: newSet(plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			return plural.Other
-		},
-	},
-
-	// Lithuanian
-	"lt": &Language{
-		ID:               "lt",
-		PluralCategories: newSet(plural.One, plural.Few, plural.Many, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.F != 0 {
-				return plural.Many
-			}
-			mod100 := ops.I % 100
-			if mod100 < 11 || mod100 > 19 {
-				switch ops.I % 10 {
-				case 0:
-					return plural.Other
-				case 1:
-					return plural.One
-				default:
-					return plural.Few
-				}
-			}
-			return plural.Other
-		},
-	},
-
-	// Portuguese (European)
-	"pt": &Language{
-		ID:               "pt",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.V == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Portuguese (Brazilian)
-	"pt-BR": &Language{
-		ID:               "pt-BR",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if (ops.I == 1 && ops.V == 0) || (ops.I == 0 && ops.T == 1) {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-
-	// Spanish
-	"es": &Language{
-		ID:               "es",
-		PluralCategories: newSet(plural.One, plural.Other),
-		PluralFunc: func(ops *plural.Operands) plural.Category {
-			if ops.I == 1 && ops.W == 0 {
-				return plural.One
-			}
-			return plural.Other
-		},
-	},
-}
-
-// LanguageWithID returns the language identified by id
-// or nil if the language is not registered.
-func LanguageWithID(id string) *Language {
-	return languages[id]
-}
-
-// Register adds Language l to the collection of available languages.
-func Register(l *Language) {
-	languages[l.ID] = l
-}
-
-// PluralCategory returns the plural category for number as defined by
-// the language's CLDR plural rules.
-func (l *Language) PluralCategory(number interface{}) (plural.Category, error) {
-	ops, err := plural.NewOperands(number)
-	if err != nil {
-		return plural.Invalid, err
-	}
-	return l.PluralFunc(ops), nil
+	// Tag uniquely identifies the language as defined by RFC 5646.
+	//
+	// Most language tags are a two character language code (ISO 639-1)
+	// optionally followed by a dash and a two character country code (ISO 3166-1).
+	// (e.g. en, pt-br)
+	Tag string
+	*PluralSpec
 }
 
 func (l *Language) String() string {
-	return l.ID
+	return l.Tag
 }
 
-func newSet(pluralCategories ...plural.Category) map[plural.Category]struct{} {
-	set := make(map[plural.Category]struct{}, len(pluralCategories))
-	for _, pc := range pluralCategories {
-		set[pc] = struct{}{}
+// Parse returns a slice of supported languages found in src or nil if none are found.
+// It can parse language tags and Accept-Language headers.
+func Parse(src string) []*Language {
+	var langs []*Language
+	start := 0
+	for end, chr := range src {
+		switch chr {
+		case ',', ';', '.':
+			tag := strings.TrimSpace(src[start:end])
+			if spec := getPluralSpec(tag); spec != nil {
+				langs = append(langs, &Language{NormalizeTag(tag), spec})
+			}
+			start = end + 1
+		}
 	}
-	return set
+	if start > 0 {
+		tag := strings.TrimSpace(src[start:])
+		if spec := getPluralSpec(tag); spec != nil {
+			langs = append(langs, &Language{NormalizeTag(tag), spec})
+		}
+		return dedupe(langs)
+	}
+	if spec := getPluralSpec(src); spec != nil {
+		langs = append(langs, &Language{NormalizeTag(src), spec})
+	}
+	return langs
+}
+
+func dedupe(langs []*Language) []*Language {
+	found := make(map[string]struct{}, len(langs))
+	deduped := make([]*Language, 0, len(langs))
+	for _, lang := range langs {
+		if _, ok := found[lang.Tag]; !ok {
+			found[lang.Tag] = struct{}{}
+			deduped = append(deduped, lang)
+		}
+	}
+	return deduped
+}
+
+// MustParse is similar to Parse except it panics instead of retuning a nil Language.
+func MustParse(src string) []*Language {
+	langs := Parse(src)
+	if len(langs) == 0 {
+		panic(fmt.Errorf("unable to parse language from %q", src))
+	}
+	return langs
+}
+
+// Add adds support for a new language.
+func Add(l *Language) {
+	tag := NormalizeTag(l.Tag)
+	pluralSpecs[tag] = l.PluralSpec
+}
+
+// NormalizeTag returns a language tag with all lower-case characters
+// and dashes "-" instead of underscores "_"
+func NormalizeTag(tag string) string {
+	tag = strings.ToLower(tag)
+	return strings.Replace(tag, "_", "-", -1)
 }

@@ -1,14 +1,14 @@
-package plural
+package language
 
 import (
 	"testing"
 )
 
-func TestNewCategory(t *testing.T) {
+func TestNewPlural(t *testing.T) {
 	tests := []struct {
-		src string
-		cat Category
-		err bool
+		src    string
+		plural Plural
+		err    bool
 	}{
 		{"zero", Zero, false},
 		{"one", One, false},
@@ -18,13 +18,11 @@ func TestNewCategory(t *testing.T) {
 		{"other", Other, false},
 		{"asdf", Invalid, true},
 	}
-
 	for _, test := range tests {
-		cat, err := NewCategory(test.src)
+		plural, err := NewPlural(test.src)
 		wrongErr := (err != nil && !test.err) || (err == nil && test.err)
-		if cat != test.cat || wrongErr {
-			t.Errorf("New(%#v) returned %#v,%#v; expected %#v", test.src, cat, err, test.cat)
+		if plural != test.plural || wrongErr {
+			t.Errorf("NewPlural(%#v) returned %#v,%#v; expected %#v", test.src, plural, err, test.plural)
 		}
 	}
-
 }

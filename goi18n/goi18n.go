@@ -15,42 +15,46 @@ Usage:
 
 Translation files:
 
-    A translation file contains the strings and translations for a single locale (language + country).
+    A translation file contains the strings and translations for a single language.
 
     Translation file names must have a suffix of a supported format (e.g. .json) and
-    contain a valid locale identifier (e.g. ar-EG, en-US, fr-FR, etc.).
+    contain a valid language tag as defined by RFC 5646 (e.g. en-us, fr, zh-hant, etc.).
 
-    For each locale represented by at least one input translation file, goi18n will produce 2 output files:
+    For each language represented by at least one input translation file, goi18n will produce 2 output files:
 
-        xx-XX.all.format
-            This file contains all strings for the locale (translated and untranslated).
+        xx-yy.all.format
+            This file contains all strings for the language (translated and untranslated).
+            Use this file when loading strings at runtime.
 
-        xx-XX.untranslated.format
-            This file contains the strings that have not been translated for this locale.
-			The translations for the strings in this file will be extracted from the source locale.
-            Get these strings translated! After they are translated, merge them back into
-			xx-XX.all.format using goi18n.
+        xx-yy.untranslated.format
+            This file contains the strings that have not been translated for this language.
+            The translations for the strings in this file will be extracted from the source language.
+            After they are translated, merge them back into xx-yy.all.format using goi18n.
 
-    goi18n will merge multiple translation files for the same locale. 
+Merging:
+
+    goi18n will merge multiple translation files for the same language.
     Duplicate translations will be merged into the existing translation.
     Non-empty fields in the duplicate translation will overwrite those fields in the existing translation.
     Empty fields in the duplicate translation are ignored.
 
-    To produce translation files for a new locale, create an empty translation file with the
+Adding a new language:
+
+    To produce translation files for a new language, create an empty translation file with the
     appropriate name and pass it in to goi18n.
 
 Options:
 
-    -sourceLocale localeId
-	    The id of the locale that strings are initially written in (e.g. xx-XX)
-	    Default: en-US
+    -sourceLanguage tag
+        goi18n uses the strings from this language to seed the translations for other languages.
+        Default: en-us
 
     -outdir directory
-        goi18n will write the output translation files to this directory.
+        goi18n writes the output translation files to this directory.
         Default: .
 
     -format format
-        goi18n will encode the output translation files in this format.
+        goi18n encodes the output translation files in this format.
         Supported formats: json
         Default: json
 
@@ -60,16 +64,16 @@ Options:
 
 func main() {
 	flag.Usage = usage
-	sourceLocale := flag.String("sourceLocale", "en-US", "")
+	sourceLanguage := flag.String("sourceLanguage", "en-us", "")
 	outdir := flag.String("outdir", ".", "")
 	format := flag.String("format", "json", "")
 	flag.Parse()
 
 	mc := &mergeCommand{
-		translationFiles: flag.Args(),
-		sourceLocaleID:   *sourceLocale,
-		outdir:           *outdir,
-		format:           *format,
+		translationFiles:  flag.Args(),
+		sourceLanguageTag: *sourceLanguage,
+		outdir:            *outdir,
+		format:            *format,
 	}
 	if err := mc.execute(); err != nil {
 		fmt.Println(err.Error())

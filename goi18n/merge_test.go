@@ -18,10 +18,10 @@ func TestMergeExecute(t *testing.T) {
 	}
 
 	mc := &mergeCommand{
-		translationFiles: files,
-		sourceLocaleID:   "en-US",
-		outdir:           "testdata/output",
-		format:           "json",
+		translationFiles:  files,
+		sourceLanguageTag: "en-US",
+		outdir:            "testdata/output",
+		format:            "json",
 	}
 	if err := mc.execute(); err != nil {
 		t.Fatal(err)

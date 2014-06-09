@@ -5,19 +5,20 @@ import (
 	"fmt"
 	"io/ioutil"
 	//"launchpad.net/goyaml"
-	"github.com/nicksnyder/go-i18n/i18n/bundle"
-	"github.com/nicksnyder/go-i18n/i18n/locale"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
 	"path/filepath"
 	"reflect"
 	"sort"
+
+	"github.com/nicksnyder/go-i18n/i18n/bundle"
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 type mergeCommand struct {
-	translationFiles []string
-	sourceLocaleID   string
-	outdir           string
-	format           string
+	translationFiles  []string
+	sourceLanguageTag string
+	outdir            string
+	format            string
 }
 
 func (mc *mergeCommand) execute() error {
@@ -25,8 +26,8 @@ func (mc *mergeCommand) execute() error {
 		return fmt.Errorf("need at least one translation file to parse")
 	}
 
-	if _, err := locale.New(mc.sourceLocaleID); err != nil {
-		return fmt.Errorf("invalid source locale %s: %s", mc.sourceLocaleID, err)
+	if lang := language.Parse(mc.sourceLanguageTag); lang == nil {
+		return fmt.Errorf("invalid source locale: %s", mc.sourceLanguageTag)
 	}
 
 	marshal, err := newMarshalFunc(mc.format)
@@ -42,7 +43,11 @@ func (mc *mergeCommand) execute() error {
 	}
 
 	translations := bundle.Translations()
-	sourceTranslations := translations[mc.sourceLocaleID]
+	sourceLanguageTag := language.NormalizeTag(mc.sourceLanguageTag)
+	sourceTranslations := translations[sourceLanguageTag]
+	if sourceTranslations == nil {
+		return fmt.Errorf("no translations found for source locale %s", sourceLanguageTag)
+	}
 	for translationID, src := range sourceTranslations {
 		for _, localeTranslations := range translations {
 			if dst := localeTranslations[translationID]; dst == nil || reflect.TypeOf(src) != reflect.TypeOf(dst) {
@@ -52,17 +57,17 @@ func (mc *mergeCommand) execute() error {
 	}
 
 	for localeID, localeTranslations := range translations {
-		locale := locale.MustNew(localeID)
+		lang := language.MustParse(localeID)[0]
 		all := filter(localeTranslations, func(t translation.Translation) translation.Translation {
-			return t.Normalize(locale.Language)
+			return t.Normalize(lang)
 		})
 		if err := mc.writeFile("all", all, localeID, marshal); err != nil {
 			return err
 		}
 
 		untranslated := filter(localeTranslations, func(t translation.Translation) translation.Translation {
-			if t.Incomplete(locale.Language) {
-				return t.Normalize(locale.Language).Backfill(sourceTranslations[t.ID()])
+			if t.Incomplete(lang) {
+				return t.Normalize(lang).Backfill(sourceTranslations[t.ID()])
 			}
 			return nil
 		})

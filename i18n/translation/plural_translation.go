@@ -2,12 +2,11 @@ package translation
 
 import (
 	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/plural"
 )
 
 type pluralTranslation struct {
 	id        string
-	templates map[plural.Category]*template
+	templates map[language.Plural]*template
 }
 
 func (pt *pluralTranslation) MarshalInterface() interface{} {
@@ -21,23 +20,23 @@ func (pt *pluralTranslation) ID() string {
 	return pt.id
 }
 
-func (pt *pluralTranslation) Template(pc plural.Category) *template {
+func (pt *pluralTranslation) Template(pc language.Plural) *template {
 	return pt.templates[pc]
 }
 
 func (pt *pluralTranslation) UntranslatedCopy() Translation {
-	return &pluralTranslation{pt.id, make(map[plural.Category]*template)}
+	return &pluralTranslation{pt.id, make(map[language.Plural]*template)}
 }
 
 func (pt *pluralTranslation) Normalize(l *language.Language) Translation {
 	// Delete plural categories that don't belong to this language.
 	for pc := range pt.templates {
-		if _, ok := l.PluralCategories[pc]; !ok {
+		if _, ok := l.Plurals[pc]; !ok {
 			delete(pt.templates, pc)
 		}
 	}
 	// Create map entries for missing valid categories.
-	for pc := range l.PluralCategories {
+	for pc := range l.Plurals {
 		if _, ok := pt.templates[pc]; !ok {
 			pt.templates[pc] = mustNewTemplate("")
 		}
@@ -48,7 +47,7 @@ func (pt *pluralTranslation) Normalize(l *language.Language) Translation {
 func (pt *pluralTranslation) Backfill(src Translation) Translation {
 	for pc, t := range pt.templates {
 		if t == nil || t.src == "" {
-			pt.templates[pc] = src.Template(plural.Other)
+			pt.templates[pc] = src.Template(language.Other)
 		}
 	}
 	return pt
@@ -68,7 +67,7 @@ func (pt *pluralTranslation) Merge(t Translation) Translation {
 }
 
 func (pt *pluralTranslation) Incomplete(l *language.Language) bool {
-	for pc := range l.PluralCategories {
+	for pc := range l.Plurals {
 		if t := pt.templates[pc]; t == nil || t.src == "" {
 			return true
 		}

@@ -2,3 +2,5 @@
 _*
 output/
 .DS_Store
+*.test
+*.swp

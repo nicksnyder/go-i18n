@@ -1,4 +1,4 @@
-package plural
+package language
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
-type Operands struct {
+type operands struct {
 	N float64 // absolute value of the source number (integer and decimals)
 	I int64   // integer digits of n
 	V int     // number of visible fraction digits in n, with trailing zeros
@@ -16,7 +16,7 @@ type Operands struct {
 	T int     // visible fractional digits in n, without trailing zeros
 }
 
-func NewOperands(v interface{}) (*Operands, error) {
+func newOperands(v interface{}) (*operands, error) {
 	switch v := v.(type) {
 	case int:
 		return newOperandsInt64(int64(v)), nil
@@ -37,14 +37,14 @@ func NewOperands(v interface{}) (*Operands, error) {
 	}
 }
 
-func newOperandsInt64(i int64) *Operands {
+func newOperandsInt64(i int64) *operands {
 	if i < 0 {
 		i = -i
 	}
-	return &Operands{float64(i), i, 0, 0, 0, 0}
+	return &operands{float64(i), i, 0, 0, 0, 0}
 }
 
-func newOperandsString(s string) (*Operands, error) {
+func newOperandsString(s string) (*operands, error) {
 	if s[0] == '-' {
 		s = s[1:]
 	}
@@ -52,7 +52,7 @@ func newOperandsString(s string) (*Operands, error) {
 	if err != nil {
 		return nil, err
 	}
-	ops := &Operands{N: n}
+	ops := &operands{N: n}
 	parts := strings.SplitN(s, ".", 2)
 	ops.I, err = strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
