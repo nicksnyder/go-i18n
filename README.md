@@ -2,30 +2,20 @@ go-i18n [![Build Status](https://secure.travis-ci.org/nicksnyder/go-i18n.png?bra
 =======
 
 go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that can be used to translate Go programs into multiple languages.
-
-Requires Go 1.2.
-
-Features
---------
-
 * Supports pluralized strings using [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 * Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
 * Translation files are simple JSON.
 * [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
-i18n package
+i18n package [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.png)](http://godoc.org/github.com/nicksnyder/go-i18n/i18n)
 ------------
 
 The i18n package provides runtime APIs for fetching translated strings.
 
-[Documentation](http://godoc.org/github.com/nicksnyder/go-i18n/i18n)
-
-goi18n command
+goi18n command [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.png)](http://godoc.org/github.com/nicksnyder/go-i18n/goi18n)
 --------------
 
 The goi18n command provides functionality for managing the translation process.
-
-[Documentation](http://godoc.org/github.com/nicksnyder/go-i18n/goi18n)
 
 ### Installation
 
@@ -142,7 +132,10 @@ Supported languages
 * Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
 
-More languages are straightforward to add:
+Adding new languages
+--------------------
+
+It is easy to add support for additional languages:
 
 1. Lookup the language's [CLDR plural rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
 2. Add the language to [pluralspec.go](i18n/language/pluralspec.go):
