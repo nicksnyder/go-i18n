@@ -231,6 +231,17 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
+
+	// Bulgarian
+	"bg": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.I == 1 && ops.W == 0 {
+				return One
+			}
+			return Other
+		},
+	},
 }
 
 func newPluralSet(plurals ...Plural) map[Plural]struct{} {

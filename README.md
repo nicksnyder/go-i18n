@@ -131,6 +131,7 @@ Supported languages
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
+* Bulgarian (`bg`)
 
 Adding new languages
 --------------------
