@@ -117,6 +117,7 @@ Supported languages
 -------------------
 
 * Arabic (`ar`)
+* Bulgarian (`bg`)
 * Catalan (`ca`)
 * Chinese (simplified and traditional) (`zh`)
 * Czech (`cs`)
@@ -128,10 +129,9 @@ Supported languages
 * Italian (`it`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
-* Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
+* Portuguese (`pt`)
 * Spanish (`es`)
-* Bulgarian (`bg`)
 
 Adding new languages
 --------------------
