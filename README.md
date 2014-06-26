@@ -129,8 +129,8 @@ Supported languages
 * Italian (`it`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
-* Portuguese (Brazilian) (`pt-BR`)
 * Portuguese (`pt`)
+* Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
 
 Adding new languages
