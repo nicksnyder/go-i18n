@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const onePlusEpsilon = "1.00000000000000000000000000000001"
+
 func TestGetPluralSpec(t *testing.T) {
 	tests := []struct {
 		src  string
@@ -69,6 +71,7 @@ func TestArabic(t *testing.T) {
 		{"1", One},
 		{"1.0", One},
 		{"1.00", One},
+		{onePlusEpsilon, Other},
 		{2, Two},
 		{"2", Two},
 		{"2.0", Two},
@@ -137,6 +140,7 @@ func TestCatalan(t *testing.T) {
 		{1, One},
 		{"1", One},
 		{"1.0", Other},
+		{onePlusEpsilon, Other},
 		{2, Other},
 		{"2", Other},
 	}
@@ -157,6 +161,7 @@ func TestCzech(t *testing.T) {
 		{"0", Other},
 		{1, One},
 		{"1", One},
+		{onePlusEpsilon, Many},
 		{2, Few},
 		{"2", Few},
 		{3, Few},
@@ -174,6 +179,7 @@ func TestDanish(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, One},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.1, 1.9, One)
@@ -185,6 +191,7 @@ func TestDutch(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
@@ -195,6 +202,7 @@ func TestEnglish(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
@@ -205,6 +213,7 @@ func TestFrench(t *testing.T) {
 	tests := []pluralTest{
 		{0, One},
 		{1, One},
+		{onePlusEpsilon, One},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 1.9, One)
@@ -216,6 +225,7 @@ func TestGerman(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
@@ -226,6 +236,7 @@ func TestItalian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
@@ -250,6 +261,7 @@ func TestLithuanian(t *testing.T) {
 		{"0.1", Many},
 		{"0.7", Many},
 		{"1.0", One},
+		{onePlusEpsilon, Many},
 		{"2.0", Few},
 		{"10.0", Other},
 	}
@@ -260,6 +272,7 @@ func TestPortuguese(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
@@ -276,6 +289,7 @@ func TestPortugueseBrazilian(t *testing.T) {
 		{"1", One},
 		{"1.1", Other},
 		{"1.01", Other},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 2.0, 10.0, Other)
@@ -289,6 +303,7 @@ func TestSpanish(t *testing.T) {
 		{"1", One},
 		{"1.0", One},
 		{"1.00", One},
+		{onePlusEpsilon, Other},
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 0.0, 0.9, Other)
@@ -309,6 +324,7 @@ func TestBulgarian(t *testing.T) {
 		{"0.7", Other},
 		{"1.0", One},
 		{"1.001", Other},
+		{onePlusEpsilon, Other},
 		{"1.1", Other},
 		{"2.0", Other},
 		{"10.0", Other},
