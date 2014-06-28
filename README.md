@@ -126,6 +126,7 @@ Supported languages
 * English (`en`)
 * French (`fr`)
 * German (`de`)
+* Icelandic (`is`)
 * Italian (`it`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
