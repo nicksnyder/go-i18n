@@ -232,6 +232,21 @@ func TestGerman(t *testing.T) {
 	runTests(t, "de", tests)
 }
 
+func TestIcelandic(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{2, Other},
+		{11, Other},
+		{21, One},
+		{111, Other},
+		{"0.0", Other},
+		{"0.1", One},
+		{"2.0", Other},
+	}
+	runTests(t, "is", tests)
+}
+
 func TestItalian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},

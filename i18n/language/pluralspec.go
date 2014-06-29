@@ -158,6 +158,17 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Icelandic
+	"is": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if (ops.T == 0 && ops.I % 10 == 1 && ops.I % 100 != 11) || ops.T != 0 {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// Italian
 	"it": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
