@@ -133,6 +133,7 @@ Supported languages
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
+* Swedish (`sv`)
 
 Adding new languages
 --------------------
