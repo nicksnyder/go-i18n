@@ -253,6 +253,17 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
+
+	// Swedish
+	"sv": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.I == 1 && ops.V == 0 {
+				return One
+			}
+			return Other
+		},
+	},
 }
 
 func newPluralSet(plurals ...Plural) map[Plural]struct{} {
