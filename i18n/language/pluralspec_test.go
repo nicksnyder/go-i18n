@@ -12,6 +12,7 @@ func TestGetPluralSpec(t *testing.T) {
 		src  string
 		spec *PluralSpec
 	}{
+		{"pl", pluralSpecs["pl"]},
 		{"en", pluralSpecs["en"]},
 		{"en-US", pluralSpecs["en"]},
 		{"en_US", pluralSpecs["en"]},
@@ -281,6 +282,30 @@ func TestLithuanian(t *testing.T) {
 		{"10.0", Other},
 	}
 	runTests(t, "lt", tests)
+}
+
+func TestPolish(t *testing.T) {
+	tests := []pluralTest{
+		{0, Many},
+		{1, One},
+		{2, Few},
+		{3, Few},
+		{4, Few},
+		{5, Many},
+		{19, Many},
+		{20, Many},
+		{10, Many},
+		{11, Many},
+		{52, Few},
+		{"0.1", Other},
+		{"0.7", Other},
+		{"1.5", Other},
+		{"1.0", Other},
+		{onePlusEpsilon, Other},
+		{"2.0", Other},
+		{"10.0", Other},
+	}
+	runTests(t, "pl", tests)
 }
 
 func TestPortuguese(t *testing.T) {

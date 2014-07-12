@@ -210,6 +210,27 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Polish
+	"pl": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Many, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.V == 0 && ops.I == 1 {
+				return One
+			}
+			mod10 := ops.I % 10
+			mod100 := ops.I % 100
+			if ops.V == 0 && mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14) {
+				return Few
+			}
+			if	(ops.V == 0 && ops.I != 1 && mod10 >= 0 && mod10 <= 1) ||
+				(ops.V == 0 && mod10 >= 5 && mod10 <= 9) ||
+				(ops.V == 0 && mod100 >= 12 && mod100 <= 14) {
+				return Many
+			}
+			return Other
+		},
+	},
+	
 	// Portuguese (European)
 	"pt": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
