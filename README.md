@@ -130,6 +130,7 @@ Supported languages
 * Italian (`it`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
+* Polish (`pl`)
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
 * Spanish (`es`)
