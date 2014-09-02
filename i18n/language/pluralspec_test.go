@@ -151,10 +151,10 @@ func TestBelarusian(t *testing.T) {
 		{"0.1", Other},
 		{"0.7", Other},
 		{"1.5", Other},
-		{"1.0", Other},
+		{"1.0", One},
 		{onePlusEpsilon, Other},
-		{"2.0", Other},
-		{"10.0", Other},
+		{"2.0", Few},
+		{"10.0", Many},
 	}
 	runTests(t, "be", tests)
 }
