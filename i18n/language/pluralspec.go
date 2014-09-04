@@ -1,6 +1,9 @@
 package language
 
-import "strings"
+import (
+	"strings"
+	"math"
+)
 
 // PluralSpec defines the CLDR plural rules for a language.
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
@@ -60,6 +63,27 @@ var pluralSpecs = map[string]*PluralSpec{
 						return Many
 					}
 				}
+			}
+			return Other
+		},
+	},
+
+	// Belarusian
+	"be": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Many, Other),
+		PluralFunc: func(ops *operands) Plural {
+			mod10 := math.Mod(ops.N, 10)
+			mod100 := math.Mod(ops.N, 100)
+			if ops.T == 0 && mod10 == 1 && mod100 != 11 {
+				return One
+			}
+			if ops.T == 0 && mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14) {
+				return Few
+			}
+			if	(ops.T == 0 && mod10 == 0) ||
+				(ops.T == 0 && mod10 >= 5 && mod10 <= 9) ||
+				(ops.T == 0 && mod100 >= 11 && mod100 <= 14) {
+				return Many
 			}
 			return Other
 		},
@@ -253,6 +277,27 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Russian
+	"ru": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Many, Other),
+		PluralFunc: func(ops *operands) Plural {
+			mod10 := ops.I % 10
+			mod100 := ops.I % 100
+			if ops.V == 0 && mod10 == 1 && mod100 != 11 {
+				return One
+			}
+			if ops.V == 0 && mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14) {
+				return Few
+			}
+			if	(ops.V == 0 && mod10 == 0) ||
+				(ops.V == 0 && mod10 >= 5 && mod10 <= 9) ||
+				(ops.V == 0 && mod100 >= 11 && mod100 <= 14) {
+				return Many
+			}
+			return Other
+		},
+	},
+
 	// Spanish
 	"es": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
@@ -281,6 +326,27 @@ var pluralSpecs = map[string]*PluralSpec{
 		PluralFunc: func(ops *operands) Plural {
 			if ops.I == 1 && ops.V == 0 {
 				return One
+			}
+			return Other
+		},
+	},
+
+	// Ukrainian
+	"uk": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Many, Other),
+		PluralFunc: func(ops *operands) Plural {
+			mod10 := ops.I % 10
+			mod100 := ops.I % 100
+			if ops.V == 0 && mod10 == 1 && mod100 != 11 {
+				return One
+			}
+			if ops.V == 0 && mod10 >= 2 && mod10 <= 4 && !(mod100 >= 12 && mod100 <= 14) {
+				return Few
+			}
+			if	(ops.V == 0 && mod10 == 0) ||
+				(ops.V == 0 && mod10 >= 5 && mod10 <= 9) ||
+				(ops.V == 0 && mod100 >= 11 && mod100 <= 14) {
+				return Many
 			}
 			return Other
 		},

@@ -62,7 +62,7 @@ type pluralTest struct {
 	plural Plural
 }
 
-func TestArabic(t *testing.T) {
+func TestArabic(t *testing.T ) {
 	tests := []pluralTest{
 		{0, Zero},
 		{"0", Zero},
@@ -132,6 +132,31 @@ func TestArabic(t *testing.T) {
 	tests = appendFloatTests(tests, 3.1, 3.9, Other)
 	tests = appendFloatTests(tests, 4.1, 4.9, Other)
 	runTests(t, "ar", tests)
+}
+
+func TestBelarusian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Many},
+		{1, One},
+		{2, Few},
+		{3, Few},
+		{4, Few},
+		{5, Many},
+		{19, Many},
+		{20, Many},
+		{21, One},
+		{11, Many},
+		{52, Few},
+		{101, One},
+		{"0.1", Other},
+		{"0.7", Other},
+		{"1.5", Other},
+		{"1.0", One},
+		{onePlusEpsilon, Other},
+		{"2.0", Few},
+		{"10.0", Many},
+	}
+	runTests(t, "be", tests)
 }
 
 func TestCatalan(t *testing.T) {
@@ -336,6 +361,31 @@ func TestPortugueseBrazilian(t *testing.T) {
 	runTests(t, "pt-br", tests)
 }
 
+func TestRussian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Many},
+		{1, One},
+		{2, Few},
+		{3, Few},
+		{4, Few},
+		{5, Many},
+		{19, Many},
+		{20, Many},
+		{21, One},
+		{11, Many},
+		{52, Few},
+		{101, One},
+		{"0.1", Other},
+		{"0.7", Other},
+		{"1.5", Other},
+		{"1.0", Other},
+		{onePlusEpsilon, Other},
+		{"2.0", Other},
+		{"10.0", Other},
+	}
+	runTests(t, "ru", tests)
+}
+
 func TestSpanish(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
@@ -381,6 +431,31 @@ func TestSwedish(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
 	runTests(t, "sv", tests)
+}
+
+func TestUkrainian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Many},
+		{1, One},
+		{2, Few},
+		{3, Few},
+		{4, Few},
+		{5, Many},
+		{19, Many},
+		{20, Many},
+		{21, One},
+		{11, Many},
+		{52, Few},
+		{101, One},
+		{"0.1", Other},
+		{"0.7", Other},
+		{"1.5", Other},
+		{"1.0", Other},
+		{onePlusEpsilon, Other},
+		{"2.0", Other},
+		{"10.0", Other},
+	}
+	runTests(t, "uk", tests)
 }
 
 func appendIntTests(tests []pluralTest, from, to int, p Plural) []pluralTest {

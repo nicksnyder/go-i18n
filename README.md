@@ -117,6 +117,7 @@ Supported languages
 -------------------
 
 * Arabic (`ar`)
+* Belarusian (`be`)
 * Bulgarian (`bg`)
 * Catalan (`ca`)
 * Chinese (simplified and traditional) (`zh`)
@@ -133,8 +134,10 @@ Supported languages
 * Polish (`pl`)
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
+* Russian (`ru`)
 * Spanish (`es`)
 * Swedish (`sv`)
+* Ukrainian (`uk`)
 
 Adding new languages
 --------------------
