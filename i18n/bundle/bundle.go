@@ -42,6 +42,18 @@ func (b *Bundle) MustLoadTranslationFile(filename string) {
 //
 // Generally you should load translation files once during your program's initialization.
 func (b *Bundle) LoadTranslationFile(filename string) error {
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+	return b.ParseTranslationFileBytes(filename, buf)
+}
+
+// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses
+// the bytes in buf.
+//
+// It is useful for parsing translation files embedded with go-bindata.
+func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 	basename := filepath.Base(filename)
 	langs := language.Parse(basename)
 	switch l := len(langs); {
@@ -50,7 +62,7 @@ func (b *Bundle) LoadTranslationFile(filename string) error {
 	case l > 1:
 		return fmt.Errorf("multiple languages found in filename %q: %v; expected one", basename, langs)
 	}
-	translations, err := parseTranslationFile(filename)
+	translations, err := parseTranslations(filename, buf)
 	if err != nil {
 		return err
 	}
@@ -58,7 +70,7 @@ func (b *Bundle) LoadTranslationFile(filename string) error {
 	return nil
 }
 
-func parseTranslationFile(filename string) ([]translation.Translation, error) {
+func parseTranslations(filename string, buf []byte) ([]translation.Translation, error) {
 	var unmarshalFunc func([]byte, interface{}) error
 	switch format := filepath.Ext(filename); format {
 	case ".json":
@@ -70,14 +82,10 @@ func parseTranslationFile(filename string) ([]translation.Translation, error) {
 	default:
 		return nil, fmt.Errorf("unsupported file extension %s", format)
 	}
-	fileBytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
 
 	var translationsData []map[string]interface{}
-	if len(fileBytes) > 0 {
-		if err := unmarshalFunc(fileBytes, &translationsData); err != nil {
+	if len(buf) > 0 {
+		if err := unmarshalFunc(buf, &translationsData); err != nil {
 			return nil, err
 		}
 	}

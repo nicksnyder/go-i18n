@@ -98,6 +98,14 @@ func LoadTranslationFile(filename string) error {
 	return defaultBundle.LoadTranslationFile(filename)
 }
 
+// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses
+// the bytes in buf.
+//
+// It is useful for parsing translation files embedded with go-bindata.
+func ParseTranslationFileBytes(filename string, buf []byte) error {
+	return defaultBundle.ParseTranslationFileBytes(filename, buf)
+}
+
 // AddTranslation adds translations for a language.
 //
 // It is useful if your translations are in a format not supported by LoadTranslationFile.
