@@ -203,7 +203,15 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-
+	
+	// Korean
+	"ko": &PluralSpec{
+		Plurals: newPluralSet(Other),
+		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+	
 	// Japanese
 	"ja": &PluralSpec{
 		Plurals: newPluralSet(Other),
