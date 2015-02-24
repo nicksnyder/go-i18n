@@ -129,6 +129,7 @@ Supported languages
 * German (`de`)
 * Icelandic (`is`)
 * Italian (`it`)
+* Korean (`ko`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
 * Polish (`pl`)
