@@ -443,6 +443,18 @@ func TestSwedish(t *testing.T) {
 	runTests(t, "sv", tests)
 }
 
+func TestTurkish(t *testing.T) {
+	tests := []pluralTest{
+		{0, Zero},
+		{1, Other},
+		{152, Other},
+		{"0.7", Other},
+		{onePlusEpsilon, Other},
+		{"2.0", Other},
+	}
+	runTests(t, "tr", tests)
+}
+
 func TestUkrainian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Many},

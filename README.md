@@ -138,6 +138,7 @@ Supported languages
 * Russian (`ru`)
 * Spanish (`es`)
 * Swedish (`sv`)
+* Turkish (`tr`)
 * Ukrainian (`uk`)
 
 Adding new languages
