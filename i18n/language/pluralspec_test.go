@@ -445,8 +445,8 @@ func TestSwedish(t *testing.T) {
 
 func TestTurkish(t *testing.T) {
 	tests := []pluralTest{
-		{0, Zero},
-		{1, Other},
+		{0, Other},
+		{1, One},
 		{152, Other},
 		{"0.7", Other},
 		{onePlusEpsilon, Other},

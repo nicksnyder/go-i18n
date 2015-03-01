@@ -341,10 +341,10 @@ var pluralSpecs = map[string]*PluralSpec{
 
 	// Turkish
 	"tr": &PluralSpec{
-		Plurals: newPluralSet(Zero, Other),
+		Plurals: newPluralSet(One, Other),
 		PluralFunc: func(ops *operands) Plural {
-			if ops.I == 0 && ops.W == 0 {
-				return Zero
+			if ops.I == 1 && ops.V == 0 {
+				return One
 			}
 			return Other
 		},
