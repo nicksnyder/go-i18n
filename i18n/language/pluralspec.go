@@ -343,7 +343,7 @@ var pluralSpecs = map[string]*PluralSpec{
 	"tr": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
 		PluralFunc: func(ops *operands) Plural {
-			if ops.I == 1 && ops.V == 0 {
+			if (ops.I == 1 && ops.W == 0) {
 				return One
 			}
 			return Other

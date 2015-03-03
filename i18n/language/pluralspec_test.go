@@ -447,9 +447,15 @@ func TestTurkish(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{1, One},
-		{152, Other},
-		{"0.7", Other},
+		{"1", One},
+		{"1.0", One},
+		{"1.00", One},
+		{"1.001", Other},
+		{"1.100", Other},
+		{"1.101", Other},
 		{onePlusEpsilon, Other},
+		{2, Other},
+		{"0.7", Other},
 		{"2.0", Other},
 	}
 	runTests(t, "tr", tests)
