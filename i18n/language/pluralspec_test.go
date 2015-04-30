@@ -277,6 +277,12 @@ func TestIcelandic(t *testing.T) {
 	runTests(t, "is", tests)
 }
 
+func TestIndonesian(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "id", tests)
+}
+
 func TestItalian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
@@ -317,6 +323,12 @@ func TestLithuanian(t *testing.T) {
 		{"10.0", Other},
 	}
 	runTests(t, "lt", tests)
+}
+
+func TestMalay(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "ms", tests)
 }
 
 func TestPolish(t *testing.T) {
