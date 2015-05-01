@@ -137,15 +137,7 @@ func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) Tra
 //
 // It can parse languages from Accept-Language headers (RFC 2616).
 func (b *Bundle) Tfunc(src string, srcs ...string) (TranslateFunc, error) {
-	lang := b.translatedLanguage(src)
-	if lang == nil {
-		for _, src := range srcs {
-			lang = b.translatedLanguage(src)
-			if lang != nil {
-				break
-			}
-		}
-	}
+	lang := b.SupportedLanguage(src, srcs...)
 	var err error
 	if lang == nil {
 		err = fmt.Errorf("no supported languages found %#v", append(srcs, src))
@@ -163,6 +155,23 @@ func (b *Bundle) translatedLanguage(src string) *language.Language {
 		}
 	}
 	return nil
+}
+
+// SupportedLanguage returns the first language which
+// has a non-zero number of translations in the bundle.
+//
+// It can parse languages from Accept-Language headers (RFC 2616).
+func (b *Bundle) SupportedLanguage(src string, srcs ...string) *language.Language {
+	lang := b.translatedLanguage(src)
+	if lang == nil {
+		for _, src := range srcs {
+			lang = b.translatedLanguage(src)
+			if lang != nil {
+				break
+			}
+		}
+	}
+	return lang
 }
 
 func (b *Bundle) translate(lang *language.Language, translationID string, args ...interface{}) string {

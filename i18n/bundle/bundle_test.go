@@ -36,60 +36,71 @@ func TestTfunc(t *testing.T) {
 	b := New()
 	translationID := "translation_id"
 	englishTranslation := "en-US(translation_id)"
-	b.AddTranslation(language.MustParse("en-US")[0], testNewTranslation(t, map[string]interface{}{
+	englishLanguage := language.MustParse("en-US")[0]
+	frenchLanguage := language.MustParse("fr-FR")[0]
+	spanishLanguage := language.MustParse("es")[0]
+	b.AddTranslation(englishLanguage, testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": englishTranslation,
 	}))
 	frenchTranslation := "fr-FR(translation_id)"
-	b.AddTranslation(language.MustParse("fr-FR")[0], testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(frenchLanguage, testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": frenchTranslation,
 	}))
 	spanishTranslation := "es(translation_id)"
-	b.AddTranslation(language.MustParse("es")[0], testNewTranslation(t, map[string]interface{}{
+	b.AddTranslation(spanishLanguage, testNewTranslation(t, map[string]interface{}{
 		"id":          translationID,
 		"translation": spanishTranslation,
 	}))
 
 	tests := []struct {
-		languageIDs []string
-		valid       bool
-		result      string
+		languageIDs      []string
+		valid            bool
+		result           string
+		expectedLanguage *language.Language
 	}{
 		{
 			[]string{"invalid"},
 			false,
 			translationID,
+			nil,
 		},
 		{
 			[]string{"invalid", "invalid2"},
 			false,
 			translationID,
+			nil,
 		},
 		{
 			[]string{"invalid", "en-US"},
 			true,
 			englishTranslation,
+			englishLanguage,
 		},
 		{
 			[]string{"en-US", "invalid"},
 			true,
 			englishTranslation,
+			englishLanguage,
 		},
 		{
 			[]string{"en-US", "fr-FR"},
 			true,
 			englishTranslation,
+			englishLanguage,
 		},
 		{
 			[]string{"invalid", "es"},
 			true,
 			spanishTranslation,
+			spanishLanguage,
 		},
 		{
 			[]string{"zh-CN,fr-XX,es"},
 			true,
 			spanishTranslation,
+			spanishLanguage,
 		},
 	}
 
@@ -103,6 +114,13 @@ func TestTfunc(t *testing.T) {
 		}
 		if result := tf(translationID); result != test.result {
 			t.Errorf("translation %d was %s; expected %s", i, result, test.result)
+		}
+		lang := b.SupportedLanguage(test.languageIDs[0], test.languageIDs[1:]...)
+		if ((test.expectedLanguage == nil) && (lang == nil)) ||
+			(lang.String() == test.expectedLanguage.String()) {
+			// ok
+		} else {
+			t.Errorf("lang %d was %s; expected %s", i, lang, test.expectedLanguage)
 		}
 	}
 }
