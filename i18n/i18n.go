@@ -126,3 +126,11 @@ func Tfunc(languageSource string, languageSources ...string) (TranslateFunc, err
 	tf, err := defaultBundle.Tfunc(languageSource, languageSources...)
 	return TranslateFunc(tf), err
 }
+
+// SupportedLanguage returns the first language which
+// has a non-zero number of translations.
+//
+// It can parse languages from Accept-Language headers (RFC 2616).
+func SupportedLanguage(languageSource string, languageSources ...string) *language.Language {
+	return defaultBundle.SupportedLanguage(languageSource, languageSources...)
+}
