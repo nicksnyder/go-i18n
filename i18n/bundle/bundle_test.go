@@ -116,10 +116,9 @@ func TestTfunc(t *testing.T) {
 			t.Errorf("translation %d was %s; expected %s", i, result, test.result)
 		}
 		lang := b.SupportedLanguage(test.languageIDs[0], test.languageIDs[1:]...)
-		if ((test.expectedLanguage == nil) && (lang == nil)) ||
-			(lang.String() == test.expectedLanguage.String()) {
-			// ok
-		} else {
+		if (lang == nil && test.expectedLanguage != nil) ||
+			(lang != nil && test.expectedLanguage == nil) ||
+			(lang != nil && test.expectedLanguage != nil && lang.String() != test.expectedLanguage.String()) {
 			t.Errorf("lang %d was %s; expected %s", i, lang, test.expectedLanguage)
 		}
 	}
