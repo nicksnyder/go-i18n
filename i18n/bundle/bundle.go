@@ -132,11 +132,30 @@ func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) Tra
 	return tf
 }
 
+// MustTfuncAndLanguage returns both Tfunc and SupportedLanguage at once.
+// This panics if an error happens.
+func (b *Bundle) MustTfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language) {
+	tf, language, err := b.TfuncAndLanguage(languageSource, languageSources...)
+	if err != nil {
+		panic(err)
+	}
+	return tf, language
+}
+
 // Tfunc returns a TranslateFunc that will be bound to the first language which
 // has a non-zero number of translations in the bundle.
 //
 // It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) Tfunc(src string, srcs ...string) (TranslateFunc, error) {
+func (b *Bundle) Tfunc(src string, srcs ...string) (tfunc TranslateFunc, err error) {
+	tfunc, _, err = b.TfuncAndLanguage(src, srcs...)
+	return
+}
+
+// Tfunc returns a TranslateFunc that will be bound to the first language which
+// has a non-zero number of translations in the bundle.
+//
+// It can parse languages from Accept-Language headers (RFC 2616).
+func (b *Bundle) TfuncAndLanguage(src string, srcs ...string) (TranslateFunc, *language.Language, error) {
 	lang := b.SupportedLanguage(src, srcs...)
 	var err error
 	if lang == nil {
@@ -144,7 +163,7 @@ func (b *Bundle) Tfunc(src string, srcs ...string) (TranslateFunc, error) {
 	}
 	return func(translationID string, args ...interface{}) string {
 		return b.translate(lang, translationID, args...)
-	}, err
+	}, lang, err
 }
 
 func (b *Bundle) translatedLanguage(src string) *language.Language {

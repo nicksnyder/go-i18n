@@ -127,6 +127,19 @@ func Tfunc(languageSource string, languageSources ...string) (TranslateFunc, err
 	return TranslateFunc(tf), err
 }
 
+// MustTfuncAndLanguage returns both Tfunc and SupportedLanguage at once.
+// This panics if an error happens.
+func MustTfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language) {
+	tfunc, lang := defaultBundle.MustTfuncAndLanguage(languageSource, languageSources...)
+	return TranslateFunc(tfunc), lang
+}
+
+// TfuncAndLanguage returns both Tfunc and SupportedLanguage at once.
+func TfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language, error) {
+	tf, lang, err := defaultBundle.TfuncAndLanguage(languageSource, languageSources...)
+	return TranslateFunc(tf), lang, err
+}
+
 // SupportedLanguage returns the first language which
 // has a non-zero number of translations.
 //
