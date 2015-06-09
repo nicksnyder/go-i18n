@@ -105,7 +105,7 @@ func TestTfunc(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		tf, err := b.Tfunc(test.languageIDs[0], test.languageIDs[1:]...)
+		tf, lang, err := b.TfuncAndLanguage(test.languageIDs[0], test.languageIDs[1:]...)
 		if err != nil && test.valid {
 			t.Errorf("Tfunc(%v) = error{%q}; expected no error", test.languageIDs, err)
 		}
@@ -115,7 +115,6 @@ func TestTfunc(t *testing.T) {
 		if result := tf(translationID); result != test.result {
 			t.Errorf("translation %d was %s; expected %s", i, result, test.result)
 		}
-		lang := b.SupportedLanguage(test.languageIDs[0], test.languageIDs[1:]...)
 		if (lang == nil && test.expectedLanguage != nil) ||
 			(lang != nil && test.expectedLanguage == nil) ||
 			(lang != nil && test.expectedLanguage != nil && lang.String() != test.expectedLanguage.String()) {

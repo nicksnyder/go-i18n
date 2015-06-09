@@ -49,8 +49,7 @@ func (b *Bundle) LoadTranslationFile(filename string) error {
 	return b.ParseTranslationFileBytes(filename, buf)
 }
 
-// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses
-// the bytes in buf.
+// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses the bytes in buf.
 //
 // It is useful for parsing translation files embedded with go-bindata.
 func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
@@ -125,38 +124,34 @@ func (b *Bundle) Translations() map[string]map[string]translation.Translation {
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
 func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
-	tf, err := b.Tfunc(languageSource, languageSources...)
+	tfunc, err := b.Tfunc(languageSource, languageSources...)
 	if err != nil {
 		panic(err)
 	}
-	return tf
+	return tfunc
 }
 
-// MustTfuncAndLanguage returns both Tfunc and SupportedLanguage at once.
-// This panics if an error happens.
+// MustTfuncAndLanguage is similar to TfuncAndLanguage except it panics if an error happens.
 func (b *Bundle) MustTfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language) {
-	tf, language, err := b.TfuncAndLanguage(languageSource, languageSources...)
+	tfunc, language, err := b.TfuncAndLanguage(languageSource, languageSources...)
 	if err != nil {
 		panic(err)
 	}
-	return tf, language
+	return tfunc, language
 }
 
 // Tfunc returns a TranslateFunc that will be bound to the first language which
 // has a non-zero number of translations in the bundle.
 //
 // It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) Tfunc(src string, srcs ...string) (tfunc TranslateFunc, err error) {
-	tfunc, _, err = b.TfuncAndLanguage(src, srcs...)
-	return
+func (b *Bundle) Tfunc(src string, srcs ...string) (TranslateFunc, error) {
+	tfunc, _, err := b.TfuncAndLanguage(src, srcs...)
+	return tfunc, err
 }
 
-// Tfunc returns a TranslateFunc that will be bound to the first language which
-// has a non-zero number of translations in the bundle.
-//
-// It can parse languages from Accept-Language headers (RFC 2616).
+// TfuncAndLanguage is similar to Tfunc except it also returns the language which TranslateFunc is bound to.
 func (b *Bundle) TfuncAndLanguage(src string, srcs ...string) (TranslateFunc, *language.Language, error) {
-	lang := b.SupportedLanguage(src, srcs...)
+	lang := b.supportedLanguage(src, srcs...)
 	var err error
 	if lang == nil {
 		err = fmt.Errorf("no supported languages found %#v", append(srcs, src))
@@ -176,11 +171,11 @@ func (b *Bundle) translatedLanguage(src string) *language.Language {
 	return nil
 }
 
-// SupportedLanguage returns the first language which
+// supportedLanguage returns the first language which
 // has a non-zero number of translations in the bundle.
 //
 // It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) SupportedLanguage(src string, srcs ...string) *language.Language {
+func (b *Bundle) supportedLanguage(src string, srcs ...string) *language.Language {
 	lang := b.translatedLanguage(src)
 	if lang == nil {
 		for _, src := range srcs {
