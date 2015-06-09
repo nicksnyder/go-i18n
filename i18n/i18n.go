@@ -98,8 +98,7 @@ func LoadTranslationFile(filename string) error {
 	return defaultBundle.LoadTranslationFile(filename)
 }
 
-// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses
-// the bytes in buf.
+// ParseTranslationFileBytes is similar to LoadTranslationFile except it parses the bytes in buf.
 //
 // It is useful for parsing translation files embedded with go-bindata.
 func ParseTranslationFileBytes(filename string, buf []byte) error {
@@ -123,6 +122,18 @@ func MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
 //
 // It can parse languages from Accept-Language headers (RFC 2616).
 func Tfunc(languageSource string, languageSources ...string) (TranslateFunc, error) {
-	tf, err := defaultBundle.Tfunc(languageSource, languageSources...)
-	return TranslateFunc(tf), err
+	tfunc, err := defaultBundle.Tfunc(languageSource, languageSources...)
+	return TranslateFunc(tfunc), err
+}
+
+// MustTfuncAndLanguage is similar to TfuncAndLanguage except it panics if an error happens.
+func MustTfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language) {
+	tfunc, lang := defaultBundle.MustTfuncAndLanguage(languageSource, languageSources...)
+	return TranslateFunc(tfunc), lang
+}
+
+// TfuncAndLanguage is similar to Tfunc except it also returns the language which TranslateFunc is bound to.
+func TfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language, error) {
+	tfunc, lang, err := defaultBundle.TfuncAndLanguage(languageSource, languageSources...)
+	return TranslateFunc(tfunc), lang, err
 }
