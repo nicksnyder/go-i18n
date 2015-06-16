@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
 	//	"launchpad.net/goyaml"
 
 	"path/filepath"
@@ -18,13 +19,18 @@ type TranslateFunc func(translationID string, args ...interface{}) string
 
 // Bundle stores the translations for multiple languages.
 type Bundle struct {
+	// The primary translations for a language tag and translation id.
 	translations map[string]map[string]translation.Translation
+
+	// Translations that can be used when an exact language match is not possible.
+	fallbackTranslations map[string]map[string]translation.Translation
 }
 
 // New returns an empty bundle.
 func New() *Bundle {
 	return &Bundle{
-		translations: make(map[string]map[string]translation.Translation),
+		translations:         make(map[string]map[string]translation.Translation),
+		fallbackTranslations: make(map[string]map[string]translation.Translation),
 	}
 }
 
@@ -115,6 +121,11 @@ func (b *Bundle) AddTranslation(lang *language.Language, translations ...transla
 			currentTranslations[newTranslation.ID()] = newTranslation
 		}
 	}
+
+	// lang can provide translations for less specific language tags.
+	for _, tag := range lang.MatchingTags() {
+		b.fallbackTranslations[tag] = currentTranslations
+	}
 }
 
 // Translations returns all translations in the bundle.
@@ -123,8 +134,8 @@ func (b *Bundle) Translations() map[string]map[string]translation.Translation {
 }
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
-func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
-	tfunc, err := b.Tfunc(languageSource, languageSources...)
+func (b *Bundle) MustTfunc(pref string, prefs ...string) TranslateFunc {
+	tfunc, err := b.Tfunc(pref, prefs...)
 	if err != nil {
 		panic(err)
 	}
@@ -132,60 +143,66 @@ func (b *Bundle) MustTfunc(languageSource string, languageSources ...string) Tra
 }
 
 // MustTfuncAndLanguage is similar to TfuncAndLanguage except it panics if an error happens.
-func (b *Bundle) MustTfuncAndLanguage(languageSource string, languageSources ...string) (TranslateFunc, *language.Language) {
-	tfunc, language, err := b.TfuncAndLanguage(languageSource, languageSources...)
+func (b *Bundle) MustTfuncAndLanguage(pref string, prefs ...string) (TranslateFunc, *language.Language) {
+	tfunc, language, err := b.TfuncAndLanguage(pref, prefs...)
 	if err != nil {
 		panic(err)
 	}
 	return tfunc, language
 }
 
-// Tfunc returns a TranslateFunc that will be bound to the first language which
-// has a non-zero number of translations in the bundle.
-//
-// It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) Tfunc(src string, srcs ...string) (TranslateFunc, error) {
-	tfunc, _, err := b.TfuncAndLanguage(src, srcs...)
+// Tfunc is similar to TfuncAndLanguage except is doesn't return the Language.
+func (b *Bundle) Tfunc(pref string, prefs ...string) (TranslateFunc, error) {
+	tfunc, _, err := b.TfuncAndLanguage(pref, prefs...)
 	return tfunc, err
 }
 
-// TfuncAndLanguage is similar to Tfunc except it also returns the language which TranslateFunc is bound to.
-func (b *Bundle) TfuncAndLanguage(src string, srcs ...string) (TranslateFunc, *language.Language, error) {
-	lang := b.supportedLanguage(src, srcs...)
+// TfuncAndLanguage returns a TranslateFunc for the first Language that
+// has a non-zero number of translations in the bundle.
+//
+// The returned Language matches the the first language preference that could be satisfied,
+// but this may not strictly match the language of the translations used to satisfy that preference.
+//
+// For example, the user may request "zh". If there are no translations for "zh" but there are translations
+// for "zh-cn", then the translations for "zh-cn" will be used but the returned Language will be "zh".
+//
+// It can parse languages from Accept-Language headers (RFC 2616),
+// but it assumes weights are monotonically decreasing.
+func (b *Bundle) TfuncAndLanguage(pref string, prefs ...string) (TranslateFunc, *language.Language, error) {
+	lang := b.supportedLanguage(pref, prefs...)
 	var err error
 	if lang == nil {
-		err = fmt.Errorf("no supported languages found %#v", append(srcs, src))
+		err = fmt.Errorf("no supported languages found %#v", append(prefs, pref))
 	}
 	return func(translationID string, args ...interface{}) string {
 		return b.translate(lang, translationID, args...)
 	}, lang, err
 }
 
-func (b *Bundle) translatedLanguage(src string) *language.Language {
-	langs := language.Parse(src)
-	for _, lang := range langs {
-		if len(b.translations[lang.Tag]) > 0 {
-			return lang
-		}
-	}
-	return nil
-}
-
 // supportedLanguage returns the first language which
 // has a non-zero number of translations in the bundle.
-//
-// It can parse languages from Accept-Language headers (RFC 2616).
-func (b *Bundle) supportedLanguage(src string, srcs ...string) *language.Language {
-	lang := b.translatedLanguage(src)
+func (b *Bundle) supportedLanguage(pref string, prefs ...string) *language.Language {
+	lang := b.translatedLanguage(pref)
 	if lang == nil {
-		for _, src := range srcs {
-			lang = b.translatedLanguage(src)
+		for _, pref := range prefs {
+			lang = b.translatedLanguage(pref)
 			if lang != nil {
 				break
 			}
 		}
 	}
 	return lang
+}
+
+func (b *Bundle) translatedLanguage(src string) *language.Language {
+	langs := language.Parse(src)
+	for _, lang := range langs {
+		if len(b.translations[lang.Tag]) > 0 ||
+			len(b.fallbackTranslations[lang.Tag]) > 0 {
+			return lang
+		}
+	}
+	return nil
 }
 
 func (b *Bundle) translate(lang *language.Language, translationID string, args ...interface{}) string {
@@ -195,7 +212,10 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 
 	translations := b.translations[lang.Tag]
 	if translations == nil {
-		return translationID
+		translations = b.fallbackTranslations[lang.Tag]
+		if translations == nil {
+			return translationID
+		}
 	}
 
 	translation := translations[translationID]

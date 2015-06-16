@@ -21,6 +21,21 @@ func (l *Language) String() string {
 	return l.Tag
 }
 
+// MatchingTags returns the set of language tags that map to this Language.
+// e.g. "zh-hans-cn" yields {"zh", "zh-hans", "zh-hans-cn"}
+// BUG: This should be computed once and stored as a field on Language for efficiency,
+//      but this would require changing how Languages are constructed.
+func (l *Language) MatchingTags() []string {
+	parts := strings.Split(l.Tag, "-")
+	var prefix, matches []string
+	for _, part := range parts {
+		prefix = append(prefix, part)
+		match := strings.Join(prefix, "-")
+		matches = append(matches, match)
+	}
+	return matches
+}
+
 // Parse returns a slice of supported languages found in src or nil if none are found.
 // It can parse language tags and Accept-Language headers.
 func Parse(src string) []*Language {

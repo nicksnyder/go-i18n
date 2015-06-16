@@ -68,3 +68,18 @@ func TestParse(t *testing.T) {
 		}
 	}
 }
+
+func TestMatchingTags(t *testing.T) {
+	tests := []struct {
+		lang    *Language
+		matches []string
+	}{
+		{&Language{"zh-hans-cn", nil}, []string{"zh", "zh-hans", "zh-hans-cn"}},
+		{&Language{"foo", nil}, []string{"foo"}},
+	}
+	for _, test := range tests {
+		if actual := test.lang.MatchingTags(); !reflect.DeepEqual(test.matches, actual) {
+			t.Errorf("matchingTags(%q) = %q expected %q", test.lang.Tag, actual, test.matches)
+		}
+	}
+}
