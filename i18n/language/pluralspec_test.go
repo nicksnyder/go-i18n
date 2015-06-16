@@ -163,6 +163,12 @@ func TestBelarusian(t *testing.T) {
 	runTests(t, "be", tests)
 }
 
+func TestBurmese(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "my", tests)
+}
+
 func TestCatalan(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},

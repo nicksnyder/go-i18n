@@ -89,6 +89,14 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Burmese
+	"my": &PluralSpec{
+		Plurals: newPluralSet(Other),
+		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+
 	// Catalan
 	"ca": &PluralSpec{
 		Plurals: newPluralSet(One, Other),

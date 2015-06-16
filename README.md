@@ -119,6 +119,7 @@ Supported languages
 * Arabic (`ar`)
 * Belarusian (`be`)
 * Bulgarian (`bg`)
+* Burmese (`my`)
 * Catalan (`ca`)
 * Chinese (simplified and traditional) (`zh`)
 * Czech (`cs`)
