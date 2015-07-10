@@ -34,7 +34,24 @@ func Example_template() {
 		"Timeframe": T("d_days", 1),
 	})
 
+	tmpl.Execute(os.Stdout, struct {
+		Person    string
+		Timeframe string
+	}{
+		Person:    "Bob",
+		Timeframe: T("d_days", 1),
+	})
+
 	// Output:
+	// Hello world
+	// Hello Bob
+	// You have 0 unread emails.
+	// You have 1 unread email.
+	// You have 2 unread emails.
+	// Bob has 0 unread emails.
+	// Bob has 1 unread email.
+	// Bob has 2 unread emails.
+	//
 	// Hello world
 	// Hello Bob
 	// You have 0 unread emails.
