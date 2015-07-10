@@ -183,3 +183,29 @@ func TestToMapWithMap(t *testing.T) {
 		}
 	}
 }
+
+func TestTranslate(t *testing.T) {
+	b := New()
+	translationID := "translation_id"
+	englishLanguage := languageWithTag("en-US")
+	b.AddTranslation(englishLanguage, testNewTranslation(t, map[string]interface{}{
+		"id":          translationID,
+		"translation": "{{.Person}} is {{.Age}} years old.",
+	}))
+	input := struct {
+		Person string
+		Age    int
+	}{
+		Person: "Bob",
+		Age:    26,
+	}
+	expected := "Bob is 26 years old."
+
+	tf, err := b.Tfunc("en-US")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if result := tf("translation_id", input); result != expected {
+		t.Errorf("expected '%s', got: '%s'", expected, result)
+	}
+}
