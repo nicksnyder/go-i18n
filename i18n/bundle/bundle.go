@@ -271,7 +271,7 @@ func toMap(input interface{}) map[string]interface{} {
 		data, _ := input.(map[string]interface{})
 		return data
 	case reflect.Ptr:
-		return structToMap(v.Elem())
+		return toMap(v.Elem().Interface())
 	case reflect.Struct:
 		return structToMap(v)
 	default:
