@@ -10,6 +10,7 @@ import (
 
 	"path/filepath"
 
+	"github.com/fatih/structs"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
@@ -237,7 +238,7 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 
 	var data map[string]interface{}
 	if len(args) > 0 {
-		data, _ = args[0].(map[string]interface{})
+		data = toMap(args[0])
 	}
 
 	if isNumber(count) {
@@ -261,4 +262,13 @@ func isNumber(n interface{}) bool {
 		return true
 	}
 	return false
+}
+
+func toMap(input interface{}) (data map[string]interface{}) {
+	if structs.IsStruct(input) {
+		data = structs.Map(input)
+	} else {
+		data, _ = input.(map[string]interface{})
+	}
+	return
 }

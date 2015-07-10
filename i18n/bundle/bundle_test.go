@@ -156,3 +156,30 @@ func testNewTranslation(t *testing.T, data map[string]interface{}) translation.T
 func languageWithTag(tag string) *language.Language {
 	return language.MustParse(tag)[0]
 }
+
+func TestToMapWithMap(t *testing.T) {
+	masterMap := map[string]interface{}{
+		"Person": "Bob",
+		"Age":    26,
+	}
+
+	data := toMap(masterMap)
+	for k, v := range masterMap {
+		if data[k] != v {
+			t.Errorf("expected %v, got: %v", v, data[k])
+		}
+	}
+
+	data = toMap(struct {
+		Person string
+		Age    int
+	}{
+		Person: "Bob",
+		Age:    26,
+	})
+	for k, v := range masterMap {
+		if data[k] != v {
+			t.Errorf("expected %v, got: %v", v, data[k])
+		}
+	}
+}
