@@ -132,6 +132,32 @@ func TestTfuncAndLanguage(t *testing.T) {
 	}
 }
 
+func TestToMap(t *testing.T) {
+	testMatchesMap(t, "with map", testMap, toMap(testMap))
+	testMatchesMap(t, "with struct", testMap, toMap(testStruct))
+	testMatchesMap(t, "with pointer", testMap, toMap(&testStruct))
+}
+
+func TestTranslate(t *testing.T) {
+	b := New()
+	lang := "en-US"
+	translationID := "translation_id"
+	b.AddTranslation(languageWithTag(lang), testNewTranslation(t, map[string]interface{}{
+		"id":          translationID,
+		"translation": "{{.Person}} is {{.Age}} years old.",
+	}))
+	expected := "Bob is 26 years old."
+
+	tf, err := b.Tfunc(lang)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	if result := tf(translationID, testStruct); result != expected {
+		t.Errorf("expected '%s', got: '%s'", expected, result)
+	}
+}
+
 func addFakeTranslation(t *testing.T, b *Bundle, lang *language.Language, translationID string) string {
 	translation := fakeTranslation(lang, translationID)
 	b.AddTranslation(lang, testNewTranslation(t, map[string]interface{}{
@@ -157,55 +183,10 @@ func languageWithTag(tag string) *language.Language {
 	return language.MustParse(tag)[0]
 }
 
-func TestToMapWithMap(t *testing.T) {
-	masterMap := map[string]interface{}{
-		"Person": "Bob",
-		"Age":    26,
-	}
-
-	data := toMap(masterMap)
-	for k, v := range masterMap {
-		if data[k] != v {
-			t.Errorf("expected %v, got: %v", v, data[k])
+func testMatchesMap(t *testing.T, key string, expected map[string]interface{}, actual map[string]interface{}) {
+	for k, v := range expected {
+		if actual[k] != v {
+			t.Errorf("(%s) expected %v, got: %v", key, v, actual[k])
 		}
-	}
-
-	data = toMap(struct {
-		Person string
-		Age    int
-	}{
-		Person: "Bob",
-		Age:    26,
-	})
-	for k, v := range masterMap {
-		if data[k] != v {
-			t.Errorf("expected %v, got: %v", v, data[k])
-		}
-	}
-}
-
-func TestTranslate(t *testing.T) {
-	b := New()
-	translationID := "translation_id"
-	englishLanguage := languageWithTag("en-US")
-	b.AddTranslation(englishLanguage, testNewTranslation(t, map[string]interface{}{
-		"id":          translationID,
-		"translation": "{{.Person}} is {{.Age}} years old.",
-	}))
-	input := struct {
-		Person string
-		Age    int
-	}{
-		Person: "Bob",
-		Age:    26,
-	}
-	expected := "Bob is 26 years old."
-
-	tf, err := b.Tfunc("en-US")
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
-	if result := tf("translation_id", input); result != expected {
-		t.Errorf("expected '%s', got: '%s'", expected, result)
 	}
 }

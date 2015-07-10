@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 
 	//	"launchpad.net/goyaml"
 
 	"path/filepath"
 
-	"github.com/fatih/structs"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
@@ -264,11 +264,17 @@ func isNumber(n interface{}) bool {
 	return false
 }
 
-func toMap(input interface{}) (data map[string]interface{}) {
-	if structs.IsStruct(input) {
-		data = structs.Map(input)
-	} else {
-		data, _ = input.(map[string]interface{})
+func toMap(input interface{}) map[string]interface{} {
+	v := reflect.ValueOf(input)
+	switch v.Kind() {
+	case reflect.Map:
+		data, _ := input.(map[string]interface{})
+		return data
+	case reflect.Ptr:
+		return structToMap(v.Elem())
+	case reflect.Struct:
+		return structToMap(v)
+	default:
+		panic(fmt.Errorf("i18n: cannot handle type %s", v.Kind()))
 	}
-	return
 }
