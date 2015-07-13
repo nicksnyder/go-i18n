@@ -133,9 +133,9 @@ func TestTfuncAndLanguage(t *testing.T) {
 }
 
 func TestToMap(t *testing.T) {
-	testMatchesMap(t, "with map", testMap, toMap(testMap))
-	testMatchesMap(t, "with struct", testMap, toMap(testStruct))
-	testMatchesMap(t, "with pointer", testMap, toMap(&testStruct))
+	testToMatchesMap(t, "with map", testMap, testMap)
+	testToMatchesMap(t, "with struct", testMap, testStruct)
+	testToMatchesMap(t, "with pointer", testMap, &testStruct)
 }
 
 func TestTranslate(t *testing.T) {
@@ -181,6 +181,14 @@ func testNewTranslation(t *testing.T, data map[string]interface{}) translation.T
 
 func languageWithTag(tag string) *language.Language {
 	return language.MustParse(tag)[0]
+}
+
+func testToMatchesMap(t *testing.T, key string, expected map[string]interface{}, input interface{}) {
+	actual, err := toMap(input)
+	if err != nil {
+		t.Errorf("toMap failed with (%s)")
+	}
+	testMatchesMap(t, key, expected, actual)
 }
 
 func testMatchesMap(t *testing.T, key string, expected map[string]interface{}, actual map[string]interface{}) {

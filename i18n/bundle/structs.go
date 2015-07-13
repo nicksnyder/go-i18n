@@ -6,31 +6,36 @@ import (
 )
 
 // Panic if the value does not represent a struct.
-func assertStruct(v reflect.Value) {
-	if kind := v.Kind(); kind != reflect.Struct {
-		panic(fmt.Errorf("struct expected, got %s", kind))
-	}
+func isStruct(v reflect.Value) bool {
+	return v.Kind() == reflect.Struct
 }
 
 // Converts a struct to a map[string]interface{}.
 // Pulled from github.com/fatih/structs, modified to omit tagging and
 // nested conversion.
-func structToMap(v reflect.Value) map[string]interface{} {
-	assertStruct(v)
+func structToMap(v reflect.Value) (map[string]interface{}, error) {
+	if !isStruct(v) {
+		return nil, fmt.Errorf("struct expected, got %s", v.Kind())
+	}
 
 	out := make(map[string]interface{})
-	fields := structFieldNames(v)
+	fields, err := structFieldNames(v)
+	if err != nil {
+		return nil, err
+	}
 	for _, field := range fields {
 		out[field] = v.FieldByName(field).Interface()
 	}
-	return out
+	return out, nil
 }
 
 // Creates a slice of the struct's field names.
 // Pulled from github.com/fatih/structs, modified to omit tagging and to
 // only return the field name rather than the full reflect.StructField.
-func structFieldNames(v reflect.Value) []string {
-	assertStruct(v)
+func structFieldNames(v reflect.Value) ([]string, error) {
+	if !isStruct(v) {
+		return nil, fmt.Errorf("struct expected, got %s", v.Kind())
+	}
 
 	var fields []string
 	t := v.Type()
@@ -42,5 +47,5 @@ func structFieldNames(v reflect.Value) []string {
 		}
 		fields = append(fields, field.Name)
 	}
-	return fields
+	return fields, nil
 }

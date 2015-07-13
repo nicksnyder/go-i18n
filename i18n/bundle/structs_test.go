@@ -21,38 +21,33 @@ var (
 )
 
 func TestStructToMap(t *testing.T) {
-	testMatchesMap(t, "with struct", testMap, structToMap(testValue))
+	actual, err := structToMap(testValue)
+	if err != nil {
+		t.Errorf("not expecting error, got %v", err)
+	}
+	testMatchesMap(t, "with struct", testMap, actual)
 }
 
 func TestStructToMapPanicsWithNonStruct(t *testing.T) {
-	defer testPanics(t, "struct expected, got ptr")
-	testMatchesMap(t, "with pointer", testMap, structToMap(reflect.ValueOf(&testStruct)))
+	_, err := structToMap(reflect.ValueOf(&testStruct))
+	if err == nil {
+		t.Errorf("expecting expecting error, got nothing", err)
+	}
 }
 
 func TestStructFieldNames(t *testing.T) {
-	fields := structFieldNames(testValue)
+	fields, err := structFieldNames(testValue)
+	if err != nil {
+		t.Errorf("not expecting error, got %v", err)
+	}
 	if !reflect.DeepEqual(fields, fieldNames) {
 		t.Errorf("expected %s, got %s", fieldNames, fields)
 	}
 }
 
 func TestStructFieldNamesPanicsWithNonStruct(t *testing.T) {
-	defer testPanics(t, "struct expected, got ptr")
-	structFieldNames(reflect.ValueOf(&testStruct))
-}
-
-func testPanics(t *testing.T, expected string) {
-	if e := recover(); e != nil {
-		if err, ok := e.(error); ok {
-			if err.Error() != expected {
-				t.Errorf("expected '%s', got '%s'",
-					expected,
-					err.Error())
-			}
-		} else {
-			t.Errorf("expected error, got: %v", e)
-		}
-	} else {
-		t.Errorf("expected error, none found")
+	_, err := structFieldNames(reflect.ValueOf(&testStruct))
+	if err == nil {
+		t.Errorf("expecting expecting error, got nothing", err)
 	}
 }

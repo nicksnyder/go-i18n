@@ -238,7 +238,7 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 
 	var data map[string]interface{}
 	if len(args) > 0 {
-		data = toMap(args[0])
+		data, _ = toMap(args[0])
 	}
 
 	if isNumber(count) {
@@ -264,17 +264,17 @@ func isNumber(n interface{}) bool {
 	return false
 }
 
-func toMap(input interface{}) map[string]interface{} {
+func toMap(input interface{}) (map[string]interface{}, error) {
 	v := reflect.ValueOf(input)
 	switch v.Kind() {
 	case reflect.Map:
 		data, _ := input.(map[string]interface{})
-		return data
+		return data, nil
 	case reflect.Ptr:
 		return toMap(v.Elem().Interface())
 	case reflect.Struct:
 		return structToMap(v)
 	default:
-		panic(fmt.Errorf("i18n: cannot handle type %s", v.Kind()))
+		return nil, fmt.Errorf("i18n: cannot handle type %s", v.Kind())
 	}
 }
