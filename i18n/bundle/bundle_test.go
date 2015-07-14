@@ -138,6 +138,18 @@ func TestToMap(t *testing.T) {
 	testToMatchesMap(t, "with pointer", testMap, &testStruct)
 }
 
+func BenchmarkToMapWithMap(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		toMap(testMap)
+	}
+}
+
+func BenchmarkToMapWithStruct(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		toMap(testStruct)
+	}
+}
+
 func TestTranslate(t *testing.T) {
 	b := New()
 	lang := "en-US"

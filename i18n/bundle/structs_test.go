@@ -51,3 +51,17 @@ func TestStructFieldNamesErrorsWithNonStruct(t *testing.T) {
 		t.Errorf("expecting expecting error, got nothing", err)
 	}
 }
+
+func BenchmarkStructToMapWithMap(b *testing.B) {
+	v := reflect.ValueOf(testMap)
+	for i := 0; i < b.N; i++ {
+		structToMap(v)
+	}
+}
+
+func BenchmarkStructToMapWithStruct(b *testing.B) {
+	v := reflect.ValueOf(testStruct)
+	for i := 0; i < b.N; i++ {
+		structToMap(v)
+	}
+}
