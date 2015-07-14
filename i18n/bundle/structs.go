@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-// Panic if the value does not represent a struct.
+// Whether the Value represents a struct value.
 func isStruct(v reflect.Value) bool {
 	return v.Kind() == reflect.Struct
 }

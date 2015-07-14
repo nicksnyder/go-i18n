@@ -28,7 +28,7 @@ func TestStructToMap(t *testing.T) {
 	testMatchesMap(t, "with struct", testMap, actual)
 }
 
-func TestStructToMapPanicsWithNonStruct(t *testing.T) {
+func TestStructToMapErrorsWithNonStruct(t *testing.T) {
 	_, err := structToMap(reflect.ValueOf(&testStruct))
 	if err == nil {
 		t.Errorf("expecting expecting error, got nothing", err)
@@ -45,7 +45,7 @@ func TestStructFieldNames(t *testing.T) {
 	}
 }
 
-func TestStructFieldNamesPanicsWithNonStruct(t *testing.T) {
+func TestStructFieldNamesErrorsWithNonStruct(t *testing.T) {
 	_, err := structFieldNames(reflect.ValueOf(&testStruct))
 	if err == nil {
 		t.Errorf("expecting expecting error, got nothing", err)
