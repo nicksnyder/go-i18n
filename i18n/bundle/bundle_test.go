@@ -132,6 +132,44 @@ func TestTfuncAndLanguage(t *testing.T) {
 	}
 }
 
+func TestToMap(t *testing.T) {
+	testToMatchesMap(t, "with map", testMap, testMap)
+	testToMatchesMap(t, "with struct", testMap, testStruct)
+	testToMatchesMap(t, "with pointer", testMap, &testStruct)
+}
+
+func BenchmarkToMapWithMap(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		toMap(testMap)
+	}
+}
+
+func BenchmarkToMapWithStruct(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		toMap(testStruct)
+	}
+}
+
+func TestTranslate(t *testing.T) {
+	b := New()
+	lang := "en-US"
+	translationID := "translation_id"
+	b.AddTranslation(languageWithTag(lang), testNewTranslation(t, map[string]interface{}{
+		"id":          translationID,
+		"translation": "{{.Person}} is {{.Age}} years old.",
+	}))
+	expected := "Bob is 26 years old."
+
+	tf, err := b.Tfunc(lang)
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
+	if result := tf(translationID, testStruct); result != expected {
+		t.Errorf("expected '%s', got: '%s'", expected, result)
+	}
+}
+
 func addFakeTranslation(t *testing.T, b *Bundle, lang *language.Language, translationID string) string {
 	translation := fakeTranslation(lang, translationID)
 	b.AddTranslation(lang, testNewTranslation(t, map[string]interface{}{
@@ -155,4 +193,20 @@ func testNewTranslation(t *testing.T, data map[string]interface{}) translation.T
 
 func languageWithTag(tag string) *language.Language {
 	return language.MustParse(tag)[0]
+}
+
+func testToMatchesMap(t *testing.T, key string, expected map[string]interface{}, input interface{}) {
+	actual, err := toMap(input)
+	if err != nil {
+		t.Errorf("toMap failed with (%s)")
+	}
+	testMatchesMap(t, key, expected, actual)
+}
+
+func testMatchesMap(t *testing.T, key string, expected map[string]interface{}, actual map[string]interface{}) {
+	for k, v := range expected {
+		if actual[k] != v {
+			t.Errorf("(%s) expected %v, got: %v", key, v, actual[k])
+		}
+	}
 }

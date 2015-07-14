@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 
 	//	"launchpad.net/goyaml"
 
@@ -237,7 +238,7 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 
 	var data map[string]interface{}
 	if len(args) > 0 {
-		data, _ = args[0].(map[string]interface{})
+		data, _ = toMap(args[0])
 	}
 
 	if isNumber(count) {
@@ -261,4 +262,19 @@ func isNumber(n interface{}) bool {
 		return true
 	}
 	return false
+}
+
+func toMap(input interface{}) (map[string]interface{}, error) {
+	v := reflect.ValueOf(input)
+	switch v.Kind() {
+	case reflect.Map:
+		data, _ := input.(map[string]interface{})
+		return data, nil
+	case reflect.Ptr:
+		return toMap(v.Elem().Interface())
+	case reflect.Struct:
+		return structToMap(v)
+	default:
+		return nil, fmt.Errorf("i18n: cannot handle type %s", v.Kind())
+	}
 }
