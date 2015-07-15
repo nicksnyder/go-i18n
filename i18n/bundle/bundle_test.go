@@ -132,44 +132,6 @@ func TestTfuncAndLanguage(t *testing.T) {
 	}
 }
 
-func TestToMap(t *testing.T) {
-	testToMatchesMap(t, "with map", testMap, testMap)
-	testToMatchesMap(t, "with struct", testMap, testStruct)
-	testToMatchesMap(t, "with pointer", testMap, &testStruct)
-}
-
-func BenchmarkToMapWithMap(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		toMap(testMap)
-	}
-}
-
-func BenchmarkToMapWithStruct(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		toMap(testStruct)
-	}
-}
-
-func TestTranslate(t *testing.T) {
-	b := New()
-	lang := "en-US"
-	translationID := "translation_id"
-	b.AddTranslation(languageWithTag(lang), testNewTranslation(t, map[string]interface{}{
-		"id":          translationID,
-		"translation": "{{.Person}} is {{.Age}} years old.",
-	}))
-	expected := "Bob is 26 years old."
-
-	tf, err := b.Tfunc(lang)
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
-	}
-
-	if result := tf(translationID, testStruct); result != expected {
-		t.Errorf("expected '%s', got: '%s'", expected, result)
-	}
-}
-
 func addFakeTranslation(t *testing.T, b *Bundle, lang *language.Language, translationID string) string {
 	translation := fakeTranslation(lang, translationID)
 	b.AddTranslation(lang, testNewTranslation(t, map[string]interface{}{
@@ -195,18 +157,60 @@ func languageWithTag(tag string) *language.Language {
 	return language.MustParse(tag)[0]
 }
 
-func testToMatchesMap(t *testing.T, key string, expected map[string]interface{}, input interface{}) {
-	actual, err := toMap(input)
+func createBenchmarkTranslateFunc(b *testing.B) func(data interface{}) {
+	bundle := New()
+	lang := "en-US"
+	translationID := "translation_id"
+	translation, err := translation.NewTranslation(map[string]interface{}{
+		"id": translationID,
+		"translation": map[string]interface{}{
+			"one":   "{{.Person}} is {{.Count}} year old.",
+			"other": "{{.Person}} is {{.Count}} years old.",
+		},
+	})
 	if err != nil {
-		t.Errorf("toMap failed with (%s)")
+		b.Fatal(err)
 	}
-	testMatchesMap(t, key, expected, actual)
+	bundle.AddTranslation(languageWithTag(lang), translation)
+	expected := "Bob is 26 years old."
+
+	tf, err := bundle.Tfunc(lang)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	return func(data interface{}) {
+		if result := tf(translationID, 26, data); result != expected {
+			b.Fatalf("expected %q, got %q", expected, result)
+		}
+	}
 }
 
-func testMatchesMap(t *testing.T, key string, expected map[string]interface{}, actual map[string]interface{}) {
-	for k, v := range expected {
-		if actual[k] != v {
-			t.Errorf("(%s) expected %v, got: %v", key, v, actual[k])
-		}
+func BenchmarkTranslateWithMap(b *testing.B) {
+	data := map[string]interface{}{
+		"Person": "Bob",
+	}
+	tf := createBenchmarkTranslateFunc(b)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tf(data)
+	}
+}
+
+func BenchmarkTranslateWithStruct(b *testing.B) {
+	data := struct{ Person string }{Person: "Bob"}
+	tf := createBenchmarkTranslateFunc(b)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tf(data)
+	}
+}
+
+func BenchmarkTranslateWithStructPointer(b *testing.B) {
+	data := &struct{ Person string }{Person: "Bob"}
+	tf := createBenchmarkTranslateFunc(b)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		tf(data)
 	}
 }

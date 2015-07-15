@@ -238,7 +238,7 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 
 	var data map[string]interface{}
 	if len(args) > 0 {
-		data, _ = toMap(args[0])
+		data = toMap(args[0])
 	}
 
 	if isNumber(count) {
@@ -264,17 +264,33 @@ func isNumber(n interface{}) bool {
 	return false
 }
 
-func toMap(input interface{}) (map[string]interface{}, error) {
+func toMap(input interface{}) map[string]interface{} {
+	if data, ok := input.(map[string]interface{}); ok {
+		return data
+	}
 	v := reflect.ValueOf(input)
 	switch v.Kind() {
-	case reflect.Map:
-		data, _ := input.(map[string]interface{})
-		return data, nil
 	case reflect.Ptr:
 		return toMap(v.Elem().Interface())
 	case reflect.Struct:
 		return structToMap(v)
 	default:
-		return nil, fmt.Errorf("i18n: cannot handle type %s", v.Kind())
+		return nil
 	}
+}
+
+// Converts the top level of a struct to a map[string]interface{}.
+// Code inspired by github.com/fatih/structs.
+func structToMap(v reflect.Value) map[string]interface{} {
+	out := make(map[string]interface{})
+	t := v.Type()
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		if field.PkgPath != "" {
+			// unexported field. skip.
+			continue
+		}
+		out[field.Name] = v.FieldByName(field.Name).Interface()
+	}
+	return out
 }
