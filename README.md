@@ -135,6 +135,7 @@ Supported languages
 * Japanese (`ja`)
 * Lithuanian (`lt`)
 * Malay (`ms`)
+* Norwegian Bokmål (`no-nb`)
 * Polish (`pl`)
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
