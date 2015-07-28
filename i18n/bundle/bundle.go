@@ -224,29 +224,33 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 		return translationID
 	}
 
+	var data interface{}
 	var count interface{}
-	if len(args) > 0 && isNumber(args[0]) {
-		count = args[0]
-		args = args[1:]
+	if argc := len(args); argc > 0 {
+		if isNumber(args[0]) {
+			count = args[0]
+			if argc > 1 {
+				data = args[1]
+			}
+		} else {
+			data = args[0]
+		}
 	}
 
-	plural, _ := lang.Plural(count)
-	template := translation.Template(plural)
-	if template == nil {
-		return translationID
-	}
-
-	var data map[string]interface{}
-	if len(args) > 0 {
-		data = toMap(args[0])
-	}
-
-	if isNumber(count) {
+	if count != nil {
 		if data == nil {
 			data = map[string]interface{}{"Count": count}
 		} else {
-			data["Count"] = count
+			dataMap := toMap(data)
+			dataMap["Count"] = count
+			data = dataMap
 		}
+	}
+
+	p, _ := lang.Plural(count)
+	template := translation.Template(p)
+	if template == nil {
+		return translationID
 	}
 
 	s := template.Execute(data)
