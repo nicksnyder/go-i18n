@@ -363,6 +363,14 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Thai
+	"th": &PluralSpec{
+		Plurals: newPluralSet(Other),
+		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+
 	// Turkish
 	"tr": &PluralSpec{
 		Plurals: newPluralSet(One, Other),

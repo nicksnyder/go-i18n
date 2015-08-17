@@ -504,6 +504,25 @@ func TestUkrainian(t *testing.T) {
 	runTests(t, "uk", tests)
 }
 
+func TestThai(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, Other},
+		{2, Other},
+		{3, Other},
+		{9, Other},
+		{10, Other},
+		{11, Other},
+		{"0.1", Other},
+		{"0.7", Other},
+		{"1.0", Other},
+		{onePlusEpsilon, Other},
+		{"2.0", Other},
+		{"10.0", Other},
+	}
+	runTests(t, "th", tests)
+}
+
 func appendIntTests(tests []pluralTest, from, to int, p Plural) []pluralTest {
 	for i := from; i <= to; i++ {
 		tests = append(tests, pluralTest{i, p})
