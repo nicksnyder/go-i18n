@@ -34,6 +34,8 @@ func TestGetPluralSpec(t *testing.T) {
 		{"ko-KP", pluralSpecs["ko"]},
 		{"ko_KP", pluralSpecs["ko"]},
 		{"en-US-en-US", pluralSpecs["en"]},
+		{"th", pluralSpecs["th"]},
+		{"th-TH", pluralSpecs["th"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -66,7 +68,7 @@ type pluralTest struct {
 	plural Plural
 }
 
-func TestArabic(t *testing.T ) {
+func TestArabic(t *testing.T) {
 	tests := []pluralTest{
 		{0, Zero},
 		{"0", Zero},
@@ -459,6 +461,12 @@ func TestSwedish(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
 	runTests(t, "sv", tests)
+}
+
+func TestThai(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "th", tests)
 }
 
 func TestTurkish(t *testing.T) {

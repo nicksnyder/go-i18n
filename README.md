@@ -141,6 +141,7 @@ Supported languages
 * Russian (`ru`)
 * Spanish (`es`)
 * Swedish (`sv`)
+* Thai (`th`)
 * Turkish (`tr`)
 * Ukrainian (`uk`)
 
