@@ -63,6 +63,9 @@ import (
 
 // TranslateFunc returns the translation of the string identified by translationID.
 //
+// If there is no translation for translationID, then the translationID itself is returned.
+// This makes it easy to identify missing translations in your app.
+//
 // If translationID is a non-plural form, then the first variadic argument may be a map[string]interface{}
 // or struct that contains template data.
 //
