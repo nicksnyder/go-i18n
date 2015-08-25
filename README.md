@@ -145,6 +145,7 @@ Supported languages
 * Spanish (`es`)
 * Swedish (`sv`)
 * Thai (`th`)
+* Tigrinya (`ti`)
 * Turkish (`tr`)
 * Ukrainian (`uk`)
 
