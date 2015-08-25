@@ -424,6 +424,17 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
+	
+	// Tigrinya
+	"ti": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.N == 0 || ops.N == 1 {
+				return One
+			}
+			return Other
+		},
+	},
 
 	// Turkish
 	"tr": &PluralSpec{
