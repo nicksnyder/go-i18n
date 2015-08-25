@@ -122,6 +122,7 @@ Supported languages
 * Burmese (`my`)
 * Catalan (`ca`)
 * Chinese (simplified and traditional) (`zh`)
+* Croatian (`hr`)
 * Czech (`cs`)
 * Danish (`da`)
 * Dutch (`nl`)
