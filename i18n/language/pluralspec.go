@@ -117,19 +117,19 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Croatian
 	"hr": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
 		PluralFunc: func(ops *operands) Plural {
-			if ops.V == 0 && 
-			(ops.I % 10 == 1 && ops.I % 100 != 11) || 
-			(ops.F % 10 == 1 && ops.F % 100 != 11) {
+			if ops.V == 0 &&
+				(ops.I%10 == 1 && ops.I%100 != 11) ||
+				(ops.F%10 == 1 && ops.F%100 != 11) {
 				return One
 			}
-			if ops.V == 0 && 
-			((ops.I % 10 >= 2 && ops.I % 10 <= 4) && (ops.I % 100 != 12 && ops.I % 100 != 13 && ops.I % 100 != 14)) ||
-			((ops.F % 10 >= 2 && ops.F % 10 <= 4) && (ops.F % 100 != 12 && ops.F % 100 != 13 && ops.F % 100 != 14)) {
+			if ops.V == 0 &&
+				((ops.I%10 >= 2 && ops.I%10 <= 4) && (ops.I%100 != 12 && ops.I%100 != 13 && ops.I%100 != 14)) ||
+				((ops.F%10 >= 2 && ops.F%10 <= 4) && (ops.F%100 != 12 && ops.F%100 != 13 && ops.F%100 != 14)) {
 				return Few
 			}
 			return Other
@@ -237,7 +237,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Korean
 	"ko": &PluralSpec{
 		Plurals: newPluralSet(Other),
