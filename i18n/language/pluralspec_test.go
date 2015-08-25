@@ -37,6 +37,8 @@ func TestGetPluralSpec(t *testing.T) {
 		{"th", pluralSpecs["th"]},
 		{"th-TH", pluralSpecs["th"]},
 		{"hr", pluralSpecs["hr"]},
+		{"bs", pluralSpecs["bs"]},
+		{"sr", pluralSpecs["sr"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -513,7 +515,7 @@ func TestUkrainian(t *testing.T) {
 	runTests(t, "uk", tests)
 }
 
-func TestCroatian(t *testing.T) {
+func TestCroatianBosnianSerbian(t *testing.T) {
 	tests := []pluralTest{
 		{1, One},
 		{"0.1", One},
@@ -545,6 +547,8 @@ func TestCroatian(t *testing.T) {
 		{"1000.0", Other},
 	}
 	runTests(t, "hr", tests)
+	runTests(t, "bs", tests)
+	runTests(t, "sr", tests)
 }
 
 func appendIntTests(tests []pluralTest, from, to int, p Plural) []pluralTest {
