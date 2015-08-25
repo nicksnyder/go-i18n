@@ -118,6 +118,7 @@ Supported languages
 
 * Arabic (`ar`)
 * Belarusian (`be`)
+* Bosnian (`bs`)
 * Bulgarian (`bg`)
 * Burmese (`my`)
 * Catalan (`ca`)
@@ -140,6 +141,7 @@ Supported languages
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
 * Russian (`ru`)
+* Serbian (`sr`)
 * Spanish (`es`)
 * Swedish (`sv`)
 * Thai (`th`)
