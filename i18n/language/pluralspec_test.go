@@ -544,7 +544,7 @@ func TestCroatian(t *testing.T) {
 		{"100.0", Other},
 		{"1000.0", Other},
 	}
-	runtests(t, "hr", tests)
+	runTests(t, "hr", tests)
 }
 
 func appendIntTests(tests []pluralTest, from, to int, p Plural) []pluralTest {
