@@ -516,8 +516,24 @@ func TestUkrainian(t *testing.T) {
 	runTests(t, "uk", tests)
 }
 
-func TestCroatianBosnianSerbian(t *testing.T) {
-	tests := []pluralTest{
+func TestCroatian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "hr", tests)
+}
+
+func TestBosnian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "bs", tests)
+}
+
+func TestSerbian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "sr", tests)
+}
+
+
+func makeCroatianBosnianSerbianTests() []pluralTest {
+		return []pluralTest{
 		{1, One},
 		{"0.1", One},
 		{21, One},
@@ -547,9 +563,6 @@ func TestCroatianBosnianSerbian(t *testing.T) {
 		{"100.0", Other},
 		{"1000.0", Other},
 	}
-	runTests(t, "hr", tests)
-	runTests(t, "bs", tests)
-	runTests(t, "sr", tests)
 }
 
 func TestTigrinya(t *testing.T) {
