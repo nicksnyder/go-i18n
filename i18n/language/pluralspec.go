@@ -88,6 +88,24 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
+	
+	// Bosnian
+	"bs": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.V == 0 &&
+				(ops.I%10 == 1 && ops.I%100 != 11) ||
+				(ops.F%10 == 1 && ops.F%100 != 11) {
+				return One
+			}
+			if ops.V == 0 &&
+				((ops.I%10 >= 2 && ops.I%10 <= 4) && (ops.I%100 != 12 && ops.I%100 != 13 && ops.I%100 != 14)) ||
+				((ops.F%10 >= 2 && ops.F%10 <= 4) && (ops.F%100 != 12 && ops.F%100 != 13 && ops.F%100 != 14)) {
+				return Few
+			}
+			return Other
+		},
+	},
 
 	// Burmese
 	"my": &PluralSpec{
@@ -114,6 +132,24 @@ var pluralSpecs = map[string]*PluralSpec{
 	"zh": &PluralSpec{
 		Plurals: newPluralSet(Other),
 		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+
+	// Croatian
+	"hr": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.V == 0 &&
+				(ops.I%10 == 1 && ops.I%100 != 11) ||
+				(ops.F%10 == 1 && ops.F%100 != 11) {
+				return One
+			}
+			if ops.V == 0 &&
+				((ops.I%10 >= 2 && ops.I%10 <= 4) && (ops.I%100 != 12 && ops.I%100 != 13 && ops.I%100 != 14)) ||
+				((ops.F%10 >= 2 && ops.F%10 <= 4) && (ops.F%100 != 12 && ops.F%100 != 13 && ops.F%100 != 14)) {
+				return Few
+			}
 			return Other
 		},
 	},
@@ -329,6 +365,24 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
+	
+	// Serbian
+	"sr": &PluralSpec{
+		Plurals: newPluralSet(One, Few, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.V == 0 &&
+				(ops.I%10 == 1 && ops.I%100 != 11) ||
+				(ops.F%10 == 1 && ops.F%100 != 11) {
+				return One
+			}
+			if ops.V == 0 &&
+				((ops.I%10 >= 2 && ops.I%10 <= 4) && (ops.I%100 != 12 && ops.I%100 != 13 && ops.I%100 != 14)) ||
+				((ops.F%10 >= 2 && ops.F%10 <= 4) && (ops.F%100 != 12 && ops.F%100 != 13 && ops.F%100 != 14)) {
+				return Few
+			}
+			return Other
+		},
+	},
 
 	// Spanish
 	"es": &PluralSpec{
@@ -367,6 +421,17 @@ var pluralSpecs = map[string]*PluralSpec{
 	"th": &PluralSpec{
 		Plurals: newPluralSet(Other),
 		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+	
+	// Tigrinya
+	"ti": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.N == 0 || ops.N == 1 {
+				return One
+			}
 			return Other
 		},
 	},

@@ -36,6 +36,10 @@ func TestGetPluralSpec(t *testing.T) {
 		{"en-US-en-US", pluralSpecs["en"]},
 		{"th", pluralSpecs["th"]},
 		{"th-TH", pluralSpecs["th"]},
+		{"hr", pluralSpecs["hr"]},
+		{"bs", pluralSpecs["bs"]},
+		{"sr", pluralSpecs["sr"]},
+		{"ti", pluralSpecs["ti"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -510,6 +514,65 @@ func TestUkrainian(t *testing.T) {
 		{"10.0", Other},
 	}
 	runTests(t, "uk", tests)
+}
+
+func TestCroatian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "hr", tests)
+}
+
+func TestBosnian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "bs", tests)
+}
+
+func TestSerbian(t *testing.T) {
+	tests := makeCroatianBosnianSerbianTests()
+	runTests(t, "sr", tests)
+}
+
+
+func makeCroatianBosnianSerbianTests() []pluralTest {
+		return []pluralTest{
+		{1, One},
+		{"0.1", One},
+		{21, One},
+		{101, One},
+		{1001, One},
+		{51, One},
+		{"1.1", One},
+		{"5.1", One},
+		{"100.1", One},
+		{"1000.1", One},
+		{2, Few},
+		{"0.2", Few},
+		{22, Few},
+		{"1.2", Few},
+		{24, Few},
+		{"2.4", Few},
+		{102, Few},
+		{"100.2", Few},
+		{1002, Few},
+		{"1000.2", Few},
+		{5, Other},
+		{"0.5", Other},
+		{0, Other},
+		{100, Other},
+		{19, Other},
+		{"0.0", Other},
+		{"100.0", Other},
+		{"1000.0", Other},
+	}
+}
+
+func TestTigrinya(t *testing.T) {
+	tests := []pluralTest{
+		{0, One},
+		{1, One},
+	}
+	tests = appendIntTests(tests, 2, 10, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
+	runTests(t, "ti", tests)
 }
 
 func appendIntTests(tests []pluralTest, from, to int, p Plural) []pluralTest {
