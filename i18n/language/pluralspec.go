@@ -302,6 +302,17 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Macedonian
+	"mk": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if (ops.V == 0 && ops.I%10 == 1) || ops.F%10 == 1 {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// Norweigan
 	"no": &PluralSpec{
 		Plurals: newPluralSet(One, Other),

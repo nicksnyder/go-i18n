@@ -137,6 +137,7 @@ Supported languages
 * Japanese (`ja`)
 * Lithuanian (`lt`)
 * Malay (`ms`)
+* Macedonian (`mk`)
 * Norweigan (`no`)
 * Polish (`pl`)
 * Portuguese (`pt`)
