@@ -88,7 +88,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Bosnian
 	"bs": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
@@ -365,7 +365,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Serbian
 	"sr": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
@@ -424,7 +424,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Tigrinya
 	"ti": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
@@ -464,6 +464,14 @@ var pluralSpecs = map[string]*PluralSpec{
 				(ops.V == 0 && mod100 >= 11 && mod100 <= 14) {
 				return Many
 			}
+			return Other
+		},
+	},
+
+	// Vietnamese
+	"vi": &PluralSpec{
+		Plurals: newPluralSet(Other),
+		PluralFunc: func(ops *operands) Plural {
 			return Other
 		},
 	},
