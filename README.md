@@ -134,6 +134,7 @@ Supported languages
 * Indonesian (`id`)
 * Italian (`it`)
 * Korean (`ko`)
+* Latvian (`lv`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
 * Malay (`ms`)
