@@ -148,6 +148,7 @@ Supported languages
 * Tigrinya (`ti`)
 * Turkish (`tr`)
 * Ukrainian (`uk`)
+* Vietnamese (`vi`)
 
 Adding new languages
 --------------------
