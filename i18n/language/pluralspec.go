@@ -193,6 +193,17 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Norwegian
+	"no-nb": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.I == 1 && ops.W == 0 {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// English
 	"en": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
@@ -294,10 +305,50 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Latvian
+	"lv": &PluralSpec{
+		Plurals: newPluralSet(Zero, One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			n := int64(ops.N)
+
+			if n%10 == 0 {
+				return Zero
+			} else if n%100 >= 10 && n%100 <= 20 {
+				return Zero
+			} else if ops.V == 2 && ops.F%100 > 11 && ops.F%100 < 19 {
+				return Zero
+			} else if n%10 == 1 && n%100 != 11 {
+				return One
+			} else if ops.V == 2 && ops.F%10 == 1 && ops.F%100 != 11 {
+				return One
+			} else if ops.V != 2 && ops.F%10 == 1 {
+				return One
+			}
+
+			return Other
+		},
+	},
+
 	// Malay
 	"ms": &PluralSpec{
 		Plurals: newPluralSet(Other),
 		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+
+	// Macedonian
+	"mk": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.V == 0 && ops.I%10 == 1 {
+				return One
+			}
+
+			if ops.F%10 == 1 {
+				return One
+			}
+
 			return Other
 		},
 	},
