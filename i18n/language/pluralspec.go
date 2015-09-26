@@ -302,6 +302,17 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Norweigan
+	"no": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.I == 1 && ops.W == 0 {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// Polish
 	"pl": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),

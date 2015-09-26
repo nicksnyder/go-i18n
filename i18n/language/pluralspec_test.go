@@ -437,6 +437,21 @@ func TestSpanish(t *testing.T) {
 	runTests(t, "es", tests)
 }
 
+func TestNorweigan(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1", One},
+		{"1.0", One},
+		{"1.00", One},
+		{onePlusEpsilon, Other},
+		{2, Other},
+	}
+	tests = appendFloatTests(tests, 0.0, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
+	runTests(t, "no", tests)
+}
+
 func TestBulgarian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
