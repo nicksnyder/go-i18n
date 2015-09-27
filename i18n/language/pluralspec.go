@@ -264,6 +264,26 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Latvian
+	"lv": &PluralSpec{
+		Plurals: newPluralSet(Zero, One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			nMod10 := math.Mod(ops.N, 10)
+			nMod100 := math.Mod(ops.N, 100)
+			if nMod10 == 0 ||
+				(11 <= nMod100 && nMod100 <= 19) ||
+				(ops.V == 2 && 11 <= ops.F%100 && ops.F%100 <= 19) {
+				return Zero
+			}
+			if (nMod10 == 1 && nMod100 != 11) ||
+				(ops.V == 2 && ops.F%10 == 1 && ops.F%100 != 11) ||
+				(ops.V != 2 && ops.F%10 == 1) {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// Japanese
 	"ja": &PluralSpec{
 		Plurals: newPluralSet(Other),
