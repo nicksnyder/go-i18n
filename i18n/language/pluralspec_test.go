@@ -42,6 +42,8 @@ func TestGetPluralSpec(t *testing.T) {
 		{"ti", pluralSpecs["ti"]},
 		{"vi", pluralSpecs["vi"]},
 		{"vi-VN", pluralSpecs["vi"]},
+		{"mk", pluralSpecs["mk"]},
+		{"mk-MK", pluralSpecs["mk"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -378,6 +380,20 @@ func TestPortuguese(t *testing.T) {
 	}
 	tests = appendFloatTests(tests, 0.0, 10.0, Other)
 	runTests(t, "pt", tests)
+}
+
+func TestMacedonian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1.1", One},
+		{"2.1", One},
+		{onePlusEpsilon, One},
+		{2, Other},
+		{"2.2", Other},
+		{11, One},
+	}
+	runTests(t, "mk", tests)
 }
 
 func TestPortugueseBrazilian(t *testing.T) {
