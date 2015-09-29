@@ -40,6 +40,12 @@ func TestGetPluralSpec(t *testing.T) {
 		{"bs", pluralSpecs["bs"]},
 		{"sr", pluralSpecs["sr"]},
 		{"ti", pluralSpecs["ti"]},
+		{"vi", pluralSpecs["vi"]},
+		{"vi-VN", pluralSpecs["vi"]},
+		{"mk", pluralSpecs["mk"]},
+		{"mk-MK", pluralSpecs["mk"]},
+		{"lv", pluralSpecs["lv"]},
+		{"lv-LV", pluralSpecs["lv"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -312,6 +318,27 @@ func TestKorean(t *testing.T) {
 	runTests(t, "ko", tests)
 }
 
+func TestLatvian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Zero},
+		{"0", Zero},
+		{"0.1", One},
+		{1, One},
+		{"1", One},
+		{onePlusEpsilon, One},
+		{"10.0", Zero},
+		{"10.1", One},
+		{"10.2", Other},
+		{21, One},
+	}
+	tests = appendFloatTests(tests, 0.2, 0.9, Other)
+	tests = appendFloatTests(tests, 1.2, 1.9, Other)
+	tests = appendIntTests(tests, 2, 9, Other)
+	tests = appendIntTests(tests, 10, 20, Zero)
+	tests = appendIntTests(tests, 22, 29, Other)
+	runTests(t, "lv", tests)
+}
+
 func TestJapanese(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, Other)
 	tests = appendFloatTests(tests, 0, 10, Other)
@@ -378,6 +405,20 @@ func TestPortuguese(t *testing.T) {
 	runTests(t, "pt", tests)
 }
 
+func TestMacedonian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1.1", One},
+		{"2.1", One},
+		{onePlusEpsilon, One},
+		{2, Other},
+		{"2.2", Other},
+		{11, One},
+	}
+	runTests(t, "mk", tests)
+}
+
 func TestPortugueseBrazilian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
@@ -435,6 +476,21 @@ func TestSpanish(t *testing.T) {
 	runTests(t, "es", tests)
 }
 
+func TestNorweigan(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1", One},
+		{"1.0", One},
+		{"1.00", One},
+		{onePlusEpsilon, Other},
+		{2, Other},
+	}
+	tests = appendFloatTests(tests, 0.0, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
+	runTests(t, "no", tests)
+}
+
 func TestBulgarian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
@@ -471,6 +527,12 @@ func TestThai(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, Other)
 	tests = appendFloatTests(tests, 0, 10, Other)
 	runTests(t, "th", tests)
+}
+
+func TestVietnamese(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "vi", tests)
 }
 
 func TestTurkish(t *testing.T) {
@@ -531,9 +593,8 @@ func TestSerbian(t *testing.T) {
 	runTests(t, "sr", tests)
 }
 
-
 func makeCroatianBosnianSerbianTests() []pluralTest {
-		return []pluralTest{
+	return []pluralTest{
 		{1, One},
 		{"0.1", One},
 		{21, One},

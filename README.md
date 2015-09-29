@@ -134,9 +134,12 @@ Supported languages
 * Indonesian (`id`)
 * Italian (`it`)
 * Korean (`ko`)
+* Latvian (`lv`)
 * Japanese (`ja`)
 * Lithuanian (`lt`)
 * Malay (`ms`)
+* Macedonian (`mk`)
+* Norweigan (`no`)
 * Polish (`pl`)
 * Portuguese (`pt`)
 * Portuguese (Brazilian) (`pt-BR`)
@@ -148,6 +151,7 @@ Supported languages
 * Tigrinya (`ti`)
 * Turkish (`tr`)
 * Ukrainian (`uk`)
+* Vietnamese (`vi`)
 
 Adding new languages
 --------------------

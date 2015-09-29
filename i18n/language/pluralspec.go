@@ -88,7 +88,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Bosnian
 	"bs": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
@@ -264,6 +264,26 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
+	// Latvian
+	"lv": &PluralSpec{
+		Plurals: newPluralSet(Zero, One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			nMod10 := math.Mod(ops.N, 10)
+			nMod100 := math.Mod(ops.N, 100)
+			if nMod10 == 0 ||
+				(11 <= nMod100 && nMod100 <= 19) ||
+				(ops.V == 2 && 11 <= ops.F%100 && ops.F%100 <= 19) {
+				return Zero
+			}
+			if (nMod10 == 1 && nMod100 != 11) ||
+				(ops.V == 2 && ops.F%10 == 1 && ops.F%100 != 11) ||
+				(ops.V != 2 && ops.F%10 == 1) {
+				return One
+			}
+			return Other
+		},
+	},
+
 	// Japanese
 	"ja": &PluralSpec{
 		Plurals: newPluralSet(Other),
@@ -298,6 +318,28 @@ var pluralSpecs = map[string]*PluralSpec{
 	"ms": &PluralSpec{
 		Plurals: newPluralSet(Other),
 		PluralFunc: func(ops *operands) Plural {
+			return Other
+		},
+	},
+
+	// Macedonian
+	"mk": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if (ops.V == 0 && ops.I%10 == 1) || ops.F%10 == 1 {
+				return One
+			}
+			return Other
+		},
+	},
+
+	// Norweigan
+	"no": &PluralSpec{
+		Plurals: newPluralSet(One, Other),
+		PluralFunc: func(ops *operands) Plural {
+			if ops.I == 1 && ops.W == 0 {
+				return One
+			}
 			return Other
 		},
 	},
@@ -365,7 +407,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Serbian
 	"sr": &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
@@ -424,7 +466,7 @@ var pluralSpecs = map[string]*PluralSpec{
 			return Other
 		},
 	},
-	
+
 	// Tigrinya
 	"ti": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
@@ -464,6 +506,14 @@ var pluralSpecs = map[string]*PluralSpec{
 				(ops.V == 0 && mod100 >= 11 && mod100 <= 14) {
 				return Many
 			}
+			return Other
+		},
+	},
+
+	// Vietnamese
+	"vi": &PluralSpec{
+		Plurals: newPluralSet(Other),
+		PluralFunc: func(ops *operands) Plural {
 			return Other
 		},
 	},
