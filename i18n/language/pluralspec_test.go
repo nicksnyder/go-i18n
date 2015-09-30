@@ -19,10 +19,10 @@ func TestGetPluralSpec(t *testing.T) {
 		{"en-GB", pluralSpecs["en"]},
 		{"zh-CN", pluralSpecs["zh"]},
 		{"zh-TW", pluralSpecs["zh"]},
-		{"pt-BR", pluralSpecs["pt-br"]},
-		{"pt_BR", pluralSpecs["pt-br"]},
-		{"pt-PT", pluralSpecs["pt"]},
-		{"pt_PT", pluralSpecs["pt"]},
+		{"pt-BR", pluralSpecs["pt"]},
+		{"pt_BR", pluralSpecs["pt"]},
+		{"pt-PT", pluralSpecs["pt-pt"]},
+		{"pt_PT", pluralSpecs["pt-pt"]},
 		{"zh-Hans-CN", pluralSpecs["zh"]},
 		{"zh-Hant-TW", pluralSpecs["zh"]},
 		{"zh-CN", pluralSpecs["zh"]},
@@ -396,12 +396,15 @@ func TestPolish(t *testing.T) {
 
 func TestPortuguese(t *testing.T) {
 	tests := []pluralTest{
-		{0, Other},
+		{0, One},
+		{"0.0", One},
 		{1, One},
+		{"1.0", One},
 		{onePlusEpsilon, Other},
 		{2, Other},
 	}
-	tests = appendFloatTests(tests, 0.0, 10.0, Other)
+	tests = appendFloatTests(tests, 0.1, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
 	runTests(t, "pt", tests)
 }
 
@@ -419,12 +422,12 @@ func TestMacedonian(t *testing.T) {
 	runTests(t, "mk", tests)
 }
 
-func TestPortugueseBrazilian(t *testing.T) {
+func TestPortugueseEuropean(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{"0.0", Other},
-		{"0.1", One},
-		{"0.01", One},
+		{"0.1", Other},
+		{"0.01", Other},
 		{1, One},
 		{"1", One},
 		{"1.1", Other},
@@ -433,7 +436,7 @@ func TestPortugueseBrazilian(t *testing.T) {
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 2.0, 10.0, Other)
-	runTests(t, "pt-br", tests)
+	runTests(t, "pt-pt", tests)
 }
 
 func TestRussian(t *testing.T) {
@@ -654,10 +657,14 @@ func appendFloatTests(tests []pluralTest, from, to float64, p Plural) []pluralTe
 }
 
 func runTests(t *testing.T, specID string, tests []pluralTest) {
-	spec := pluralSpecs[specID]
-	for _, test := range tests {
-		if plural, err := spec.Plural(test.num); plural != test.plural {
-			t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", specID, test.num, plural, err, test.plural)
+	if spec := pluralSpecs[specID]; spec != nil {
+		for _, test := range tests {
+			if plural, err := spec.Plural(test.num); plural != test.plural {
+				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", specID, test.num, plural, err, test.plural)
+			}
 		}
+	} else {
+		t.Errorf("could not find plural spec for locale %s", specID)
 	}
+
 }

@@ -365,22 +365,22 @@ var pluralSpecs = map[string]*PluralSpec{
 		},
 	},
 
-	// Portuguese (European)
+	// Portuguese
 	"pt": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
 		PluralFunc: func(ops *operands) Plural {
-			if ops.I == 1 && ops.V == 0 {
+			if ops.T == 0 && (ops.I == 0 || ops.I == 1) {
 				return One
 			}
 			return Other
 		},
 	},
 
-	// Portuguese (Brazilian)
-	"pt-br": &PluralSpec{
+	// Portuguese (European)
+	"pt-pt": &PluralSpec{
 		Plurals: newPluralSet(One, Other),
 		PluralFunc: func(ops *operands) Plural {
-			if (ops.I == 1 && ops.V == 0) || (ops.I == 0 && ops.T == 1) {
+			if ops.I == 1 && ops.V == 0 {
 				return One
 			}
 			return Other
