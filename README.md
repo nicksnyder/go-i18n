@@ -1,8 +1,9 @@
 go-i18n [![Build Status](https://secure.travis-ci.org/nicksnyder/go-i18n.png?branch=master)](http://travis-ci.org/nicksnyder/go-i18n)
 =======
 
-go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that can be used to translate Go programs into multiple languages.
-* Supports pluralized strings using [CLDR plural rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
+go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that helps you translate Go programs into multiple languages.
+* Supports [pluralized strings](http://cldr.unicode.org/index/cldr-spec/plural-rules) for all 200+ languages in the [Unicode Common Locale Data Repository (CLDR)](http://www.unicode.org/cldr/charts/28/supplemental/language_plural_rules.html).
+  *  Code and tests are [automatically generated](https://github.com/nicksnyder/go-i18n/tree/master/i18n/language/codegen) from [CLDR data](http://cldr.unicode.org/index/downloads)
 * Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
 * Translation files are simple JSON.
 * [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
@@ -113,74 +114,9 @@ Example:
 ]
 ```
 
-Supported languages
--------------------
-
-* Arabic (`ar`)
-* Belarusian (`be`)
-* Bosnian (`bs`)
-* Bulgarian (`bg`)
-* Burmese (`my`)
-* Catalan (`ca`)
-* Chinese (simplified and traditional) (`zh`)
-* Croatian (`hr`)
-* Czech (`cs`)
-* Danish (`da`)
-* Dutch (`nl`)
-* English (`en`)
-* French (`fr`)
-* German (`de`)
-* Icelandic (`is`)
-* Indonesian (`id`)
-* Italian (`it`)
-* Korean (`ko`)
-* Latvian (`lv`)
-* Japanese (`ja`)
-* Lithuanian (`lt`)
-* Malay (`ms`)
-* Macedonian (`mk`)
-* Norweigan (`no`)
-* Polish (`pl`)
-* Portuguese (`pt`)
-* Portuguese (Brazilian) (`pt-BR`)
-* Russian (`ru`)
-* Serbian (`sr`)
-* Spanish (`es`)
-* Swedish (`sv`)
-* Thai (`th`)
-* Tigrinya (`ti`)
-* Turkish (`tr`)
-* Ukrainian (`uk`)
-* Vietnamese (`vi`)
-
-Adding new languages
---------------------
-
-It is easy to add support for additional languages:
-
-1. Lookup the language's [CLDR plural rules](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html).
-2. Add the language to [pluralspec.go](i18n/language/pluralspec.go):
-
-    ```go
-    var pluralSpecs = map[string]*PluralSpec{
-        // ...
-				// English
-				"en": &PluralSpec{
-					Plurals: newPluralSet(One, Other),
-					PluralFunc: func(ops *operands) Plural {
-						if ops.I == 1 && ops.V == 0 {
-							return One
-						}
-						return Other
-					},
-				},
-        // ...
-    }
-    ```
-
-3. Add a test to [pluralspec_test.go](i18n/language/pluralspec_test.go)
-4. Update this README with the new language.
-5. Submit a pull request!
+Contributions
+-------------
+If you discover a problem or have an idea to improve the library, please don't hesitate to open an issue so we can discuss.
 
 License
 -------
