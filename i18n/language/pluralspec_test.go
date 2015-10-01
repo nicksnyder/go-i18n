@@ -2,6 +2,8 @@ package language
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -77,6 +79,63 @@ type pluralTest struct {
 	num    interface{}
 	plural Plural
 }
+
+func appendIntegerTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		i, err := strconv.ParseInt(ex, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		tests = append(tests, pluralTest{ex, plural}, pluralTest{i, plural})
+	}
+	return tests
+}
+
+func appendDecimalTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		tests = append(tests, pluralTest{ex, plural})
+	}
+	return tests
+}
+
+func expandExamples(examples []string) []string {
+	var expanded []string
+	for _, ex := range examples {
+		if parts := strings.Split(ex, "~"); len(parts) == 2 {
+			for ex := parts[0]; ex != parts[1]; ex = increment(ex) {
+				expanded = append(expanded, ex)
+			}
+		} else {
+			expanded = append(expanded, ex)
+		}
+	}
+	return expanded
+}
+
+func increment(dec string) string {
+	runes := []rune(dec)
+	carry := true
+	for i := len(runes) - 1; carry && i >= 0; i-- {
+		switch runes[i] {
+		case '.':
+			continue
+		case '9':
+			runes[i] = '0'
+		default:
+			runes[i]++
+			carry = false
+		}
+	}
+	if carry {
+		runes = append([]rune{'1'}, runes...)
+	}
+	return string(runes)
+}
+
+//
+// Below here are tests that were manually written before tests were automatically generated.
+// These are kept around as sanity checks for our code generation.
+//
 
 func TestArabic(t *testing.T) {
 	tests := []pluralTest{
@@ -656,15 +715,16 @@ func appendFloatTests(tests []pluralTest, from, to float64, p Plural) []pluralTe
 	return tests
 }
 
-func runTests(t *testing.T, specID string, tests []pluralTest) {
-	if spec := pluralSpecs[specID]; spec != nil {
+func runTests(t *testing.T, pluralSpecID string, tests []pluralTest) {
+	pluralSpecID = normalizePluralSpecID(pluralSpecID)
+	if spec := pluralSpecs[pluralSpecID]; spec != nil {
 		for _, test := range tests {
 			if plural, err := spec.Plural(test.num); plural != test.plural {
-				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", specID, test.num, plural, err, test.plural)
+				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", pluralSpecID, test.num, plural, err, test.plural)
 			}
 		}
 	} else {
-		t.Errorf("could not find plural spec for locale %s", specID)
+		t.Errorf("could not find plural spec for locale %s", pluralSpecID)
 	}
 
 }
