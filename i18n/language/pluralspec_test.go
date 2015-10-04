@@ -102,8 +102,11 @@ func expandExamples(examples []string) []string {
 	var expanded []string
 	for _, ex := range examples {
 		if parts := strings.Split(ex, "~"); len(parts) == 2 {
-			for ex := parts[0]; ex != parts[1]; ex = increment(ex) {
+			for ex := parts[0]; ; ex = increment(ex) {
 				expanded = append(expanded, ex)
+				if ex == parts[1] {
+					break
+				}
 			}
 		} else {
 			expanded = append(expanded, ex)
