@@ -56,7 +56,7 @@
 package i18n
 
 import (
-	"github.com/nicksnyder/go-i18n/i18n/bundle"
+	"github.com/dennisfaust/go-i18n/i18n/bundle"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
@@ -88,8 +88,18 @@ var defaultBundle = bundle.New()
 
 // AllBundles - returns all the loaded translations. This is useful
 //  for tests and verifications.
-func AllBundles() map[string]map[string]translation.Translation {
-	return defaultBundle.Translations()
+//func AllBundles() map[string]map[string]translation.Translation {
+//	return defaultBundle.Translations()
+//}
+
+// LanguageTags returns the tags of all languages that have been added.
+func LanguageTags() []string {
+	return defaultBundle.LanguageTags()
+}
+
+// LanguageTranslationIDs returns the ids of all translations that have been added for a given language.
+func LanguageTranslationIDs(languageTag string) []string {
+	return defaultBundle.LanguageTranslationIDs(languageTag)
 }
 
 // MustLoadTranslationFile is similar to LoadTranslationFile
