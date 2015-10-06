@@ -56,7 +56,7 @@
 package i18n
 
 import (
-	"github.com/dennisfaust/go-i18n/i18n/bundle"
+	"github.com/nicksnyder/go-i18n/i18n/bundle"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
