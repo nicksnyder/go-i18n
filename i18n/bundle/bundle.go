@@ -129,9 +129,30 @@ func (b *Bundle) AddTranslation(lang *language.Language, translations ...transla
 	}
 }
 
-// Translations returns all translations in the bundle.
-func (b *Bundle) Translations() map[string]map[string]translation.Translation {
-	return b.translations
+// LanguageTags returns the tags of all languages that that have been added.
+func (b *Bundle) LanguageTags() []string {
+	tags := make([]string, len(b.translations))
+	i := 0
+	for k := range b.translations {
+		tags[i] = k
+		i++
+	}
+	return tags
+}
+
+// LanguageTranslationIDs returns the ids of all translations that have been added for a given language.
+func (b *Bundle) LanguageTranslationIDs(languageTag string) []string {
+	langTrans := b.translations[languageTag]
+	if langTrans != nil {
+		iDs := make([]string, len(langTrans))
+		i := 0
+		for _, translation := range langTrans {
+			iDs[i] = translation.ID()
+			i++
+		}
+		return iDs
+	}
+	return []string{}
 }
 
 // MustTfunc is similar to Tfunc except it panics if an error happens.
