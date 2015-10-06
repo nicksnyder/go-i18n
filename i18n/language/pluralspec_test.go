@@ -2,6 +2,8 @@ package language
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -19,10 +21,10 @@ func TestGetPluralSpec(t *testing.T) {
 		{"en-GB", pluralSpecs["en"]},
 		{"zh-CN", pluralSpecs["zh"]},
 		{"zh-TW", pluralSpecs["zh"]},
-		{"pt-BR", pluralSpecs["pt-br"]},
-		{"pt_BR", pluralSpecs["pt-br"]},
-		{"pt-PT", pluralSpecs["pt"]},
-		{"pt_PT", pluralSpecs["pt"]},
+		{"pt-BR", pluralSpecs["pt"]},
+		{"pt_BR", pluralSpecs["pt"]},
+		{"pt-PT", pluralSpecs["pt-pt"]},
+		{"pt_PT", pluralSpecs["pt-pt"]},
 		{"zh-Hans-CN", pluralSpecs["zh"]},
 		{"zh-Hant-TW", pluralSpecs["zh"]},
 		{"zh-CN", pluralSpecs["zh"]},
@@ -77,6 +79,66 @@ type pluralTest struct {
 	num    interface{}
 	plural Plural
 }
+
+func appendIntegerTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		i, err := strconv.ParseInt(ex, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		tests = append(tests, pluralTest{ex, plural}, pluralTest{i, plural})
+	}
+	return tests
+}
+
+func appendDecimalTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		tests = append(tests, pluralTest{ex, plural})
+	}
+	return tests
+}
+
+func expandExamples(examples []string) []string {
+	var expanded []string
+	for _, ex := range examples {
+		if parts := strings.Split(ex, "~"); len(parts) == 2 {
+			for ex := parts[0]; ; ex = increment(ex) {
+				expanded = append(expanded, ex)
+				if ex == parts[1] {
+					break
+				}
+			}
+		} else {
+			expanded = append(expanded, ex)
+		}
+	}
+	return expanded
+}
+
+func increment(dec string) string {
+	runes := []rune(dec)
+	carry := true
+	for i := len(runes) - 1; carry && i >= 0; i-- {
+		switch runes[i] {
+		case '.':
+			continue
+		case '9':
+			runes[i] = '0'
+		default:
+			runes[i]++
+			carry = false
+		}
+	}
+	if carry {
+		runes = append([]rune{'1'}, runes...)
+	}
+	return string(runes)
+}
+
+//
+// Below here are tests that were manually written before tests were automatically generated.
+// These are kept around as sanity checks for our code generation.
+//
 
 func TestArabic(t *testing.T) {
 	tests := []pluralTest{
@@ -396,12 +458,15 @@ func TestPolish(t *testing.T) {
 
 func TestPortuguese(t *testing.T) {
 	tests := []pluralTest{
-		{0, Other},
+		{0, One},
+		{"0.0", One},
 		{1, One},
+		{"1.0", One},
 		{onePlusEpsilon, Other},
 		{2, Other},
 	}
-	tests = appendFloatTests(tests, 0.0, 10.0, Other)
+	tests = appendFloatTests(tests, 0.1, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
 	runTests(t, "pt", tests)
 }
 
@@ -419,12 +484,12 @@ func TestMacedonian(t *testing.T) {
 	runTests(t, "mk", tests)
 }
 
-func TestPortugueseBrazilian(t *testing.T) {
+func TestPortugueseEuropean(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{"0.0", Other},
-		{"0.1", One},
-		{"0.01", One},
+		{"0.1", Other},
+		{"0.01", Other},
 		{1, One},
 		{"1", One},
 		{"1.1", Other},
@@ -433,7 +498,7 @@ func TestPortugueseBrazilian(t *testing.T) {
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 2.0, 10.0, Other)
-	runTests(t, "pt-br", tests)
+	runTests(t, "pt-pt", tests)
 }
 
 func TestRussian(t *testing.T) {
@@ -653,11 +718,16 @@ func appendFloatTests(tests []pluralTest, from, to float64, p Plural) []pluralTe
 	return tests
 }
 
-func runTests(t *testing.T, specID string, tests []pluralTest) {
-	spec := pluralSpecs[specID]
-	for _, test := range tests {
-		if plural, err := spec.Plural(test.num); plural != test.plural {
-			t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", specID, test.num, plural, err, test.plural)
+func runTests(t *testing.T, pluralSpecID string, tests []pluralTest) {
+	pluralSpecID = normalizePluralSpecID(pluralSpecID)
+	if spec := pluralSpecs[pluralSpecID]; spec != nil {
+		for _, test := range tests {
+			if plural, err := spec.Plural(test.num); plural != test.plural {
+				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", pluralSpecID, test.num, plural, err, test.plural)
+			}
 		}
+	} else {
+		t.Errorf("could not find plural spec for locale %s", pluralSpecID)
 	}
+
 }
