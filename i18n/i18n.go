@@ -86,12 +86,6 @@ func IdentityTfunc() TranslateFunc {
 
 var defaultBundle = bundle.New()
 
-// AllBundles - returns all the loaded translations. This is useful
-//  for tests and verifications.
-//func AllBundles() map[string]map[string]translation.Translation {
-//	return defaultBundle.Translations()
-//}
-
 // LanguageTags returns the tags of all languages that have been added.
 func LanguageTags() []string {
 	return defaultBundle.LanguageTags()
