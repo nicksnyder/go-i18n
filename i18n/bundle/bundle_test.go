@@ -2,11 +2,13 @@ package bundle
 
 import (
 	"fmt"
-	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
+	"testing"
+
 	"reflect"
 	"sort"
-	"testing"
+
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 func TestMustLoadTranslationFile(t *testing.T) {
@@ -48,11 +50,14 @@ func TestLanguageTagsAndTranslationIDs(t *testing.T) {
 	sort.Strings(tags)
 	compareTo := []string{englishLanguage.Tag, spanishLanguage.Tag, frenchLanguage.Tag}
 	if !reflect.DeepEqual(tags, compareTo) {
-		t.Error("Problem encountered with LanguageTags.")
+		t.Errorf(fmt.Sprintf("LanguageTags() = %#v; expected %#v", tags, compareTo))
 	}
 
-	if b.LanguageTranslationIDs(englishLanguage.Tag)[0] != "English"+translationID {
-		t.Error("Problem with LanguageTranslationIDs")
+	ids := b.LanguageTranslationIDs(englishLanguage.Tag)
+	sort.Strings(ids)
+	compareTo = []string{"English" + translationID}
+	if !reflect.DeepEqual(ids, compareTo) {
+		t.Error(fmt.Sprintf("LanguageTranslationIDs() = %#v; expected %#v", ids, compareTo))
 	}
 }
 
