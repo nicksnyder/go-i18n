@@ -129,6 +129,11 @@ func (b *Bundle) AddTranslation(lang *language.Language, translations ...transla
 	}
 }
 
+// Translations returns all translations in the bundle.
+func (b *Bundle) Translations() map[string]map[string]translation.Translation {
+	return b.translations
+}
+
 // LanguageTags returns the tags of all languages that that have been added.
 func (b *Bundle) LanguageTags() (tags []string) {
 	for k := range b.translations {
