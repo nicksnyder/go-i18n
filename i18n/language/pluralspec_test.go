@@ -2,6 +2,8 @@ package language
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -19,10 +21,10 @@ func TestGetPluralSpec(t *testing.T) {
 		{"en-GB", pluralSpecs["en"]},
 		{"zh-CN", pluralSpecs["zh"]},
 		{"zh-TW", pluralSpecs["zh"]},
-		{"pt-BR", pluralSpecs["pt-br"]},
-		{"pt_BR", pluralSpecs["pt-br"]},
-		{"pt-PT", pluralSpecs["pt"]},
-		{"pt_PT", pluralSpecs["pt"]},
+		{"pt-BR", pluralSpecs["pt"]},
+		{"pt_BR", pluralSpecs["pt"]},
+		{"pt-PT", pluralSpecs["pt-pt"]},
+		{"pt_PT", pluralSpecs["pt-pt"]},
 		{"zh-Hans-CN", pluralSpecs["zh"]},
 		{"zh-Hant-TW", pluralSpecs["zh"]},
 		{"zh-CN", pluralSpecs["zh"]},
@@ -40,6 +42,12 @@ func TestGetPluralSpec(t *testing.T) {
 		{"bs", pluralSpecs["bs"]},
 		{"sr", pluralSpecs["sr"]},
 		{"ti", pluralSpecs["ti"]},
+		{"vi", pluralSpecs["vi"]},
+		{"vi-VN", pluralSpecs["vi"]},
+		{"mk", pluralSpecs["mk"]},
+		{"mk-MK", pluralSpecs["mk"]},
+		{"lv", pluralSpecs["lv"]},
+		{"lv-LV", pluralSpecs["lv"]},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -71,6 +79,66 @@ type pluralTest struct {
 	num    interface{}
 	plural Plural
 }
+
+func appendIntegerTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		i, err := strconv.ParseInt(ex, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		tests = append(tests, pluralTest{ex, plural}, pluralTest{i, plural})
+	}
+	return tests
+}
+
+func appendDecimalTests(tests []pluralTest, plural Plural, examples []string) []pluralTest {
+	for _, ex := range expandExamples(examples) {
+		tests = append(tests, pluralTest{ex, plural})
+	}
+	return tests
+}
+
+func expandExamples(examples []string) []string {
+	var expanded []string
+	for _, ex := range examples {
+		if parts := strings.Split(ex, "~"); len(parts) == 2 {
+			for ex := parts[0]; ; ex = increment(ex) {
+				expanded = append(expanded, ex)
+				if ex == parts[1] {
+					break
+				}
+			}
+		} else {
+			expanded = append(expanded, ex)
+		}
+	}
+	return expanded
+}
+
+func increment(dec string) string {
+	runes := []rune(dec)
+	carry := true
+	for i := len(runes) - 1; carry && i >= 0; i-- {
+		switch runes[i] {
+		case '.':
+			continue
+		case '9':
+			runes[i] = '0'
+		default:
+			runes[i]++
+			carry = false
+		}
+	}
+	if carry {
+		runes = append([]rune{'1'}, runes...)
+	}
+	return string(runes)
+}
+
+//
+// Below here are tests that were manually written before tests were automatically generated.
+// These are kept around as sanity checks for our code generation.
+//
 
 func TestArabic(t *testing.T) {
 	tests := []pluralTest{
@@ -312,6 +380,27 @@ func TestKorean(t *testing.T) {
 	runTests(t, "ko", tests)
 }
 
+func TestLatvian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Zero},
+		{"0", Zero},
+		{"0.1", One},
+		{1, One},
+		{"1", One},
+		{onePlusEpsilon, One},
+		{"10.0", Zero},
+		{"10.1", One},
+		{"10.2", Other},
+		{21, One},
+	}
+	tests = appendFloatTests(tests, 0.2, 0.9, Other)
+	tests = appendFloatTests(tests, 1.2, 1.9, Other)
+	tests = appendIntTests(tests, 2, 9, Other)
+	tests = appendIntTests(tests, 10, 20, Zero)
+	tests = appendIntTests(tests, 22, 29, Other)
+	runTests(t, "lv", tests)
+}
+
 func TestJapanese(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, Other)
 	tests = appendFloatTests(tests, 0, 10, Other)
@@ -369,21 +458,38 @@ func TestPolish(t *testing.T) {
 
 func TestPortuguese(t *testing.T) {
 	tests := []pluralTest{
-		{0, Other},
+		{0, One},
+		{"0.0", One},
 		{1, One},
+		{"1.0", One},
 		{onePlusEpsilon, Other},
 		{2, Other},
 	}
-	tests = appendFloatTests(tests, 0.0, 10.0, Other)
+	tests = appendFloatTests(tests, 0.1, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
 	runTests(t, "pt", tests)
 }
 
-func TestPortugueseBrazilian(t *testing.T) {
+func TestMacedonian(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1.1", One},
+		{"2.1", One},
+		{onePlusEpsilon, One},
+		{2, Other},
+		{"2.2", Other},
+		{11, One},
+	}
+	runTests(t, "mk", tests)
+}
+
+func TestPortugueseEuropean(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
 		{"0.0", Other},
-		{"0.1", One},
-		{"0.01", One},
+		{"0.1", Other},
+		{"0.01", Other},
 		{1, One},
 		{"1", One},
 		{"1.1", Other},
@@ -392,7 +498,7 @@ func TestPortugueseBrazilian(t *testing.T) {
 		{2, Other},
 	}
 	tests = appendFloatTests(tests, 2.0, 10.0, Other)
-	runTests(t, "pt-br", tests)
+	runTests(t, "pt-pt", tests)
 }
 
 func TestRussian(t *testing.T) {
@@ -435,6 +541,21 @@ func TestSpanish(t *testing.T) {
 	runTests(t, "es", tests)
 }
 
+func TestNorweigan(t *testing.T) {
+	tests := []pluralTest{
+		{0, Other},
+		{1, One},
+		{"1", One},
+		{"1.0", One},
+		{"1.00", One},
+		{onePlusEpsilon, Other},
+		{2, Other},
+	}
+	tests = appendFloatTests(tests, 0.0, 0.9, Other)
+	tests = appendFloatTests(tests, 1.1, 10.0, Other)
+	runTests(t, "no", tests)
+}
+
 func TestBulgarian(t *testing.T) {
 	tests := []pluralTest{
 		{0, Other},
@@ -471,6 +592,12 @@ func TestThai(t *testing.T) {
 	tests := appendIntTests(nil, 0, 10, Other)
 	tests = appendFloatTests(tests, 0, 10, Other)
 	runTests(t, "th", tests)
+}
+
+func TestVietnamese(t *testing.T) {
+	tests := appendIntTests(nil, 0, 10, Other)
+	tests = appendFloatTests(tests, 0, 10, Other)
+	runTests(t, "vi", tests)
 }
 
 func TestTurkish(t *testing.T) {
@@ -531,9 +658,8 @@ func TestSerbian(t *testing.T) {
 	runTests(t, "sr", tests)
 }
 
-
 func makeCroatianBosnianSerbianTests() []pluralTest {
-		return []pluralTest{
+	return []pluralTest{
 		{1, One},
 		{"0.1", One},
 		{21, One},
@@ -592,11 +718,16 @@ func appendFloatTests(tests []pluralTest, from, to float64, p Plural) []pluralTe
 	return tests
 }
 
-func runTests(t *testing.T, specID string, tests []pluralTest) {
-	spec := pluralSpecs[specID]
-	for _, test := range tests {
-		if plural, err := spec.Plural(test.num); plural != test.plural {
-			t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", specID, test.num, plural, err, test.plural)
+func runTests(t *testing.T, pluralSpecID string, tests []pluralTest) {
+	pluralSpecID = normalizePluralSpecID(pluralSpecID)
+	if spec := pluralSpecs[pluralSpecID]; spec != nil {
+		for _, test := range tests {
+			if plural, err := spec.Plural(test.num); plural != test.plural {
+				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", pluralSpecID, test.num, plural, err, test.plural)
+			}
 		}
+	} else {
+		t.Errorf("could not find plural spec for locale %s", pluralSpecID)
 	}
+
 }

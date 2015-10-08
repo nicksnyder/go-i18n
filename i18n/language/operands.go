@@ -10,10 +10,42 @@ import (
 type operands struct {
 	N float64 // absolute value of the source number (integer and decimals)
 	I int64   // integer digits of n
-	V int     // number of visible fraction digits in n, with trailing zeros
-	W int     // number of visible fraction digits in n, without trailing zeros
-	F int     // visible fractional digits in n, with trailing zeros
-	T int     // visible fractional digits in n, without trailing zeros
+	V int64   // number of visible fraction digits in n, with trailing zeros
+	W int64   // number of visible fraction digits in n, without trailing zeros
+	F int64   // visible fractional digits in n, with trailing zeros
+	T int64   // visible fractional digits in n, without trailing zeros
+}
+
+// NmodEqualAny returns true if o represents an integer equal to any of the arguments.
+func (o *operands) NequalsAny(any ...int64) bool {
+	for _, i := range any {
+		if o.I == i && o.T == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// NmodEqualAny returns true if o represents an integer equal to any of the arguments modulo mod.
+func (o *operands) NmodEqualsAny(mod int64, any ...int64) bool {
+	modI := o.I % mod
+	for _, i := range any {
+		if modI == i && o.T == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// NmodInRange returns true if o represents an integer in the closed interval [from, to].
+func (o *operands) NinRange(from, to int64) bool {
+	return o.T == 0 && from <= o.I && o.I <= to
+}
+
+// NmodInRange returns true if o represents an integer in the closed interval [from, to] modulo mod.
+func (o *operands) NmodInRange(mod, from, to int64) bool {
+	modI := o.I % mod
+	return o.T == 0 && from <= modI && modI <= to
 }
 
 func newOperands(v interface{}) (*operands, error) {
@@ -62,7 +94,7 @@ func newOperandsString(s string) (*operands, error) {
 		return ops, nil
 	}
 	fraction := parts[1]
-	ops.V = len(fraction)
+	ops.V = int64(len(fraction))
 	for i := ops.V - 1; i >= 0; i-- {
 		if fraction[i] != '0' {
 			ops.W = i + 1
@@ -74,14 +106,14 @@ func newOperandsString(s string) (*operands, error) {
 		if err != nil {
 			return nil, err
 		}
-		ops.F = int(f)
+		ops.F = f
 	}
 	if ops.W > 0 {
 		t, err := strconv.ParseInt(fraction[:ops.W], 10, 0)
 		if err != nil {
 			return nil, err
 		}
-		ops.T = int(t)
+		ops.T = t
 	}
 	return ops, nil
 }
