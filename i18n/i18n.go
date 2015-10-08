@@ -86,6 +86,16 @@ func IdentityTfunc() TranslateFunc {
 
 var defaultBundle = bundle.New()
 
+// LanguageTags returns the tags of all languages that have been added.
+func LanguageTags() []string {
+	return defaultBundle.LanguageTags()
+}
+
+// LanguageTranslationIDs returns the ids of all translations that have been added for a given language.
+func LanguageTranslationIDs(languageTag string) []string {
+	return defaultBundle.LanguageTranslationIDs(languageTag)
+}
+
 // MustLoadTranslationFile is similar to LoadTranslationFile
 // except it panics if an error happens.
 func MustLoadTranslationFile(filename string) {
