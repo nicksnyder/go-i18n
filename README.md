@@ -116,7 +116,12 @@ Example:
 
 Contributions
 -------------
-If you discover a problem or have an idea to improve the library, please don't hesitate to open an issue so we can discuss.
+
+If you would like to submit a pull request, please
+
+1. Write tests
+2. Format code with [goimports](https://github.com/bradfitz/goimports).
+3. Read the [common code review comments](https://github.com/golang/go/wiki/CodeReviewComments).
 
 License
 -------
