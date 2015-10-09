@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"reflect"
+	"sort"
+
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
@@ -31,6 +34,31 @@ func TestMustTfunc(t *testing.T) {
 		}
 	}()
 	New().MustTfunc("invalid")
+}
+
+func TestLanguageTagsAndTranslationIDs(t *testing.T) {
+	b := New()
+	translationID := "translation_id"
+	englishLanguage := languageWithTag("en-US")
+	frenchLanguage := languageWithTag("fr-FR")
+	spanishLanguage := languageWithTag("es")
+	addFakeTranslation(t, b, englishLanguage, "English"+translationID)
+	addFakeTranslation(t, b, frenchLanguage, translationID)
+	addFakeTranslation(t, b, spanishLanguage, translationID)
+
+	tags := b.LanguageTags()
+	sort.Strings(tags)
+	compareTo := []string{englishLanguage.Tag, spanishLanguage.Tag, frenchLanguage.Tag}
+	if !reflect.DeepEqual(tags, compareTo) {
+		t.Errorf("LanguageTags() = %#v; expected: %#v", tags, compareTo)
+	}
+
+	ids := b.LanguageTranslationIDs(englishLanguage.Tag)
+	sort.Strings(ids)
+	compareTo = []string{"English" + translationID}
+	if !reflect.DeepEqual(ids, compareTo) {
+		t.Errorf("LanguageTranslationIDs() = %#v; expected: %#v", ids, compareTo)
+	}
 }
 
 func TestTfuncAndLanguage(t *testing.T) {

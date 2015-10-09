@@ -115,6 +115,16 @@ func AddTranslation(lang *language.Language, translations ...translation.Transla
 	defaultBundle.AddTranslation(lang, translations...)
 }
 
+// LanguageTags returns the tags of all languages that have been added.
+func LanguageTags() []string {
+	return defaultBundle.LanguageTags()
+}
+
+// LanguageTranslationIDs returns the ids of all translations that have been added for a given language.
+func LanguageTranslationIDs(languageTag string) []string {
+	return defaultBundle.LanguageTranslationIDs(languageTag)
+}
+
 // MustTfunc is similar to Tfunc except it panics if an error happens.
 func MustTfunc(languageSource string, languageSources ...string) TranslateFunc {
 	return TranslateFunc(defaultBundle.MustTfunc(languageSource, languageSources...))
