@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding"
 	"strings"
-	//"launchpad.net/goyaml"
 	gotemplate "text/template"
 )
 
@@ -60,21 +59,3 @@ func (t *template) parseTemplate(src string) (err error) {
 
 var _ = encoding.TextMarshaler(&template{})
 var _ = encoding.TextUnmarshaler(&template{})
-
-/*
-func (t *template) GetYAML() (tag string, value interface{}) {
-	return "", t.src
-}
-
-func (t *template) SetYAML(tag string, value interface{}) bool {
-	panic(tag)
-	src, ok := value.(string)
-	if !ok {
-		return false
-	}
-	return t.parseTemplate(src) == nil
-}
-
-var _ = goyaml.Getter(&template{})
-var _ = goyaml.Setter(&template{})
-*/

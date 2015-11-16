@@ -53,7 +53,7 @@
 //
 //         -format format
 //             goi18n encodes the output translation files in this format.
-//             Supported formats: json
+//             Supported formats: json, yaml
 //             Default: json
 //
 package main
