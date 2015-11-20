@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	//"launchpad.net/goyaml"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -110,12 +110,10 @@ func newMarshalFunc(format string) (marshalFunc, error) {
 		return func(v interface{}) ([]byte, error) {
 			return json.MarshalIndent(v, "", "  ")
 		}, nil
-		/*
-			case "yaml":
-				return func(v interface{}) ([]byte, error) {
-					return goyaml.Marshal(v)
-				}, nil
-		*/
+	case "yaml":
+		return func(v interface{}) ([]byte, error) {
+			return yaml.Marshal(v)
+		}, nil
 	}
 	return nil, fmt.Errorf("unsupported format: %s\n", format)
 }

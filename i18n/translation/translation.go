@@ -37,6 +37,7 @@ func NewTranslation(data map[string]interface{}) (Translation, error) {
 	if !ok {
 		return nil, fmt.Errorf(`missing "id" key`)
 	}
+	var pluralObject map[string]interface{}
 	switch translation := data["translation"].(type) {
 	case string:
 		tmpl, err := newTemplate(translation)
@@ -44,27 +45,39 @@ func NewTranslation(data map[string]interface{}) (Translation, error) {
 			return nil, err
 		}
 		return &singleTranslation{id, tmpl}, nil
-	case map[string]interface{}:
-		templates := make(map[language.Plural]*template, len(translation))
+	case map[interface{}]interface{}:
+		// The YAML parser uses interface{} keys so we first convert them to string keys.
+		pluralObject = make(map[string]interface{})
 		for k, v := range translation {
-			pc, err := language.NewPlural(k)
-			if err != nil {
-				return nil, err
-			}
-			str, ok := v.(string)
+			kStr, ok := k.(string)
 			if !ok {
-				return nil, fmt.Errorf(`plural category "%s" has value of type %T; expected string`, pc, v)
+				return nil, fmt.Errorf(`invalid plural category type %T; expected string`, k)
 			}
-			tmpl, err := newTemplate(str)
-			if err != nil {
-				return nil, err
-			}
-			templates[pc] = tmpl
+			pluralObject[kStr] = v
 		}
-		return &pluralTranslation{id, templates}, nil
+	case map[string]interface{}:
+		pluralObject = translation
 	case nil:
 		return nil, fmt.Errorf(`missing "translation" key`)
 	default:
 		return nil, fmt.Errorf(`unsupported type for "translation" key %T`, translation)
 	}
+
+	templates := make(map[language.Plural]*template, len(pluralObject))
+	for k, v := range pluralObject {
+		pc, err := language.NewPlural(k)
+		if err != nil {
+			return nil, err
+		}
+		str, ok := v.(string)
+		if !ok {
+			return nil, fmt.Errorf(`plural category "%s" has value of type %T; expected string`, pc, v)
+		}
+		tmpl, err := newTemplate(str)
+		if err != nil {
+			return nil, err
+		}
+		templates[pc] = tmpl
+	}
+	return &pluralTranslation{id, templates}, nil
 }

@@ -7,8 +7,7 @@ import (
 	"testing"
 )
 
-func TestMergeExecute(t *testing.T) {
-	resetDir(t, "testdata/output")
+func TestMergeExecuteJSON(t *testing.T) {
 	files := []string{
 		"testdata/input/en-us.one.json",
 		"testdata/input/en-us.two.json",
@@ -16,6 +15,22 @@ func TestMergeExecute(t *testing.T) {
 		"testdata/input/ar-ar.one.json",
 		"testdata/input/ar-ar.two.json",
 	}
+	testMergeExecute(t, files)
+}
+
+func TestMergeExecuteYAML(t *testing.T) {
+	files := []string{
+		"testdata/input/yaml/en-us.one.yaml",
+		"testdata/input/yaml/en-us.two.json",
+		"testdata/input/yaml/fr-fr.json",
+		"testdata/input/yaml/ar-ar.one.json",
+		"testdata/input/yaml/ar-ar.two.json",
+	}
+	testMergeExecute(t, files)
+}
+
+func testMergeExecute(t *testing.T, files []string) {
+	resetDir(t, "testdata/output")
 
 	mc := &mergeCommand{
 		translationFiles:  files,

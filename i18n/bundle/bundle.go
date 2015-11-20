@@ -4,10 +4,9 @@ package bundle
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"reflect"
-
-	//	"launchpad.net/goyaml"
 
 	"path/filepath"
 
@@ -81,10 +80,8 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 	switch format := filepath.Ext(filename); format {
 	case ".json":
 		unmarshalFunc = json.Unmarshal
-	/*
-		case ".yaml":
-			unmarshalFunc = goyaml.Unmarshal
-	*/
+	case ".yaml":
+		unmarshalFunc = yaml.Unmarshal
 	default:
 		return nil, fmt.Errorf("unsupported file extension %s", format)
 	}
