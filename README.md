@@ -18,14 +18,16 @@ Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.p
 
 The goi18n command provides functionality for managing the translation process.
 
-### Installation
+Installation
+------------
 
 Make sure you have [setup GOPATH](http://golang.org/doc/code.html#GOPATH).
 
-    go get -u github.com/nicksnyder/go-i18n/goi18n
+    go get -u github.com/nicksnyder/go-i18n/goi18n gopkg.in/yaml.v2
     goi18n -help
 
-### Workflow
+Workflow
+--------
 
 A typical workflow looks like this:
 
