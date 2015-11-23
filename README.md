@@ -23,7 +23,7 @@ Installation
 
 Make sure you have [setup GOPATH](http://golang.org/doc/code.html#GOPATH).
 
-    go get -u github.com/nicksnyder/go-i18n/goi18n gopkg.in/yaml.v2
+    go get -u github.com/nicksnyder/go-i18n/goi18n
     goi18n -help
 
 Workflow
