@@ -1,8 +1,8 @@
-// Package nsi18n is a variation of the package i18n to support for multiple translation namespaces.
+// Package nsi18n is a variant of package i18n to support multiple translation namespaces.
 //
 // Initialization
 //
-// Your Go program should load translations during its initialization.
+// Your Go program should create the namespaces and load translations during its initialization.
 //     nsi18n.CreateNamespace ("ns1","ns2","ns3")
 //     nsi18n.MustLoadTranslationFile("ns1","path/to/fr-FR.ns1.json")
 //     nsi18n.MustLoadTranslationFile("ns2","path/to/fr-FR.ns2.json")
