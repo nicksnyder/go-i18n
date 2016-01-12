@@ -95,7 +95,9 @@ var defaultbundles = make(map[string]*bundle.Bundle)
 // CreateNamespace creates translation namespaces.
 func CreateNamespace (namespaces ...string) {
 	for _, namespace := range namespaces {
-		defaultbundles[namespace] = bundle.New()
+		if defaultbundles[namespace] == nil {
+			defaultbundles[namespace] = bundle.New()
+		}
 	}
 }
 
