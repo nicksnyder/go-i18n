@@ -1,46 +1,53 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/nicksnyder/go-i18n/i18n/bundle"
 )
 
 type constantsCommand struct {
-	translationFile string
-	packageName     string
-	outdir          string
+	translationFiles []string
+	packageName      string
+	outdir           string
 }
 
-const header = `// DON'T CHANGE THIS FILE MANUALLY
-// This file was generate using the command:
+type templateConstants struct {
+	ID   string
+	Name string
+}
+
+type templateHeader struct {
+	PackageName string
+	Constants   []templateConstants
+}
+
+var constTemplate = template.Must(template.New("").Parse(`// DON'T CHANGE THIS FILE MANUALLY
+// This file was generated using the command:
 // $ goi18n constants
 
-`
+package {{.PackageName}}
+{{range .Constants}}
+const {{.Name}} = "{{.ID}}"
+{{end}}`))
 
 func (cc *constantsCommand) execute() error {
-	if cc.translationFile == "" {
-		return fmt.Errorf("need one translation file to parse")
+	if len(cc.translationFiles) != 1 {
+		return fmt.Errorf("need one translation file")
 	}
 
 	bundle := bundle.New()
 
-	if err := bundle.LoadTranslationFile(cc.translationFile); err != nil {
-		return fmt.Errorf("failed to load translation file %s because %s\n", cc.translationFile, err)
+	if err := bundle.LoadTranslationFile(cc.translationFiles[0]); err != nil {
+		return fmt.Errorf("failed to load translation file %s because %s\n", cc.translationFiles[0], err)
 	}
 
-	var buf bytes.Buffer
-	buf.WriteString(header)
-
-	buf.WriteString(fmt.Sprintf("package %s\n", cc.packageName))
-
-	var name string
 	translations := bundle.Translations()
 	lang := translations[bundle.LanguageTags()[0]]
 
@@ -54,27 +61,36 @@ func (cc *constantsCommand) execute() error {
 	}
 	sort.Strings(keys)
 
-	for _, id := range keys {
-		name = toCamelCase(id)
-		if name == "" {
-			return fmt.Errorf("failed on convertion id to constant, id:%s\n", id)
-		}
+	tmpl := &templateHeader{
+		PackageName: cc.packageName,
+		Constants:   make([]templateConstants, len(keys)),
+	}
 
-		buf.WriteString(fmt.Sprintf("\n// %s id:%s\n", name, id))
-		buf.WriteString(fmt.Sprintf(`const %s string = "%s"%s`, name, id, "\n"))
+	for i, id := range keys {
+		tmpl.Constants[i].ID = id
+		tmpl.Constants[i].Name = toCamelCase(id)
 	}
 
 	filename := filepath.Join(cc.outdir, fmt.Sprintf("%s.go", cc.packageName))
-	if err := ioutil.WriteFile(filename, buf.Bytes(), 0666); err != nil {
-		return fmt.Errorf("failed to write %s because %s", filename, err)
+	f, err := os.Create(filename)
+	if err != nil {
+		return fmt.Errorf("failed to create file %s because %s", filename, err)
+	}
+
+	defer f.Close()
+
+	if err = constTemplate.Execute(f, tmpl); err != nil {
+		return fmt.Errorf("failed to write file %s because %s", filename, err)
 	}
 
 	return nil
 }
 
-// common acronyms used to const names
+// commonInitialisms is a set of common initialisms.
+// Only add entries that are highly unlikely to be non-initialisms.
+// For instance, "ID" is fine (Freudian code is rare), but "AND" is not.
 // https://github.com/golang/lint/blob/master/lint.go
-var acronyms = map[string]bool{
+var commonInitialisms = map[string]bool{
 	"API":   true,
 	"ASCII": true,
 	"CPU":   true,
@@ -119,7 +135,7 @@ func toCamelCase(id string) string {
 	var result string
 	for _, w := range words {
 		w = strings.ToUpper(w)
-		if acronyms[w] {
+		if commonInitialisms[w] {
 			result += w
 		} else {
 			result += string(w[0]) + strings.ToLower(string(w[1:]))

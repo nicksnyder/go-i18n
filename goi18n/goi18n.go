@@ -6,6 +6,10 @@ import (
 	"os"
 )
 
+type commander interface {
+	execute() error
+}
+
 func main() {
 	flag.Usage = usage
 
@@ -33,49 +37,38 @@ func main() {
 		mergeCmd.Parse(os.Args[1:])
 	}
 
-	if mergeCmd.Parsed() {
-		if len(constantsCmd.Args()) != 1 {
-			fmt.Println("need at least one translation file to parse")
-			usageMerge()
-		}
+	var cmd commander
 
-		mc := &mergeCommand{
+	if mergeCmd.Parsed() {
+		cmd = &mergeCommand{
 			translationFiles:  mergeCmd.Args(),
 			sourceLanguageTag: *sourceLanguage,
 			outdir:            *outdir,
 			format:            *format,
 		}
-		if err := mc.execute(); err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
 	} else if constantsCmd.Parsed() {
-		if len(constantsCmd.Args()) != 1 {
-			fmt.Println("need one translation file")
-			usageConstants()
+		cmd = &constantsCommand{
+			translationFiles: constantsCmd.Args(),
+			packageName:      *packageName,
+			outdir:           *outdirConstants,
 		}
+	}
 
-		cc := &constantsCommand{
-			translationFile: constantsCmd.Args()[0],
-			packageName:     *packageName,
-			outdir:          *outdirConstants,
-		}
-		if err := cc.execute(); err != nil {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
+	if err := cmd.execute(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 }
 
 func usage() {
-	fmt.Printf(`goi18n tools for translation files.
+	fmt.Printf(`goi18n manages translation files.
 
 Usage:
 
-    goi18n merge     [options] [files...]
-    goi18n constants [options] [file]
+    goi18n merge     Merge translation files
+    goi18n constants Generate constant file from translation file
 
-For more details execute
+For more details execute:
 
     goi18n [command] -help
 

@@ -6,9 +6,9 @@ func TestConstantsExecute(t *testing.T) {
 	resetDir(t, "testdata/output")
 
 	cc := &constantsCommand{
-		translationFile: "testdata/input/en-us.constants.json",
-		packageName:     "R",
-		outdir:          "testdata/output",
+		translationFiles: []string{"testdata/input/en-us.constants.json"},
+		packageName:      "R",
+		outdir:           "testdata/output",
 	}
 
 	if err := cc.execute(); err != nil {
