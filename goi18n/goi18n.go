@@ -6,12 +6,89 @@ import (
 	"os"
 )
 
+func main() {
+	flag.Usage = usage
+
+	mergeCmd := flag.NewFlagSet("merge", flag.ExitOnError)
+	mergeCmd.Usage = usageMerge
+	sourceLanguage := mergeCmd.String("sourceLanguage", "en-us", "")
+	outdir := mergeCmd.String("outdir", ".", "")
+	format := mergeCmd.String("format", "json", "")
+
+	constantsCmd := flag.NewFlagSet("constants", flag.ExitOnError)
+	constantsCmd.Usage = usageConstants
+	packageName := constantsCmd.String("package", "R", "")
+	outdirConstants := constantsCmd.String("outdir", ".", "")
+
+	if len(os.Args) == 1 {
+		usage()
+	}
+
+	switch os.Args[1] {
+	case "merge":
+		mergeCmd.Parse(os.Args[2:])
+	case "constants":
+		constantsCmd.Parse(os.Args[2:])
+	default:
+		mergeCmd.Parse(os.Args[1:])
+	}
+
+	if mergeCmd.Parsed() {
+		if len(constantsCmd.Args()) != 1 {
+			fmt.Println("need at least one translation file to parse")
+			usageMerge()
+		}
+
+		mc := &mergeCommand{
+			translationFiles:  mergeCmd.Args(),
+			sourceLanguageTag: *sourceLanguage,
+			outdir:            *outdir,
+			format:            *format,
+		}
+		if err := mc.execute(); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+	} else if constantsCmd.Parsed() {
+		if len(constantsCmd.Args()) != 1 {
+			fmt.Println("need one translation file")
+			usageConstants()
+		}
+
+		cc := &constantsCommand{
+			translationFile: constantsCmd.Args()[0],
+			packageName:     *packageName,
+			outdir:          *outdirConstants,
+		}
+		if err := cc.execute(); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+	}
+}
+
 func usage() {
-	fmt.Printf(`goi18n formats and merges translation files.
+	fmt.Printf(`goi18n tools for translation files.
 
 Usage:
 
-    goi18n [options] [files...]
+    goi18n merge     [options] [files...]
+    goi18n constants [options] [file]
+
+For more details execute
+
+    goi18n [command] -help
+
+`)
+	os.Exit(1)
+}
+
+func usageMerge() {
+	fmt.Printf(`Merge translation files.
+
+Usage:
+
+    goi18n merge [options] [files...]
 
 Translation files:
 
@@ -62,21 +139,30 @@ Options:
 	os.Exit(1)
 }
 
-func main() {
-	flag.Usage = usage
-	sourceLanguage := flag.String("sourceLanguage", "en-us", "")
-	outdir := flag.String("outdir", ".", "")
-	format := flag.String("format", "json", "")
-	flag.Parse()
+func usageConstants() {
+	fmt.Printf(`Generate constant file from translation file.
 
-	mc := &mergeCommand{
-		translationFiles:  flag.Args(),
-		sourceLanguageTag: *sourceLanguage,
-		outdir:            *outdir,
-		format:            *format,
-	}
-	if err := mc.execute(); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+Usage:
+
+    goi18n constants [options] [file]
+
+Translation files:
+
+    A translation file contains the strings and translations for a single language.
+
+    Translation file names must have a suffix of a supported format (e.g. .json) and
+    contain a valid language tag as defined by RFC 5646 (e.g. en-us, fr, zh-hant, etc.).
+
+Options:
+
+    -package name
+        goi18n generates the constant file under the package name.
+        Default: R
+
+    -outdir directory
+        goi18n writes the constant file to this directory.
+        Default: .
+
+`)
+	os.Exit(1)
 }
