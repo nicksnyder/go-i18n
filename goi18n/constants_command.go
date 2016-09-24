@@ -1,15 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
+	"unicode"
 
 	"github.com/nicksnyder/go-i18n/i18n/bundle"
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 type constantsCommand struct {
@@ -19,8 +25,9 @@ type constantsCommand struct {
 }
 
 type templateConstants struct {
-	ID   string
-	Name string
+	ID      string
+	Name    string
+	Comment string
 }
 
 type templateHeader struct {
@@ -34,6 +41,7 @@ var constTemplate = template.Must(template.New("").Parse(`// DON'T CHANGE THIS F
 
 package {{.PackageName}}
 {{range .Constants}}
+// {{.Name}} {{.Comment}}
 const {{.Name}} = "{{.ID}}"
 {{end}}`))
 
@@ -69,9 +77,10 @@ func (cc *constantsCommand) execute() error {
 	for i, id := range keys {
 		tmpl.Constants[i].ID = id
 		tmpl.Constants[i].Name = toCamelCase(id)
+		tmpl.Constants[i].Comment = toComment(lang[id])
 	}
 
-	filename := filepath.Join(cc.outdir, fmt.Sprintf("%s.go", cc.packageName))
+	filename := filepath.Join(cc.outdir, cc.packageName+".go")
 	f, err := os.Create(filename)
 	if err != nil {
 		return fmt.Errorf("failed to create file %s because %s", filename, err)
@@ -84,6 +93,56 @@ func (cc *constantsCommand) execute() error {
 	}
 
 	return nil
+}
+
+func (cc *constantsCommand) parse(arguments []string) {
+	constantsCmd := flag.NewFlagSet("constants", flag.ExitOnError)
+	constantsCmd.Usage = usageConstants
+
+	packageName := constantsCmd.String("package", "R", "")
+	outdir := constantsCmd.String("outdir", ".", "")
+
+	constantsCmd.Parse(arguments)
+
+	if constantsCmd.Parsed() {
+		cc.translationFiles = constantsCmd.Args()
+		cc.packageName = *packageName
+		cc.outdir = *outdir
+	} else {
+		usageConstants()
+	}
+}
+
+func (cc *constantsCommand) SetArgs(args []string) {
+	cc.translationFiles = args
+}
+
+func usageConstants() {
+	fmt.Printf(`Generate constant file from translation file.
+
+Usage:
+
+    goi18n constants [options] [file]
+
+Translation files:
+
+    A translation file contains the strings and translations for a single language.
+
+    Translation file names must have a suffix of a supported format (e.g. .json) and
+    contain a valid language tag as defined by RFC 5646 (e.g. en-us, fr, zh-hant, etc.).
+
+Options:
+
+    -package name
+        goi18n generates the constant file under the package name.
+        Default: R
+
+    -outdir directory
+        goi18n writes the constant file to this directory.
+        Default: .
+
+`)
+	os.Exit(1)
 }
 
 // commonInitialisms is a set of common initialisms.
@@ -130,16 +189,49 @@ var commonInitialisms = map[string]bool{
 }
 
 func toCamelCase(id string) string {
-	r := regexp.MustCompile("[A-Za-z0-9]+")
-	words := r.FindAllString(id, -1)
 	var result string
+
+	r := regexp.MustCompile(`[\-\.\_\s]`)
+	words := r.Split(id, -1)
+
 	for _, w := range words {
-		w = strings.ToUpper(w)
-		if commonInitialisms[w] {
-			result += w
-		} else {
-			result += string(w[0]) + strings.ToLower(string(w[1:]))
+		upper := strings.ToUpper(w)
+		if commonInitialisms[upper] {
+			result += upper
+			continue
+		}
+
+		if len(w) > 0 {
+			u := []rune(w)
+			u[0] = unicode.ToUpper(u[0])
+			result += string(u)
 		}
 	}
+	return result
+}
+
+func toComment(trans translation.Translation) string {
+	var result string
+	data := trans.MarshalInterface().(map[string]interface{})
+
+	t := data["translation"]
+
+	switch v := reflect.ValueOf(t); v.Kind() {
+	case reflect.Map:
+		for _, k := range []language.Plural{"zero", "one", "two", "few", "many", "other"} {
+			vt := v.MapIndex(reflect.ValueOf(k))
+			if !vt.IsValid() {
+				continue
+			}
+
+			if len(result) > 0 {
+				result += "\n// "
+			}
+			result += string(k) + ": " + strconv.Quote(fmt.Sprint(vt.Interface()))
+		}
+	default:
+		result = strconv.Quote(fmt.Sprint(t))
+	}
+
 	return result
 }

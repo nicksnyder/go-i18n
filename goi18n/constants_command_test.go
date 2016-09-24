@@ -29,6 +29,7 @@ func TestToCamelCase(t *testing.T) {
 	expectEqual("", "")
 	expectEqual("a", "A")
 	expectEqual("_", "")
+	expectEqual("__code__", "Code")
 	expectEqual("test", "Test")
 	expectEqual("test_one", "TestOne")
 	expectEqual("test.two", "TestTwo")
@@ -36,4 +37,6 @@ func TestToCamelCase(t *testing.T) {
 	expectEqual("word  word", "WordWord")
 	expectEqual("test_id", "TestID")
 	expectEqual("tcp_name", "TCPName")
+	expectEqual("こんにちは", "こんにちは")
+	expectEqual("test_a", "TestA")
 }
