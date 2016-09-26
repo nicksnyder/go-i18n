@@ -25,9 +25,9 @@ type constantsCommand struct {
 }
 
 type templateConstants struct {
-	ID      string
-	Name    string
-	Comment string
+	ID       string
+	Name     string
+	Comments []string
 }
 
 type templateHeader struct {
@@ -41,7 +41,8 @@ var constTemplate = template.Must(template.New("").Parse(`// DON'T CHANGE THIS F
 
 package {{.PackageName}}
 {{range .Constants}}
-// {{.Name}} {{.Comment}}
+// {{.Name}} is the identifier for the following localizable string template(s):{{range .Comments}}
+// {{.}}{{end}}
 const {{.Name}} = "{{.ID}}"
 {{end}}`))
 
@@ -77,7 +78,7 @@ func (cc *constantsCommand) execute() error {
 	for i, id := range keys {
 		tmpl.Constants[i].ID = id
 		tmpl.Constants[i].Name = toCamelCase(id)
-		tmpl.Constants[i].Comment = toComment(lang[id])
+		tmpl.Constants[i].Comments = toComments(lang[id])
 	}
 
 	filename := filepath.Join(cc.outdir, cc.packageName+".go")
@@ -96,21 +97,17 @@ func (cc *constantsCommand) execute() error {
 }
 
 func (cc *constantsCommand) parse(arguments []string) {
-	constantsCmd := flag.NewFlagSet("constants", flag.ExitOnError)
-	constantsCmd.Usage = usageConstants
+	flags := flag.NewFlagSet("constants", flag.ExitOnError)
+	flags.Usage = usageConstants
 
-	packageName := constantsCmd.String("package", "R", "")
-	outdir := constantsCmd.String("outdir", ".", "")
+	packageName := flags.String("package", "R", "")
+	outdir := flags.String("outdir", ".", "")
 
-	constantsCmd.Parse(arguments)
+	flags.Parse(arguments)
 
-	if constantsCmd.Parsed() {
-		cc.translationFiles = constantsCmd.Args()
-		cc.packageName = *packageName
-		cc.outdir = *outdir
-	} else {
-		usageConstants()
-	}
+	cc.translationFiles = flags.Args()
+	cc.packageName = *packageName
+	cc.outdir = *outdir
 }
 
 func (cc *constantsCommand) SetArgs(args []string) {
@@ -210,8 +207,8 @@ func toCamelCase(id string) string {
 	return result
 }
 
-func toComment(trans translation.Translation) string {
-	var result string
+func toComments(trans translation.Translation) []string {
+	var result []string
 	data := trans.MarshalInterface().(map[string]interface{})
 
 	t := data["translation"]
@@ -223,14 +220,10 @@ func toComment(trans translation.Translation) string {
 			if !vt.IsValid() {
 				continue
 			}
-
-			if len(result) > 0 {
-				result += "\n// "
-			}
-			result += string(k) + ": " + strconv.Quote(fmt.Sprint(vt.Interface()))
+			result = append(result, string(k)+": "+strconv.Quote(fmt.Sprint(vt.Interface())))
 		}
 	default:
-		result = strconv.Quote(fmt.Sprint(t))
+		result = append(result, strconv.Quote(fmt.Sprint(t)))
 	}
 
 	return result

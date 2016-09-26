@@ -82,23 +82,19 @@ func (mc *mergeCommand) execute() error {
 }
 
 func (mc *mergeCommand) parse(arguments []string) {
-	mergeCmd := flag.NewFlagSet("merge", flag.ExitOnError)
-	mergeCmd.Usage = usageMerge
+	flags := flag.NewFlagSet("merge", flag.ExitOnError)
+	flags.Usage = usageMerge
 
-	sourceLanguage := mergeCmd.String("sourceLanguage", "en-us", "")
-	outdir := mergeCmd.String("outdir", ".", "")
-	format := mergeCmd.String("format", "json", "")
+	sourceLanguage := flags.String("sourceLanguage", "en-us", "")
+	outdir := flags.String("outdir", ".", "")
+	format := flags.String("format", "json", "")
 
-	mergeCmd.Parse(arguments)
+	flags.Parse(arguments)
 
-	if mergeCmd.Parsed() {
-		mc.translationFiles = mergeCmd.Args()
-		mc.sourceLanguage = *sourceLanguage
-		mc.outdir = *outdir
-		mc.format = *format
-	} else {
-		usageMerge()
-	}
+	mc.translationFiles = flags.Args()
+	mc.sourceLanguage = *sourceLanguage
+	mc.outdir = *outdir
+	mc.format = *format
 }
 
 func (mc *mergeCommand) SetArgs(args []string) {
