@@ -89,7 +89,7 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 	var translationsData []map[string]interface{}
 	if len(buf) > 0 {
 		if err := unmarshalFunc(buf, &translationsData); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to load %s because %s", filename, err)
 		}
 	}
 
