@@ -66,7 +66,7 @@ Translation files
 
 A translation file stores translated and untranslated strings.
 
-Example:
+Here is an example of the default file format that go-i18n supports:
 
 ```json
 [
@@ -115,6 +115,8 @@ Example:
   }
 ]
 ```
+
+To use a different file format, write a parser for the format and add the parsed translations using [AddTranslation](https://godoc.org/github.com/nicksnyder/go-i18n/i18n#AddTranslation).
 
 Contributions
 -------------
