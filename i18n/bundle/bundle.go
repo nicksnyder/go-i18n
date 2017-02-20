@@ -82,23 +82,15 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 	var standardFormat []map[string]interface{}
 	err := unmarshal(filename, buf, &standardFormat)
 	if err == nil {
-		translations, err := parseStandardFormat(standardFormat)
-		if err != nil {
-			return nil, err
-		}
-		return translations, nil
+		return parseStandardFormat(standardFormat)
 	}
 
-	// if it's flatter format
-	var flatterFormat map[string]map[string]interface{}
-	if err := unmarshal(filename, buf, &flatterFormat); err != nil {
+	// if it's flat format
+	var flatFormat map[string]map[string]interface{}
+	if err := unmarshal(filename, buf, &flatFormat); err != nil {
 		return nil, err
 	}
-	translations, err := parseFlatterFormat(flatterFormat)
-	if err != nil {
-		return nil, err
-	}
-	return translations, nil
+	return parseFlatFormat(flatFormat)
 }
 
 func unmarshal(filename string, buf []byte, out interface{}) error {
@@ -113,7 +105,9 @@ func unmarshal(filename string, buf []byte, out interface{}) error {
 	}
 
 	if len(buf) > 0 {
-		return unmarshalFunc(buf, out)
+		if err := unmarshalFunc(buf, out); err != nil {
+			return fmt.Errorf("failed to load %s because %s", filename, err)
+		}
 	}
 	return nil
 }
@@ -130,8 +124,8 @@ func parseStandardFormat(data []map[string]interface{}) ([]translation.Translati
 	return translations, nil
 }
 
-func parseFlatterFormat(data map[string]map[string]interface{}) ([]translation.Translation, error) {
-	// just convert flatter format to standard
+func parseFlatFormat(data map[string]map[string]interface{}) ([]translation.Translation, error) {
+	// just convert flat format to standard
 	var standardFormatData []map[string]interface{}
 	for id, translationData := range data {
 		dataObject := make(map[string]interface{})
