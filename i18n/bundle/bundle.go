@@ -78,6 +78,30 @@ func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 }
 
 func parseTranslations(filename string, buf []byte) ([]translation.Translation, error) {
+	// if it's standard format
+	var standardFormat []map[string]interface{}
+	err := unmarshal(filename, buf, &standardFormat)
+	if err == nil {
+		translations, err := parseStandardFormat(standardFormat)
+		if err != nil {
+			return nil, err
+		}
+		return translations, nil
+	}
+
+	// if it's flatter format
+	var flatterFormat map[string]map[string]interface{}
+	if err := unmarshal(filename, buf, &flatterFormat); err != nil {
+		return nil, err
+	}
+	translations, err := parseFlatterFormat(flatterFormat)
+	if err != nil {
+		return nil, err
+	}
+	return translations, nil
+}
+
+func unmarshal(filename string, buf []byte, out interface{}) error {
 	var unmarshalFunc func([]byte, interface{}) error
 	switch format := filepath.Ext(filename); format {
 	case ".json":
@@ -85,25 +109,46 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 	case ".yaml":
 		unmarshalFunc = yaml.Unmarshal
 	default:
-		return nil, fmt.Errorf("unsupported file extension %s", format)
+		return fmt.Errorf("unsupported file extension %s", format)
 	}
 
-	var translationsData []map[string]interface{}
 	if len(buf) > 0 {
-		if err := unmarshalFunc(buf, &translationsData); err != nil {
-			return nil, fmt.Errorf("failed to load %s because %s", filename, err)
-		}
+		return unmarshalFunc(buf, out)
 	}
+	return nil
+}
 
-	translations := make([]translation.Translation, 0, len(translationsData))
-	for i, translationData := range translationsData {
+func parseStandardFormat(data []map[string]interface{}) ([]translation.Translation, error) {
+	translations := make([]translation.Translation, 0, len(data))
+	for i, translationData := range data {
 		t, err := translation.NewTranslation(translationData)
 		if err != nil {
-			return nil, fmt.Errorf("unable to parse translation #%d in %s because %s\n%v", i, filename, err, translationData)
+			return nil, fmt.Errorf("unable to parse translation #%d because %s\n%v", i, err, translationData)
 		}
 		translations = append(translations, t)
 	}
 	return translations, nil
+}
+
+func parseFlatterFormat(data map[string]map[string]interface{}) ([]translation.Translation, error) {
+	// just convert flatter format to standard
+	var standardFormatData []map[string]interface{}
+	for id, translationData := range data {
+		dataObject := make(map[string]interface{})
+		dataObject["id"] = id
+		if len(translationData) == 1 { // non-plural form
+			_, otherExists := translationData["other"]
+			if otherExists {
+				dataObject["translation"] = translationData["other"]
+			}
+		} else { // plural form
+			dataObject["translation"] = translationData
+		}
+
+		standardFormatData = append(standardFormatData, dataObject)
+	}
+
+	return parseStandardFormat(standardFormatData)
 }
 
 // AddTranslation adds translations for a language.
