@@ -93,6 +93,8 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 	return parseFlatFormat(flatFormat)
 }
 
+// unmarshal finds an appropriate unmarshal function for filename
+// and unmarshals buf to out. out must be a pointer.
 func unmarshal(filename string, buf []byte, out interface{}) error {
 	var unmarshalFunc func([]byte, interface{}) error
 	switch format := filepath.Ext(filename); format {
@@ -124,8 +126,13 @@ func parseStandardFormat(data []map[string]interface{}) ([]translation.Translati
 	return translations, nil
 }
 
+// parseFlatFormat just converts data from flat format to standard format
+// and passes it to parseStandardFormat.
+//
+// Flat format logic:
+// key of data must be a string and data[key] must be always map[string]interface{},
+// but if there is only "other" key in it then it is non-plural, else plural.
 func parseFlatFormat(data map[string]map[string]interface{}) ([]translation.Translation, error) {
-	// just convert flat format to standard
 	var standardFormatData []map[string]interface{}
 	for id, translationData := range data {
 		dataObject := make(map[string]interface{})
