@@ -78,41 +78,46 @@ func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 }
 
 func parseTranslations(filename string, buf []byte) ([]translation.Translation, error) {
+	if buf == nil || len(buf) == 0 {
+		return []translation.Translation{}, nil
+	}
+
 	ext := filepath.Ext(filename)
 
-	// if it's standard format
-	var standardFormat []map[string]interface{}
-	err := unmarshal(ext, buf, &standardFormat)
-	if err == nil {
+	if isStandardFormat(ext, buf) {
+		var standardFormat []map[string]interface{}
+		if err := unmarshal(ext, buf, &standardFormat); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
+		}
 		return parseStandardFormat(standardFormat)
+	} else {
+		var flatFormat map[string]map[string]interface{}
+		if err := unmarshal(ext, buf, &flatFormat); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
+		}
+		return parseFlatFormat(flatFormat)
 	}
+}
 
-	// if it's flat format
-	var flatFormat map[string]map[string]interface{}
-	if err := unmarshal(ext, buf, &flatFormat); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
+func isStandardFormat(ext string, buf []byte) bool {
+	firstRune := rune(buf[0])
+	if (ext == ".json" && firstRune == '[') || (ext == ".yaml" && firstRune == '-') {
+		return true
 	}
-	return parseFlatFormat(flatFormat)
+	return false
 }
 
 // unmarshal finds an appropriate unmarshal function for ext
 // (extension of filename) and unmarshals buf to out. out must be a pointer.
 func unmarshal(ext string, buf []byte, out interface{}) error {
-	if len(buf) <= 0 {
-		return nil
-	}
-
-	var err error
 	switch ext {
 	case ".json":
-		err = json.Unmarshal(buf, out)
+		return json.Unmarshal(buf, out)
 	case ".yaml":
-		err = yaml.Unmarshal(buf, out)
+		return yaml.Unmarshal(buf, out)
 	default:
 		return fmt.Errorf("unsupported file extension %v", ext)
 	}
-
-	return err
 }
 
 func parseStandardFormat(data []map[string]interface{}) ([]translation.Translation, error) {
