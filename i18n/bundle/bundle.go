@@ -78,40 +78,41 @@ func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 }
 
 func parseTranslations(filename string, buf []byte) ([]translation.Translation, error) {
+	ext := filepath.Ext(filename)
+
 	// if it's standard format
 	var standardFormat []map[string]interface{}
-	err := unmarshal(filename, buf, &standardFormat)
+	err := unmarshal(ext, buf, &standardFormat)
 	if err == nil {
 		return parseStandardFormat(standardFormat)
 	}
 
 	// if it's flat format
 	var flatFormat map[string]map[string]interface{}
-	if err := unmarshal(filename, buf, &flatFormat); err != nil {
-		return nil, err
+	if err := unmarshal(ext, buf, &flatFormat); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
 	}
 	return parseFlatFormat(flatFormat)
 }
 
-// unmarshal finds an appropriate unmarshal function for filename
-// and unmarshals buf to out. out must be a pointer.
-func unmarshal(filename string, buf []byte, out interface{}) error {
-	var unmarshalFunc func([]byte, interface{}) error
-	switch format := filepath.Ext(filename); format {
-	case ".json":
-		unmarshalFunc = json.Unmarshal
-	case ".yaml":
-		unmarshalFunc = yaml.Unmarshal
-	default:
-		return fmt.Errorf("unsupported file extension %s", format)
+// unmarshal finds an appropriate unmarshal function for ext
+// (extension of filename) and unmarshals buf to out. out must be a pointer.
+func unmarshal(ext string, buf []byte, out interface{}) error {
+	if len(buf) <= 0 {
+		return nil
 	}
 
-	if len(buf) > 0 {
-		if err := unmarshalFunc(buf, out); err != nil {
-			return fmt.Errorf("failed to load %s because %s", filename, err)
-		}
+	var err error
+	switch ext {
+	case ".json":
+		err = json.Unmarshal(buf, out)
+	case ".yaml":
+		err = yaml.Unmarshal(buf, out)
+	default:
+		return fmt.Errorf("unsupported file extension %v", ext)
 	}
-	return nil
+
+	return err
 }
 
 func parseStandardFormat(data []map[string]interface{}) ([]translation.Translation, error) {
