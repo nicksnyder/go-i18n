@@ -161,6 +161,11 @@ E.g the example above can be written in this way:
 }
 ```
 
+The logic of flat format is, what it is structure of structures
+and name of substructures (ids) should be always a string.
+If there is only one key in substructure and it is "other", then it's non-plural
+translation, else plural.
+
 Contributions
 -------------
 
