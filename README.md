@@ -118,6 +118,54 @@ Here is an example of the default file format that go-i18n supports:
 
 To use a different file format, write a parser for the format and add the parsed translations using [AddTranslation](https://godoc.org/github.com/nicksnyder/go-i18n/i18n#AddTranslation).
 
+Flat Format
+-------------
+
+You can also write shorter translation files with flat format.
+E.g the example above can be written in this way:
+
+```json
+{
+  "d_days": {
+    "one":  "{{.Count}} day.",
+    "other":  "{{.Count}} days."
+  },
+
+  "my_height_in_meters": {
+    "one":  "I am {{.Count}} meter tall.",
+    "other":  "I am {{.Count}} meters tall."
+  },
+
+  "person_greeting": {
+    "other": "Hello {{.Person}}"
+  },
+
+  "person_unread_email_count": {
+    "one":  "{{.Person}} has {{.Count}} unread email.",
+    "other":  "{{.Person}} has {{.Count}} unread emails."
+  },
+
+  "person_unread_email_count_timeframe": {
+    "one":  "{{.Person}} has {{.Count}} unread email in the past {{.Timeframe}}.",
+    "other":  "{{.Person}} has {{.Count}} unread emails in the past {{.Timeframe}}."
+  },
+
+  "program_greeting": {
+    "other": "Hello world"
+  },
+
+  "your_unread_email_count": {
+    "one":  "You have {{.Count}} unread email.",
+    "other":  "You have {{.Count}} unread emails."
+  }
+}
+```
+
+The logic of flat format is, what it is structure of structures
+and name of substructures (ids) should be always a string.
+If there is only one key in substructure and it is "other", then it's non-plural
+translation, else plural.
+
 Contributions
 -------------
 
