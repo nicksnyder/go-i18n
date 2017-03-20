@@ -2,6 +2,7 @@
 package bundle
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
+	toml "github.com/pelletier/go-toml"
 	"gopkg.in/yaml.v2"
 )
 
@@ -78,12 +80,29 @@ func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 }
 
 func parseTranslations(filename string, buf []byte) ([]translation.Translation, error) {
-	if buf == nil || len(buf) == 0 {
+	if len(buf) == 0 {
 		return []translation.Translation{}, nil
 	}
 
 	ext := filepath.Ext(filename)
 
+	// `github.com/pelletier/go-toml` has an Unmarshal function,
+	// that can't unmarshal to maps, so we should parse TOML format separately.
+	if ext == ".toml" {
+		tree, err := toml.LoadReader(bytes.NewReader(buf))
+		if err != nil {
+			return nil, err
+		}
+
+		m := make(map[string]map[string]interface{})
+		for k, v := range tree.ToMap() {
+			m[k] = v.(map[string]interface{})
+		}
+
+		return parseFlatFormat(m)
+	}
+
+	// Then parse other formats.
 	if isStandardFormat(ext, buf) {
 		var standardFormat []map[string]interface{}
 		if err := unmarshal(ext, buf, &standardFormat); err != nil {
@@ -115,9 +134,9 @@ func unmarshal(ext string, buf []byte, out interface{}) error {
 		return json.Unmarshal(buf, out)
 	case ".yaml":
 		return yaml.Unmarshal(buf, out)
-	default:
-		return fmt.Errorf("unsupported file extension %v", ext)
 	}
+
+	return fmt.Errorf("unsupported file extension %v", ext)
 }
 
 func parseStandardFormat(data []map[string]interface{}) ([]translation.Translation, error) {
