@@ -2,12 +2,12 @@ package main
 
 import "testing"
 
-func TestMergeExecuteFlatJSON(t *testing.T) {
+func TestMergeExecuteFlat(t *testing.T) {
 	files := []string{
-		"testdata/input/flat/en-us.one.json",
+		"testdata/input/flat/en-us.one.yaml",
 		"testdata/input/flat/en-us.two.json",
 		"testdata/input/flat/fr-fr.json",
-		"testdata/input/flat/ar-ar.one.json",
+		"testdata/input/flat/ar-ar.one.toml",
 		"testdata/input/flat/ar-ar.two.json",
 	}
 	testFlatMergeExecute(t, files)

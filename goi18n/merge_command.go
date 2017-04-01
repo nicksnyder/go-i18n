@@ -14,6 +14,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n/bundle"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
+	toml "github.com/pelletier/go-toml"
 )
 
 type mergeCommand struct {
@@ -36,7 +37,7 @@ func (mc *mergeCommand) execute() error {
 	bundle := bundle.New()
 	for _, tf := range mc.translationFiles {
 		if err := bundle.LoadTranslationFile(tf); err != nil {
-			return fmt.Errorf("failed to load translation file %s because %s\n", tf, err)
+			return fmt.Errorf("failed to load translation file %s: %s\n", tf, err)
 		}
 	}
 
@@ -91,7 +92,11 @@ func (mc *mergeCommand) parse(arguments []string) {
 	mc.sourceLanguage = *sourceLanguage
 	mc.outdir = *outdir
 	mc.format = *format
-	mc.flat = *flat
+	if *format == "toml" {
+		mc.flat = true
+	} else {
+		mc.flat = *flat
+	}
 }
 
 func (mc *mergeCommand) SetArgs(args []string) {
@@ -110,13 +115,13 @@ func (mc *mergeCommand) writeFile(label string, translations []translation.Trans
 
 	buf, err := mc.marshal(convert(translations))
 	if err != nil {
-		return fmt.Errorf("failed to marshal %s strings to %s because %s", localeID, mc.format, err)
+		return fmt.Errorf("failed to marshal %s strings to %s: %s", localeID, mc.format, err)
 	}
 
 	filename := filepath.Join(mc.outdir, fmt.Sprintf("%s.%s.%s", localeID, label, mc.format))
 
 	if err := ioutil.WriteFile(filename, buf, 0666); err != nil {
-		return fmt.Errorf("failed to write %s because %s", filename, err)
+		return fmt.Errorf("failed to write %s: %s", filename, err)
 	}
 	return nil
 }
@@ -152,10 +157,25 @@ func (mc mergeCommand) marshal(v interface{}) ([]byte, error) {
 	switch mc.format {
 	case "json":
 		return json.MarshalIndent(v, "", "  ")
+	case "toml":
+		return marshalTOML(v)
 	case "yaml":
 		return yaml.Marshal(v)
 	}
 	return nil, fmt.Errorf("unsupported format: %s\n", mc.format)
+}
+
+func marshalTOML(v interface{}) ([]byte, error) {
+	m, ok := v.(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("invalid format for marshaling to TOML")
+	}
+	tree, err := toml.TreeFromMap(m)
+	if err != nil {
+		return nil, err
+	}
+	s, err := tree.ToTomlString()
+	return []byte(s), err
 }
 
 func usageMerge() {
@@ -207,11 +227,12 @@ Options:
 
     -format format
         goi18n encodes the output translation files in this format.
-        Supported formats: json, yaml
+        Supported formats: json, toml, yaml
         Default: json
 
     -flat
         goi18n writes the output translation files in flat format.
+        Usage of '-format toml' automitically sets this flag.
         Default: true
 
 `)

@@ -83,3 +83,7 @@ func TestJSONFlatParse(t *testing.T) {
 func TestYAMLFlatParse(t *testing.T) {
 	testFile(t, "../goi18n/testdata/en-us.flat.yaml")
 }
+
+func TestTOMLFlatParse(t *testing.T) {
+	testFile(t, "../goi18n/testdata/en-us.flat.toml")
+}
