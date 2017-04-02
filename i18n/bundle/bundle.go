@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"sync"
+	"unicode"
 
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
@@ -119,11 +120,42 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 }
 
 func isStandardFormat(ext string, buf []byte) bool {
+	buf = deleteLeadingComments(ext, buf)
 	firstRune := rune(buf[0])
 	if (ext == ".json" && firstRune == '[') || (ext == ".yaml" && firstRune == '-') {
 		return true
 	}
 	return false
+}
+
+// deleteLeadingComments deletes leading newlines and comments in buf.
+// It only works for ext == ".yaml".
+func deleteLeadingComments(ext string, buf []byte) []byte {
+	if ext != ".yaml" {
+		return buf
+	}
+
+	for {
+		buf = bytes.TrimLeftFunc(buf, unicode.IsSpace)
+		if buf[0] == '#' {
+			buf = deleteLine(buf)
+		} else {
+			break
+		}
+	}
+
+	return buf
+}
+
+func deleteLine(buf []byte) []byte {
+	index := bytes.IndexRune(buf, '\n')
+	if index == -1 { // If there is only one line without newline ...
+		return nil // ... delete it and return nothing.
+	}
+	if len(buf) == index { // If there is only one line with newline ...
+		return nil // ... do the same as above.
+	}
+	return buf[index+1:]
 }
 
 // unmarshal finds an appropriate unmarshal function for ext
