@@ -87,8 +87,8 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 
 	ext := filepath.Ext(filename)
 
-	// `github.com/pelletier/go-toml` has an Unmarshal function,
-	// that can't unmarshal to maps, so we should parse TOML format separately.
+	// `github.com/pelletier/go-toml` lacks an Unmarshal function,
+	// so we should parse TOML separately.
 	if ext == ".toml" {
 		tree, err := toml.LoadReader(bytes.NewReader(buf))
 		if err != nil {
