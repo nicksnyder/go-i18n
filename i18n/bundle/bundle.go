@@ -122,10 +122,7 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 func isStandardFormat(ext string, buf []byte) bool {
 	buf = deleteLeadingComments(ext, buf)
 	firstRune := rune(buf[0])
-	if (ext == ".json" && firstRune == '[') || (ext == ".yaml" && firstRune == '-') {
-		return true
-	}
-	return false
+	return (ext == ".json" && firstRune == '[') || (ext == ".yaml" && firstRune == '-')
 }
 
 // deleteLeadingComments deletes leading newlines and comments in buf.
