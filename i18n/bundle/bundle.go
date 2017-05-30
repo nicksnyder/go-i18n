@@ -377,7 +377,12 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 			count = c
 		}
 	}
-
+	{
+		dataMap := toMap(data)
+		if c, ok := dataMap["Count"]; ok {
+			count = c
+		}
+	}
 	p, _ := lang.Plural(count)
 	template := translation.Template(p)
 	if template == nil {

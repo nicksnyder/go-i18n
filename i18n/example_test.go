@@ -13,6 +13,7 @@ func Example() {
 
 	bobMap := map[string]interface{}{"Person": "Bob"}
 	bobStruct := struct{ Person string }{Person: "Bob"}
+	countStruct := struct{ Count int }{Count: 3}
 
 	fmt.Println(T("program_greeting"))
 	fmt.Println(T("person_greeting", bobMap))
@@ -22,6 +23,7 @@ func Example() {
 	fmt.Println(T("your_unread_email_count", 1))
 	fmt.Println(T("your_unread_email_count", 2))
 	fmt.Println(T("my_height_in_meters", "1.7"))
+	fmt.Println(T("my_height_in_meters", countStruct))
 
 	fmt.Println(T("person_unread_email_count", 0, bobMap))
 	fmt.Println(T("person_unread_email_count", 1, bobMap))
@@ -76,6 +78,7 @@ func Example() {
 	// You have 1 unread email.
 	// You have 2 unread emails.
 	// I am 1.7 meters tall.
+	// I am 3 meters tall.
 	// Bob has 0 unread emails.
 	// Bob has 1 unread email.
 	// Bob has 2 unread emails.
