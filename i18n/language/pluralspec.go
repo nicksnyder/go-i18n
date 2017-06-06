@@ -12,6 +12,13 @@ type PluralSpec struct {
 
 var pluralSpecs = make(map[string]*PluralSpec)
 
+// EmptyPluralSpec has only Other plural
+// and its PluralFunc always returns Other.
+var EmptyPluralSpec = &PluralSpec{
+	Plurals:    map[Plural]struct{}{Other: struct{}{}},
+	PluralFunc: func(*operands) Plural { return Other },
+}
+
 func normalizePluralSpecID(id string) string {
 	id = strings.Replace(id, "_", "-", -1)
 	id = strings.ToLower(id)
@@ -38,7 +45,6 @@ func (ps *PluralSpec) Plural(number interface{}) (Plural, error) {
 // getPluralSpec returns the PluralSpec that matches the longest prefix of tag.
 // It returns nil if no PluralSpec matches tag.
 func getPluralSpec(tag string) *PluralSpec {
-	tag = NormalizeTag(tag)
 	subtag := tag
 	for {
 		if spec := pluralSpecs[subtag]; spec != nil {

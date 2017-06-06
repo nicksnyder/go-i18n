@@ -111,7 +111,7 @@ func TestTfuncAndLanguage(t *testing.T) {
 			spanishLanguage,
 		},
 		{
-			[]string{"zh-CN,fr-XX,es"},
+			[]string{"zh-CN", "fr-XX", "es"},
 			spanishTranslation,
 			spanishLanguage,
 		},
