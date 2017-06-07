@@ -1,0 +1,7 @@
+# Bavarian language
+
+[program_greeting]
+other = "Servus Wöed"
+
+[your_unread_email_count]
+other = "Du hosd {{.Count}} ungelesne E-Mails"

@@ -17,6 +17,15 @@ type Language struct {
 	*PluralSpec
 }
 
+// NewLanguage returns Language with specified tag and pluralSpec.
+// If pluralSpec is nil, it uses EmptyPluralSpec.
+func NewLanguage(tag string, pluralSpec *PluralSpec) *Language {
+	if pluralSpec == nil {
+		return &Language{Tag: tag, PluralSpec: EmptyPluralSpec}
+	}
+	return &Language{Tag: tag, PluralSpec: pluralSpec}
+}
+
 func (l *Language) String() string {
 	return l.Tag
 }
@@ -39,41 +48,65 @@ func (l *Language) MatchingTags() []string {
 // Parse returns a slice of supported languages found in src or nil if none are found.
 // It can parse language tags and Accept-Language headers.
 func Parse(src string) []*Language {
+	if src == "" {
+		return nil
+	}
+
 	var langs []*Language
 	start := 0
 	for end, chr := range src {
 		switch chr {
 		case ',', ';', '.':
-			tag := strings.TrimSpace(src[start:end])
+			tag := NormalizeTag(strings.TrimSpace(src[start:end]))
 			if spec := getPluralSpec(tag); spec != nil {
-				langs = append(langs, &Language{NormalizeTag(tag), spec})
+				langs = append(langs, NewLanguage(tag, spec))
 			}
 			start = end + 1
 		}
 	}
 	if start > 0 {
-		tag := strings.TrimSpace(src[start:])
+		tag := NormalizeTag(strings.TrimSpace(src[start:]))
 		if spec := getPluralSpec(tag); spec != nil {
-			langs = append(langs, &Language{NormalizeTag(tag), spec})
+			langs = append(langs, NewLanguage(tag, spec))
 		}
-		return dedupe(langs)
+		return uniq(langs)
 	}
+	src = NormalizeTag(src)
 	if spec := getPluralSpec(src); spec != nil {
-		langs = append(langs, &Language{NormalizeTag(src), spec})
+		langs = append(langs, NewLanguage(src, spec))
 	}
 	return langs
 }
 
-func dedupe(langs []*Language) []*Language {
+func uniq(langs []*Language) []*Language {
 	found := make(map[string]struct{}, len(langs))
-	deduped := make([]*Language, 0, len(langs))
+	unique := make([]*Language, 0, len(langs))
 	for _, lang := range langs {
 		if _, ok := found[lang.Tag]; !ok {
 			found[lang.Tag] = struct{}{}
-			deduped = append(deduped, lang)
+			unique = append(unique, lang)
 		}
 	}
-	return deduped
+	return unique
+}
+
+// ParseFirst returns Language with first found language code in src.
+// It also supports custom, non-provided in Unicode CLDR language codes.
+// It can parse language tags and Accept-Language headers.
+func ParseFirst(src string) *Language {
+	if src == "" {
+		return nil
+	}
+
+	delims := ",;."
+	src = strings.TrimLeft(src, delims)
+
+	delimIndex := strings.IndexAny(src, delims)
+	if delimIndex == -1 {
+		delimIndex = len(src)
+	}
+	tag := NormalizeTag(strings.TrimSpace(src[:delimIndex]))
+	return NewLanguage(tag, getPluralSpec(tag))
 }
 
 // MustParse is similar to Parse except it panics instead of retuning a nil Language.

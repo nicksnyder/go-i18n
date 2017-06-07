@@ -65,18 +65,16 @@ func (b *Bundle) LoadTranslationFile(filename string) error {
 // It is useful for parsing translation files embedded with go-bindata.
 func (b *Bundle) ParseTranslationFileBytes(filename string, buf []byte) error {
 	basename := filepath.Base(filename)
-	langs := language.Parse(basename)
-	switch l := len(langs); {
-	case l == 0:
+	lang := language.ParseFirst(basename)
+	if lang == nil {
 		return fmt.Errorf("no language found in %q", basename)
-	case l > 1:
-		return fmt.Errorf("multiple languages found in filename %q: %v; expected one", basename, langs)
 	}
+
 	translations, err := parseTranslations(filename, buf)
 	if err != nil {
 		return err
 	}
-	b.AddTranslation(langs[0], translations...)
+	b.AddTranslation(lang, translations...)
 	return nil
 }
 
@@ -328,14 +326,16 @@ func (b *Bundle) supportedLanguage(pref string, prefs ...string) *language.Langu
 }
 
 func (b *Bundle) translatedLanguage(src string) *language.Language {
-	langs := language.Parse(src)
+	lang := language.ParseFirst(src)
+	if lang == nil {
+		return nil
+	}
+
 	b.RLock()
 	defer b.RUnlock()
-	for _, lang := range langs {
-		if len(b.translations[lang.Tag]) > 0 ||
-			len(b.fallbackTranslations[lang.Tag]) > 0 {
-			return lang
-		}
+	if len(b.translations[lang.Tag]) > 0 ||
+		len(b.fallbackTranslations[lang.Tag]) > 0 {
+		return lang
 	}
 	return nil
 }

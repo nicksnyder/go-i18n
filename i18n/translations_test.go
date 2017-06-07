@@ -87,3 +87,36 @@ func TestYAMLFlatParse(t *testing.T) {
 func TestTOMLFlatParse(t *testing.T) {
 	testFile(t, "../goi18n/testdata/en-us.flat.toml")
 }
+
+// TestCustomLanguageTag checks, if go-i18n correctly parses
+// translation file with custom language tags, which aren't registered
+// in Unicode CLDR.
+// As an example we take bavarian language.
+// Related to https://github.com/nicksnyder/go-i18n/issues/72.
+func TestCustomLanguageTag(t *testing.T) {
+	b := bundle.New()
+	if err := b.LoadTranslationFile("../goi18n/testdata/bar.toml"); err != nil {
+		t.Fatal(err)
+	}
+
+	T, err := b.Tfunc("bar")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testCases := []struct {
+		id   string
+		arg  interface{}
+		want string
+	}{
+		{"program_greeting", nil, "Servus Wöed"},
+		{"your_unread_email_count", 7, "Du hosd 7 ungelesne E-Mails"},
+	}
+
+	for _, tc := range testCases {
+		got := T(tc.id, tc.arg)
+		if got != tc.want {
+			t.Error("got: %v; want: %v", got, tc.want)
+		}
+	}
+}
