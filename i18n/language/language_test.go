@@ -7,8 +7,8 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		src  string
-		lang []*Language
+		src   string
+		langs []*Language
 	}{
 		{"en", []*Language{{"en", pluralSpecs["en"]}}},
 		{"en-US", []*Language{{"en-us", pluralSpecs["en"]}}},
@@ -62,11 +62,58 @@ func TestParse(t *testing.T) {
 		{"xx", nil},
 	}
 	for _, test := range tests {
-		lang := Parse(test.src)
-		if !reflect.DeepEqual(lang, test.lang) {
-			t.Errorf("Parse(%q) = %s expected %s", test.src, lang, test.lang)
+		langs := Parse(test.src)
+		if len(test.langs) != len(langs) && !reflect.DeepEqual(langs, test.langs) {
+			t.Errorf("Parse(%q) = %s expected %s", test.src, langs, test.langs)
 		}
 	}
+}
+
+func TestAllLanguageTags(t *testing.T) {
+	tests := []struct {
+		src      string
+		expected []string
+	}{
+		{"en", []string{"en"}},
+		{"en-US", []string{"en-us"}},
+		{"en_US", []string{"en-us"}},
+		{"en-GB", []string{"en-gb"}},
+		{"zh-CN", []string{"zh-cn"}},
+		{"zh-TW", []string{"zh-tw"}},
+		{"zh-Hans-CN", []string{"zh-hans-cn"}},
+		{"zh-Hant-TW", []string{"zh-hant-tw"}},
+		{"en-US-en-US", []string{"en-us-en-us"}},
+		{".en-US..en-US.", []string{"en-us"}},
+		{
+			"it, xx-zz, xx-ZZ, zh, en-gb, en, es-ES, de-xx, xx",
+			[]string{"it", "xx-zz", "zh", "en-gb", "en", "es-es", "de-xx", "xx"},
+		},
+		{"en.json", []string{"en"}},
+		{"en-US.json", []string{"en-us"}},
+		{"en-us.json", []string{"en-us"}},
+		{"en-xx.json", []string{"en-xx"}},
+		{"unknown", []string{"unknown"}},
+		{"", nil},
+	}
+	for _, test := range tests {
+		langs := AllLanguageTags(test.src)
+		if !areStringSlicesEqual(langs, test.expected) {
+			t.Errorf("AllLanguages(%q) = %v expected %v", test.src, langs, test.expected)
+		}
+	}
+}
+
+func areStringSlicesEqual(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func TestMatchingTags(t *testing.T) {

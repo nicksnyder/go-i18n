@@ -39,41 +39,55 @@ func (l *Language) MatchingTags() []string {
 // Parse returns a slice of supported languages found in src or nil if none are found.
 // It can parse language tags and Accept-Language headers.
 func Parse(src string) []*Language {
-	var langs []*Language
+	tags := AllLanguageTags(src)
+	if len(tags) == 0 {
+		return nil
+	}
+	langs := make([]*Language, 0, len(tags))
+
+	for _, lang := range tags {
+		if spec := getPluralSpec(lang); spec != nil {
+			langs = append(langs, &Language{lang, spec})
+		}
+	}
+	return langs
+}
+
+// AllLanguageTags returns all normalized language tags found in src, including unsupported.
+func AllLanguageTags(src string) []string {
+	if src == "" {
+		return nil
+	}
+
+	var tags []string
+	found := make(map[string]bool)
+
+	src = strings.TrimLeft(src, ",;.")
 	start := 0
 	for end, chr := range src {
 		switch chr {
 		case ',', ';', '.':
-			tag := strings.TrimSpace(src[start:end])
-			if spec := getPluralSpec(tag); spec != nil {
-				langs = append(langs, &Language{NormalizeTag(tag), spec})
+			tag := NormalizeTag(strings.TrimSpace(src[start:end]))
+			if tag != "" && !isExtension(tag) && !found[tag] {
+				found[tag] = true
+				tags = append(tags, tag)
 			}
 			start = end + 1
 		}
 	}
 	if start > 0 {
-		tag := strings.TrimSpace(src[start:])
-		if spec := getPluralSpec(tag); spec != nil {
-			langs = append(langs, &Language{NormalizeTag(tag), spec})
+		tag := NormalizeTag(strings.TrimSpace(src[start:]))
+		if tag != "" && !isExtension(tag) && !found[tag] {
+			tags = append(tags, tag)
 		}
-		return dedupe(langs)
+		return tags
 	}
-	if spec := getPluralSpec(src); spec != nil {
-		langs = append(langs, &Language{NormalizeTag(src), spec})
-	}
-	return langs
+	tags = append(tags, NormalizeTag(src))
+	return tags
 }
 
-func dedupe(langs []*Language) []*Language {
-	found := make(map[string]struct{}, len(langs))
-	deduped := make([]*Language, 0, len(langs))
-	for _, lang := range langs {
-		if _, ok := found[lang.Tag]; !ok {
-			found[lang.Tag] = struct{}{}
-			deduped = append(deduped, lang)
-		}
-	}
-	return deduped
+func isExtension(s string) bool {
+	return s == "json" || s == "yaml" || s == "yml" || s == "toml"
 }
 
 // MustParse is similar to Parse except it panics instead of retuning a nil Language.
