@@ -18,10 +18,11 @@ func normalizePluralSpecID(id string) string {
 	return id
 }
 
-func registerPluralSpec(ids []string, ps *PluralSpec) {
+// RegisterPluralSpec registers pluralSpec for ids.
+func RegisterPluralSpec(ids []string, pluralSpec *PluralSpec) {
 	for _, id := range ids {
 		id = normalizePluralSpecID(id)
-		pluralSpecs[id] = ps
+		pluralSpecs[id] = pluralSpec
 	}
 }
 
