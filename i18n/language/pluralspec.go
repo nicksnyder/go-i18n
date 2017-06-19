@@ -12,6 +12,13 @@ type PluralSpec struct {
 
 var pluralSpecs = make(map[string]*PluralSpec)
 
+// EmptyPluralSpec has only Other plural
+// and its PluralFunc always returns Other.
+var EmptyPluralSpec = &PluralSpec{
+	Plurals:    map[Plural]struct{}{Other: struct{}{}},
+	PluralFunc: func(*Operand) Plural { return Other },
+}
+
 func normalizePluralSpecID(id string) string {
 	id = strings.Replace(id, "_", "-", -1)
 	id = strings.ToLower(id)
