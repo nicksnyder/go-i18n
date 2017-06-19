@@ -7,7 +7,7 @@ import "strings"
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type PluralSpec struct {
 	Plurals    map[Plural]struct{}
-	PluralFunc func(*operands) Plural
+	PluralFunc func(*Operand) Plural
 }
 
 var pluralSpecs = make(map[string]*PluralSpec)
@@ -29,11 +29,11 @@ func RegisterPluralSpec(ids []string, pluralSpec *PluralSpec) {
 // Plural returns the plural category for number as defined by
 // the language's CLDR plural rules.
 func (ps *PluralSpec) Plural(number interface{}) (Plural, error) {
-	ops, err := newOperands(number)
+	op, err := newOperand(number)
 	if err != nil {
 		return Invalid, err
 	}
-	return ps.PluralFunc(ops), nil
+	return ps.PluralFunc(op), nil
 }
 
 // getPluralSpec returns the PluralSpec that matches the longest prefix of tag.
