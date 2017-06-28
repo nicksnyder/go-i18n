@@ -8,8 +8,6 @@ import (
 
 // Language is a written human language.
 type Language struct {
-	matchingTags []string
-
 	// Tag uniquely identifies the language as defined by RFC 5646.
 	//
 	// Most language tags are a two character language code (ISO 639-1)
@@ -17,11 +15,10 @@ type Language struct {
 	// (e.g. en, pt-br)
 	Tag string
 	*PluralSpec
-}
 
-// NewLanguage returns new Language with specified tag and spec.
-func NewLanguage(tag string, spec *PluralSpec) *Language {
-	return &Language{Tag: tag, PluralSpec: spec}
+	// matchingTags holds the set of language tags that map to this language.
+	// It only used in MatchingTags function.
+	matchingTags []string
 }
 
 func (l *Language) String() string {
@@ -60,7 +57,7 @@ func Parse(src string) []*Language {
 		case ',', ';', '.':
 			tag := NormalizeTag(strings.TrimSpace(src[start:end]))
 			if spec := getPluralSpec(tag); spec != nil {
-				langs = append(langs, NewLanguage(tag, spec))
+				langs = append(langs, &Language{Tag: tag, PluralSpec: spec})
 			}
 			start = end + 1
 		}
@@ -68,13 +65,13 @@ func Parse(src string) []*Language {
 	if start > 0 {
 		tag := NormalizeTag(strings.TrimSpace(src[start:]))
 		if spec := getPluralSpec(tag); spec != nil {
-			langs = append(langs, NewLanguage(tag, spec))
+			langs = append(langs, &Language{Tag: tag, PluralSpec: spec})
 		}
 		return dedupe(langs)
 	}
 	src = NormalizeTag(src)
 	if spec := getPluralSpec(src); spec != nil {
-		langs = append(langs, NewLanguage(src, spec))
+		langs = append(langs, &Language{Tag: src, PluralSpec: spec})
 	}
 	return langs
 }
