@@ -362,3 +362,13 @@ func BenchmarkTranslatePluralWithStructPointer(b *testing.B) {
 		tf(data)
 	}
 }
+
+func BenchmarkLoadTransitionFiles(b *testing.B) {
+	bndl := New()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bndl.MustLoadTranslationFile("../../goi18n/testdata/expected/en-us.all.json")
+		bndl.MustLoadTranslationFile("../../goi18n/testdata/expected/ar-ar.all.json")
+		bndl.MustLoadTranslationFile("../../goi18n/testdata/expected/fr-fr.all.json")
+	}
+}

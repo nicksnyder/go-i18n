@@ -15,6 +15,10 @@ type Language struct {
 	// (e.g. en, pt-br)
 	Tag string
 	*PluralSpec
+
+	// matchingTags holds the set of language tags that map to this language.
+	// It only used in MatchingTags function.
+	matchingTags []string
 }
 
 func (l *Language) String() string {
@@ -22,18 +26,25 @@ func (l *Language) String() string {
 }
 
 // MatchingTags returns the set of language tags that map to this Language.
-// e.g. "zh-hans-cn" yields {"zh", "zh-hans", "zh-hans-cn"}
-// BUG: This should be computed once and stored as a field on Language for efficiency,
-//      but this would require changing how Languages are constructed.
+// e.g. "zh-hans-cn" yields {"zh", "zh-hans", "zh-hans-cn"}.
 func (l *Language) MatchingTags() []string {
-	parts := strings.Split(l.Tag, "-")
-	var prefix, matches []string
-	for _, part := range parts {
-		prefix = append(prefix, part)
-		match := strings.Join(prefix, "-")
-		matches = append(matches, match)
+	if len(l.matchingTags) > 0 {
+		return l.matchingTags
 	}
-	return matches
+
+	parts := strings.Split(l.Tag, "-")
+	if len(parts) == 1 {
+		l.matchingTags = parts
+		return parts
+	}
+
+	matches := make([]string, 0, len(parts))
+	matches = append(matches, parts[0])
+	for i, part := range parts[1:] {
+		matches = append(matches, matches[i]+"-"+part)
+	}
+	l.matchingTags = matches
+	return l.matchingTags
 }
 
 // Parse returns a slice of supported languages found in src or nil if none are found.
@@ -44,22 +55,23 @@ func Parse(src string) []*Language {
 	for end, chr := range src {
 		switch chr {
 		case ',', ';', '.':
-			tag := strings.TrimSpace(src[start:end])
+			tag := NormalizeTag(strings.TrimSpace(src[start:end]))
 			if spec := getPluralSpec(tag); spec != nil {
-				langs = append(langs, &Language{NormalizeTag(tag), spec})
+				langs = append(langs, &Language{Tag: tag, PluralSpec: spec})
 			}
 			start = end + 1
 		}
 	}
 	if start > 0 {
-		tag := strings.TrimSpace(src[start:])
+		tag := NormalizeTag(strings.TrimSpace(src[start:]))
 		if spec := getPluralSpec(tag); spec != nil {
-			langs = append(langs, &Language{NormalizeTag(tag), spec})
+			langs = append(langs, &Language{Tag: tag, PluralSpec: spec})
 		}
 		return dedupe(langs)
 	}
+	src = NormalizeTag(src)
 	if spec := getPluralSpec(src); spec != nil {
-		langs = append(langs, &Language{NormalizeTag(src), spec})
+		langs = append(langs, &Language{Tag: src, PluralSpec: spec})
 	}
 	return langs
 }
