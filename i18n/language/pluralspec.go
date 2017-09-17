@@ -7,10 +7,17 @@ import "strings"
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type PluralSpec struct {
 	Plurals    map[Plural]struct{}
-	PluralFunc func(*operands) Plural
+	PluralFunc func(*Operand) Plural
 }
 
 var pluralSpecs = make(map[string]*PluralSpec)
+
+// EmptyPluralSpec has only Other plural
+// and its PluralFunc always returns Other.
+var EmptyPluralSpec = &PluralSpec{
+	Plurals:    map[Plural]struct{}{Other: struct{}{}},
+	PluralFunc: func(*Operand) Plural { return Other },
+}
 
 func normalizePluralSpecID(id string) string {
 	id = strings.Replace(id, "_", "-", -1)
@@ -18,21 +25,22 @@ func normalizePluralSpecID(id string) string {
 	return id
 }
 
-func registerPluralSpec(ids []string, ps *PluralSpec) {
+// RegisterPluralSpec registers pluralSpec for ids.
+func RegisterPluralSpec(ids []string, pluralSpec *PluralSpec) {
 	for _, id := range ids {
 		id = normalizePluralSpecID(id)
-		pluralSpecs[id] = ps
+		pluralSpecs[id] = pluralSpec
 	}
 }
 
 // Plural returns the plural category for number as defined by
 // the language's CLDR plural rules.
 func (ps *PluralSpec) Plural(number interface{}) (Plural, error) {
-	ops, err := newOperands(number)
+	op, err := newOperand(number)
 	if err != nil {
 		return Invalid, err
 	}
-	return ps.PluralFunc(ops), nil
+	return ps.PluralFunc(op), nil
 }
 
 // getPluralSpec returns the PluralSpec that matches the longest prefix of tag.
