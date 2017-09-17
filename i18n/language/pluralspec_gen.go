@@ -4,15 +4,15 @@ package language
 
 func init() {
 
-	registerPluralSpec([]string{"bm", "bo", "dz", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "root", "sah", "ses", "sg", "th", "to", "vi", "wo", "yo", "zh"}, &PluralSpec{
+	RegisterPluralSpec([]string{"bm", "bo", "dz", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "root", "sah", "ses", "sg", "th", "to", "vi", "wo", "yo", "zh"}, &PluralSpec{
 		Plurals: newPluralSet(Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"am", "as", "bn", "fa", "gu", "hi", "kn", "mr", "zu"}, &PluralSpec{
+	RegisterPluralSpec([]string{"am", "as", "bn", "fa", "gu", "hi", "kn", "mr", "zu"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 0 or n = 1
 			if intEqualsAny(ops.I, 0) ||
 				ops.NequalsAny(1) {
@@ -21,9 +21,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ff", "fr", "hy", "kab"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ff", "fr", "hy", "kab"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 0,1
 			if intEqualsAny(ops.I, 0, 1) {
 				return One
@@ -31,9 +31,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ast", "ca", "de", "en", "et", "fi", "fy", "gl", "it", "ji", "nl", "sv", "sw", "ur", "yi"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ast", "ca", "de", "en", "et", "fi", "fy", "gl", "it", "ji", "nl", "sv", "sw", "ur", "yi"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 1 and v = 0
 			if intEqualsAny(ops.I, 1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -41,9 +41,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"si"}, &PluralSpec{
+	RegisterPluralSpec([]string{"si"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0,1 or i = 0 and f = 1
 			if ops.NequalsAny(0, 1) ||
 				intEqualsAny(ops.I, 0) && intEqualsAny(ops.F, 1) {
@@ -52,9 +52,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ak", "bh", "guw", "ln", "mg", "nso", "pa", "ti", "wa"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ak", "bh", "guw", "ln", "mg", "nso", "pa", "ti", "wa"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0..1
 			if ops.NinRange(0, 1) {
 				return One
@@ -62,9 +62,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"tzm"}, &PluralSpec{
+	RegisterPluralSpec([]string{"tzm"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0..1 or n = 11..99
 			if ops.NinRange(0, 1) ||
 				ops.NinRange(11, 99) {
@@ -73,9 +73,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"pt"}, &PluralSpec{
+	RegisterPluralSpec([]string{"pt"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0..2 and n != 2
 			if ops.NinRange(0, 2) && !ops.NequalsAny(2) {
 				return One
@@ -83,9 +83,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"af", "asa", "az", "bem", "bez", "bg", "brx", "ce", "cgg", "chr", "ckb", "dv", "ee", "el", "eo", "es", "eu", "fo", "fur", "gsw", "ha", "haw", "hu", "jgo", "jmc", "ka", "kaj", "kcg", "kk", "kkj", "kl", "ks", "ksb", "ku", "ky", "lb", "lg", "mas", "mgo", "ml", "mn", "nah", "nb", "nd", "ne", "nn", "nnh", "no", "nr", "ny", "nyn", "om", "or", "os", "pap", "ps", "rm", "rof", "rwk", "saq", "sdh", "seh", "sn", "so", "sq", "ss", "ssy", "st", "syr", "ta", "te", "teo", "tig", "tk", "tn", "tr", "ts", "ug", "uz", "ve", "vo", "vun", "wae", "xh", "xog"}, &PluralSpec{
+	RegisterPluralSpec([]string{"af", "asa", "az", "bem", "bez", "bg", "brx", "ce", "cgg", "chr", "ckb", "dv", "ee", "el", "eo", "es", "eu", "fo", "fur", "gsw", "ha", "haw", "hu", "jgo", "jmc", "ka", "kaj", "kcg", "kk", "kkj", "kl", "ks", "ksb", "ku", "ky", "lb", "lg", "mas", "mgo", "ml", "mn", "nah", "nb", "nd", "ne", "nn", "nnh", "no", "nr", "ny", "nyn", "om", "or", "os", "pap", "ps", "rm", "rof", "rwk", "saq", "sdh", "seh", "sn", "so", "sq", "ss", "ssy", "st", "syr", "ta", "te", "teo", "tig", "tk", "tn", "tr", "ts", "ug", "uz", "ve", "vo", "vun", "wae", "xh", "xog"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1
 			if ops.NequalsAny(1) {
 				return One
@@ -93,9 +93,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"pt_PT"}, &PluralSpec{
+	RegisterPluralSpec([]string{"pt_PT"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1 and v = 0
 			if ops.NequalsAny(1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -103,9 +103,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"da"}, &PluralSpec{
+	RegisterPluralSpec([]string{"da"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1 or t != 0 and i = 0,1
 			if ops.NequalsAny(1) ||
 				!intEqualsAny(ops.T, 0) && intEqualsAny(ops.I, 0, 1) {
@@ -114,9 +114,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"is"}, &PluralSpec{
+	RegisterPluralSpec([]string{"is"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// t = 0 and i % 10 = 1 and i % 100 != 11 or t != 0
 			if intEqualsAny(ops.T, 0) && intEqualsAny(ops.I%10, 1) && !intEqualsAny(ops.I%100, 11) ||
 				!intEqualsAny(ops.T, 0) {
@@ -125,9 +125,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"mk"}, &PluralSpec{
+	RegisterPluralSpec([]string{"mk"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 10 = 1 or f % 10 = 1
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%10, 1) ||
 				intEqualsAny(ops.F%10, 1) {
@@ -136,9 +136,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"fil", "tl"}, &PluralSpec{
+	RegisterPluralSpec([]string{"fil", "tl"}, &PluralSpec{
 		Plurals: newPluralSet(One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i = 1,2,3 or v = 0 and i % 10 != 4,6,9 or v != 0 and f % 10 != 4,6,9
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I, 1, 2, 3) ||
 				intEqualsAny(ops.V, 0) && !intEqualsAny(ops.I%10, 4, 6, 9) ||
@@ -148,9 +148,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"lv", "prg"}, &PluralSpec{
+	RegisterPluralSpec([]string{"lv", "prg"}, &PluralSpec{
 		Plurals: newPluralSet(Zero, One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n % 10 = 0 or n % 100 = 11..19 or v = 2 and f % 100 = 11..19
 			if ops.NmodEqualsAny(10, 0) ||
 				ops.NmodInRange(100, 11, 19) ||
@@ -166,9 +166,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"lag"}, &PluralSpec{
+	RegisterPluralSpec([]string{"lag"}, &PluralSpec{
 		Plurals: newPluralSet(Zero, One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0
 			if ops.NequalsAny(0) {
 				return Zero
@@ -180,9 +180,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ksh"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ksh"}, &PluralSpec{
 		Plurals: newPluralSet(Zero, One, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0
 			if ops.NequalsAny(0) {
 				return Zero
@@ -194,9 +194,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"iu", "kw", "naq", "se", "sma", "smi", "smj", "smn", "sms"}, &PluralSpec{
+	RegisterPluralSpec([]string{"iu", "kw", "naq", "se", "sma", "smi", "smj", "smn", "sms"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1
 			if ops.NequalsAny(1) {
 				return One
@@ -208,9 +208,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"shi"}, &PluralSpec{
+	RegisterPluralSpec([]string{"shi"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 0 or n = 1
 			if intEqualsAny(ops.I, 0) ||
 				ops.NequalsAny(1) {
@@ -223,9 +223,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"mo", "ro"}, &PluralSpec{
+	RegisterPluralSpec([]string{"mo", "ro"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 1 and v = 0
 			if intEqualsAny(ops.I, 1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -239,9 +239,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"bs", "hr", "sh", "sr"}, &PluralSpec{
+	RegisterPluralSpec([]string{"bs", "hr", "sh", "sr"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 10 = 1 and i % 100 != 11 or f % 10 = 1 and f % 100 != 11
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%10, 1) && !intEqualsAny(ops.I%100, 11) ||
 				intEqualsAny(ops.F%10, 1) && !intEqualsAny(ops.F%100, 11) {
@@ -255,9 +255,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"gd"}, &PluralSpec{
+	RegisterPluralSpec([]string{"gd"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1,11
 			if ops.NequalsAny(1, 11) {
 				return One
@@ -273,9 +273,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"sl"}, &PluralSpec{
+	RegisterPluralSpec([]string{"sl"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 100 = 1
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%100, 1) {
 				return One
@@ -292,9 +292,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"dsb", "hsb"}, &PluralSpec{
+	RegisterPluralSpec([]string{"dsb", "hsb"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 100 = 1 or f % 100 = 1
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%100, 1) ||
 				intEqualsAny(ops.F%100, 1) {
@@ -313,9 +313,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"he", "iw"}, &PluralSpec{
+	RegisterPluralSpec([]string{"he", "iw"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 1 and v = 0
 			if intEqualsAny(ops.I, 1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -331,9 +331,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"cs", "sk"}, &PluralSpec{
+	RegisterPluralSpec([]string{"cs", "sk"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 1 and v = 0
 			if intEqualsAny(ops.I, 1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -349,9 +349,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"pl"}, &PluralSpec{
+	RegisterPluralSpec([]string{"pl"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// i = 1 and v = 0
 			if intEqualsAny(ops.I, 1) && intEqualsAny(ops.V, 0) {
 				return One
@@ -369,9 +369,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"be"}, &PluralSpec{
+	RegisterPluralSpec([]string{"be"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n % 10 = 1 and n % 100 != 11
 			if ops.NmodEqualsAny(10, 1) && !ops.NmodEqualsAny(100, 11) {
 				return One
@@ -389,9 +389,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"lt"}, &PluralSpec{
+	RegisterPluralSpec([]string{"lt"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n % 10 = 1 and n % 100 != 11..19
 			if ops.NmodEqualsAny(10, 1) && !ops.NmodInRange(100, 11, 19) {
 				return One
@@ -407,9 +407,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"mt"}, &PluralSpec{
+	RegisterPluralSpec([]string{"mt"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1
 			if ops.NequalsAny(1) {
 				return One
@@ -426,9 +426,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ru", "uk"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ru", "uk"}, &PluralSpec{
 		Plurals: newPluralSet(One, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 10 = 1 and i % 100 != 11
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%10, 1) && !intEqualsAny(ops.I%100, 11) {
 				return One
@@ -446,9 +446,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"br"}, &PluralSpec{
+	RegisterPluralSpec([]string{"br"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n % 10 = 1 and n % 100 != 11,71,91
 			if ops.NmodEqualsAny(10, 1) && !ops.NmodEqualsAny(100, 11, 71, 91) {
 				return One
@@ -468,9 +468,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ga"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ga"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 1
 			if ops.NequalsAny(1) {
 				return One
@@ -490,9 +490,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"gv"}, &PluralSpec{
+	RegisterPluralSpec([]string{"gv"}, &PluralSpec{
 		Plurals: newPluralSet(One, Two, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// v = 0 and i % 10 = 1
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%10, 1) {
 				return One
@@ -512,9 +512,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"ar"}, &PluralSpec{
+	RegisterPluralSpec([]string{"ar"}, &PluralSpec{
 		Plurals: newPluralSet(Zero, One, Two, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0
 			if ops.NequalsAny(0) {
 				return Zero
@@ -538,9 +538,9 @@ func init() {
 			return Other
 		},
 	})
-	registerPluralSpec([]string{"cy"}, &PluralSpec{
+	RegisterPluralSpec([]string{"cy"}, &PluralSpec{
 		Plurals: newPluralSet(Zero, One, Two, Few, Many, Other),
-		PluralFunc: func(ops *operands) Plural {
+		PluralFunc: func(ops *Operands) Plural {
 			// n = 0
 			if ops.NequalsAny(0) {
 				return Zero
