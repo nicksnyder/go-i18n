@@ -88,7 +88,7 @@ func MustParse(src string) []*Language {
 // Add adds support for a new language.
 func Add(l *Language) {
 	tag := NormalizeTag(l.Tag)
-	pluralSpecs[tag] = l.PluralSpec
+	pluralSpecsStore.set(tag, l.PluralSpec)
 }
 
 // NormalizeTag returns a language tag with all lower-case characters

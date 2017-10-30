@@ -14,40 +14,40 @@ func TestGetPluralSpec(t *testing.T) {
 		src  string
 		spec *PluralSpec
 	}{
-		{"pl", pluralSpecs["pl"]},
-		{"en", pluralSpecs["en"]},
-		{"en-US", pluralSpecs["en"]},
-		{"en_US", pluralSpecs["en"]},
-		{"en-GB", pluralSpecs["en"]},
-		{"zh-CN", pluralSpecs["zh"]},
-		{"zh-TW", pluralSpecs["zh"]},
-		{"pt-BR", pluralSpecs["pt"]},
-		{"pt_BR", pluralSpecs["pt"]},
-		{"pt-PT", pluralSpecs["pt"]},
-		{"pt_PT", pluralSpecs["pt"]},
-		{"zh-Hans-CN", pluralSpecs["zh"]},
-		{"zh-Hant-TW", pluralSpecs["zh"]},
-		{"zh-CN", pluralSpecs["zh"]},
-		{"zh-TW", pluralSpecs["zh"]},
-		{"zh-Hans", pluralSpecs["zh"]},
-		{"zh-Hant", pluralSpecs["zh"]},
-		{"ko-KR", pluralSpecs["ko"]},
-		{"ko_KR", pluralSpecs["ko"]},
-		{"ko-KP", pluralSpecs["ko"]},
-		{"ko_KP", pluralSpecs["ko"]},
-		{"en-US-en-US", pluralSpecs["en"]},
-		{"th", pluralSpecs["th"]},
-		{"th-TH", pluralSpecs["th"]},
-		{"hr", pluralSpecs["hr"]},
-		{"bs", pluralSpecs["bs"]},
-		{"sr", pluralSpecs["sr"]},
-		{"ti", pluralSpecs["ti"]},
-		{"vi", pluralSpecs["vi"]},
-		{"vi-VN", pluralSpecs["vi"]},
-		{"mk", pluralSpecs["mk"]},
-		{"mk-MK", pluralSpecs["mk"]},
-		{"lv", pluralSpecs["lv"]},
-		{"lv-LV", pluralSpecs["lv"]},
+		{"pl", pluralSpecsStore.get("pl")},
+		{"en", pluralSpecsStore.get("en")},
+		{"en-US", pluralSpecsStore.get("en")},
+		{"en_US", pluralSpecsStore.get("en")},
+		{"en-GB", pluralSpecsStore.get("en")},
+		{"zh-CN", pluralSpecsStore.get("zh")},
+		{"zh-TW", pluralSpecsStore.get("zh")},
+		{"pt-BR", pluralSpecsStore.get("pt")},
+		{"pt_BR", pluralSpecsStore.get("pt")},
+		{"pt-PT", pluralSpecsStore.get("pt")},
+		{"pt_PT", pluralSpecsStore.get("pt")},
+		{"zh-Hans-CN", pluralSpecsStore.get("zh")},
+		{"zh-Hant-TW", pluralSpecsStore.get("zh")},
+		{"zh-CN", pluralSpecsStore.get("zh")},
+		{"zh-TW", pluralSpecsStore.get("zh")},
+		{"zh-Hans", pluralSpecsStore.get("zh")},
+		{"zh-Hant", pluralSpecsStore.get("zh")},
+		{"ko-KR", pluralSpecsStore.get("ko")},
+		{"ko_KR", pluralSpecsStore.get("ko")},
+		{"ko-KP", pluralSpecsStore.get("ko")},
+		{"ko_KP", pluralSpecsStore.get("ko")},
+		{"en-US-en-US", pluralSpecsStore.get("en")},
+		{"th", pluralSpecsStore.get("th")},
+		{"th-TH", pluralSpecsStore.get("th")},
+		{"hr", pluralSpecsStore.get("hr")},
+		{"bs", pluralSpecsStore.get("bs")},
+		{"sr", pluralSpecsStore.get("sr")},
+		{"ti", pluralSpecsStore.get("ti")},
+		{"vi", pluralSpecsStore.get("vi")},
+		{"vi-VN", pluralSpecsStore.get("vi")},
+		{"mk", pluralSpecsStore.get("mk")},
+		{"mk-MK", pluralSpecsStore.get("mk")},
+		{"lv", pluralSpecsStore.get("lv")},
+		{"lv-LV", pluralSpecsStore.get("lv")},
 		{".en-US..en-US.", nil},
 		{"zh, en-gb;q=0.8, en;q=0.7", nil},
 		{"zh,en-gb;q=0.8,en;q=0.7", nil},
@@ -703,7 +703,7 @@ func appendFloatTests(tests []pluralTest, from, to float64, p Plural) []pluralTe
 
 func runTests(t *testing.T, pluralSpecID string, tests []pluralTest) {
 	pluralSpecID = normalizePluralSpecID(pluralSpecID)
-	if spec := pluralSpecs[pluralSpecID]; spec != nil {
+	if spec := pluralSpecsStore.get(pluralSpecID); spec != nil {
 		for _, test := range tests {
 			if plural, err := spec.Plural(test.num); plural != test.plural {
 				t.Errorf("%s: PluralCategory(%#v) returned %s, %v; expected %s", pluralSpecID, test.num, plural, err, test.plural)
@@ -712,5 +712,4 @@ func runTests(t *testing.T, pluralSpecID string, tests []pluralTest) {
 	} else {
 		t.Errorf("could not find plural spec for locale %s", pluralSpecID)
 	}
-
 }
