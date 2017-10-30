@@ -1,6 +1,9 @@
 package language
 
-import "strings"
+import (
+	"strings"
+	"sync"
+)
 
 // PluralSpec defines the CLDR plural rules for a language.
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
@@ -10,7 +13,24 @@ type PluralSpec struct {
 	PluralFunc func(*Operands) Plural
 }
 
-var pluralSpecs = make(map[string]*PluralSpec)
+type pluralSpecs struct {
+	specs map[string]*PluralSpec
+	sync.RWMutex
+}
+
+func (ps *pluralSpecs) get(id string) *PluralSpec {
+	ps.RLock()
+	defer ps.RUnlock()
+	return ps.specs[id]
+}
+
+func (ps *pluralSpecs) set(id string, p *PluralSpec) {
+	ps.Lock()
+	ps.specs[id] = p
+	ps.Unlock()
+}
+
+var pluralSpecsStore = &pluralSpecs{specs: make(map[string]*PluralSpec)}
 
 func normalizePluralSpecID(id string) string {
 	id = strings.Replace(id, "_", "-", -1)
@@ -22,7 +42,7 @@ func normalizePluralSpecID(id string) string {
 func RegisterPluralSpec(ids []string, ps *PluralSpec) {
 	for _, id := range ids {
 		id = normalizePluralSpecID(id)
-		pluralSpecs[id] = ps
+		pluralSpecsStore.set(id, ps)
 	}
 }
 
@@ -42,7 +62,7 @@ func getPluralSpec(tag string) *PluralSpec {
 	tag = NormalizeTag(tag)
 	subtag := tag
 	for {
-		if spec := pluralSpecs[subtag]; spec != nil {
+		if spec := pluralSpecsStore.get(subtag); spec != nil {
 			return spec
 		}
 		end := strings.LastIndex(subtag, "-")
