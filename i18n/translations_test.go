@@ -63,7 +63,7 @@ func testFile(t *testing.T, path string) {
 
 		got := T(tc.id, args...)
 		if got != tc.want {
-			t.Error("got: %v; want: %v", got, tc.want)
+			t.Errorf("got: %v; want: %v", got, tc.want)
 		}
 	}
 }
