@@ -180,7 +180,7 @@ project into your own application.
 First and foremost you, of course, need to import the
 `github.com/nicksnyder/go-i18n/i18n` Golang package. Within it you will
 find the `LoadTranslationFile` and `MustLoadTranslationFile` functions.
-The first one loads the a translation file into memory and extracts its
+The first one loads a translation file into memory and extracts its
 type from the extension (`.json`, `.yaml`, etc.). The latter does the
 same, but it panics if the file could not be loaded, instead of
 returning the error as the former one.
@@ -188,7 +188,7 @@ returning the error as the former one.
 Example:
 ```
 // Load the US English and the German translations from the
-// 'translations' folder. If any of those file is missing, the
+// 'translations' folder. If any of those files is missing, the
 // application will panic and exit.
 i18n.MustLoadTranslationFile("./translations/en-us.all.yaml")
 i18n.MustLoadTranslationFile("./translations/de-de.all.yaml")
