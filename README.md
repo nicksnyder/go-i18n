@@ -172,6 +172,50 @@ translation, else plural.
 
 More examples of flat format translation files can be found in [goi18n/testdata/input/flat](https://github.com/nicksnyder/go-i18n/tree/master/goi18n/testdata/input/flat).
 
+Code example
+------------
+This section will provide a short example about how to integrate the
+project into your own application.
+
+First and foremost you, of course, need to import the
+`github.com/nicksnyder/go-i18n/i18n` Golang package. Within it you will
+find the `LoadTranslationFile` and `MustLoadTranslationFile` functions.
+The first one loads a translation file into memory and extracts its
+type from the extension (`.json`, `.yaml`, etc.). The latter does the
+same, but it panics if the file could not be loaded, instead of
+returning the error as the former one.
+
+Example:
+```
+// Load the US English and the German translations from the
+// 'translations' folder. If any of those files is missing, the
+// application will panic and exit.
+i18n.MustLoadTranslationFile("./translations/en-us.all.yaml")
+i18n.MustLoadTranslationFile("./translations/de-de.all.yaml")
+```
+
+Once you have the translations loaded in memory, you could get the
+`TranslateFunc` functions, that provide `key` based translations for
+the different locales.
+
+Example:
+```
+// Here we load the German translation.
+DE, err := i18n.Tfunc("de-DE")
+
+// Get the translation for the 'hello_world' key. Assumig it is in the
+// already-loaded "./translations/de-de.all.yaml". For the file format
+// read the sections above this one.
+worldDe:= DE("hello_world")
+
+// Use the translated key.
+log.Printf("Helo world in German is: '%s'", worldDe)
+```
+
+Note that if the translation function cannot find the key for the
+locale, it returns the requested key, thus helping you spot missing
+translations.
+
 Contributions
 -------------
 
