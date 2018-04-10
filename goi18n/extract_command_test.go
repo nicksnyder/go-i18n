@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/nicksnyder/go-i18n/i18n"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func TestExtract(t *testing.T) {
@@ -30,7 +30,7 @@ func TestExtract(t *testing.T) {
 			name: "global declaration",
 			file: `package main
 
-			import "github.com/nicksnyder/go-i18n/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			var m = &i18n.Message{
 				ID: "Plural ID",
@@ -47,7 +47,7 @@ func TestExtract(t *testing.T) {
 			name: "short form id only",
 			file: `package main
 
-			import "github.com/nicksnyder/go-i18n/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				bundle := i18n.NewBundle()
@@ -66,7 +66,7 @@ func TestExtract(t *testing.T) {
 			name: "must short form id only",
 			file: `package main
 
-			import "github.com/nicksnyder/go-i18n/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				bundle := i18n.NewBundle()
@@ -85,7 +85,7 @@ func TestExtract(t *testing.T) {
 			name: "custom package name",
 			file: `package main
 
-			import bar "github.com/nicksnyder/go-i18n/i18n"
+			import bar "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				_ := &bar.Message{
@@ -104,7 +104,7 @@ func TestExtract(t *testing.T) {
 			name: "exhaustive plural translation",
 			file: `package main
 
-			import "github.com/nicksnyder/go-i18n/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				_ := &i18n.Message{

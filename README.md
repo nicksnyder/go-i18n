@@ -8,12 +8,12 @@ go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that h
 * Supports message files of any format (e.g. JSON, TOML, YAML, etc.).
 * [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
-## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/i18n)
+## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n)
 
 The i18n package provides support for looking up messages according to a set of locale preferences.
 
 ```go
-import "github.com/nicksnyder/go-i18n/i18n"
+import "github.com/nicksnyder/go-i18n/v2/i18n"
 ```
 
 Create a Bundle to use for the lifetime of your application.
@@ -99,7 +99,7 @@ bundle.MustLoadMessageFile("active.es.toml")
 
 ## For more information and examples:
 
-* Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/i18n).
+* Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n).
 * Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/i18n/localizer_test.go).
 * Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/example).
 

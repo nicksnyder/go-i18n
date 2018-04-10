@@ -4,3 +4,6 @@ output/
 .DS_Store
 *.test
 *.swp
+
+example/example
+goi18n/goi18n
