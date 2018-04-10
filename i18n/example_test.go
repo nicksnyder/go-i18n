@@ -122,3 +122,20 @@ func ExampleLocalizer_MustLocalize_plural_template() {
 	// Nick has 2 cats.
 	// Nick has 2.5 cats.
 }
+
+func ExampleLocalizer_MustLocalize_customTemplateDelims() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	helloPersonMessage := &i18n.Message{
+		ID:         "HelloPerson",
+		Other:      "Hello <<.Name>>!",
+		LeftDelim:  "<<",
+		RightDelim: ">>",
+	}
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: helloPersonMessage,
+		TemplateData:   map[string]string{"Name": "Nick"},
+	}))
+	// Output:
+	// Hello Nick!
+}
