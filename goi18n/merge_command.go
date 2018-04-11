@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/sha1"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -111,7 +110,6 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 	for path, content := range messageFiles {
 		bundle := i18n.NewBundle(sourceLanguageTag)
 		bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-		bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 		bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
 		mf, err := bundle.ParseMessageFileBytes(content, path)
 		if err != nil {
