@@ -174,7 +174,7 @@ func (l *Localizer) pluralForm(base language.Base, operands *Operands) PluralFor
 	if operands == nil {
 		return Other
 	}
-	pluralRule := l.bundle.PluralRules[base]
+	pluralRule := l.bundle.pluralRules[base]
 	if pluralRule == nil {
 		return Invalid
 	}

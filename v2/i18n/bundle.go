@@ -19,8 +19,8 @@ type Bundle struct {
 	// MessageTemplates maps language tags to language ids to message templates.
 	MessageTemplates map[language.Tag]map[string]*MessageTemplate
 
-	// PluralRules maps language tags to their plural rules.
-	PluralRules map[language.Base]*PluralRule
+	// pluralRules maps language tags to their plural rules.
+	pluralRules map[language.Base]*PluralRule
 
 	// UnmarshalFuncs maps file formats to unmarshal functions.
 	UnmarshalFuncs map[string]UnmarshalFunc
@@ -35,7 +35,7 @@ type Bundle struct {
 func NewBundle(defaultTag language.Tag) *Bundle {
 	b := &Bundle{
 		defaultTag:  defaultTag,
-		PluralRules: DefaultPluralRules(),
+		pluralRules: DefaultPluralRules(),
 		UnmarshalFuncs: map[string]UnmarshalFunc{
 			"json": json.Unmarshal,
 		},
@@ -191,15 +191,15 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 // AddMessages adds messages for a language.
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
-	if b.PluralRules == nil {
-		b.PluralRules = DefaultPluralRules()
+	if b.pluralRules == nil {
+		b.pluralRules = DefaultPluralRules()
 	}
 	base, _ := tag.Base()
-	pluralRule := b.PluralRules[base]
+	pluralRule := b.pluralRules[base]
 	if pluralRule == nil {
 		return fmt.Errorf("no plural rule registered for %s", base)
 	}
-	b.PluralRules[base] = pluralRule
+	b.pluralRules[base] = pluralRule
 	if b.MessageTemplates == nil {
 		b.MessageTemplates = map[language.Tag]map[string]*MessageTemplate{}
 	}
