@@ -113,6 +113,58 @@ other = "other translation"
 	expectMessage(t, bundle, language.AmericanEnglish, "everything", everythingMessage)
 }
 
+func TestV1Format(t *testing.T) {
+	var bundle Bundle
+	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`[
+	{
+		"id": "simple",
+		"translation": "simple translation"
+	},
+	{
+		"id": "everything",
+		"translation": {
+			"zero": "zero translation",
+			"one": "one translation",
+			"two": "two translation",
+			"few": "few translation",
+			"many": "many translation",
+			"other": "other translation"
+		}
+	}
+]
+`), "en-US.json")
+
+	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
+	e := *everythingMessage
+	e.Description = ""
+	expectMessage(t, bundle, language.AmericanEnglish, "everything", &e)
+}
+
+func TestV1FlatFormat(t *testing.T) {
+	var bundle Bundle
+	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`{
+	"simple": {
+		"other": "simple translation"
+	},
+	"everything": {
+		"zero": "zero translation",
+		"one": "one translation",
+		"two": "two translation",
+		"few": "few translation",
+		"many": "many translation",
+		"other": "other translation"
+	}
+}
+`), "en-US.json")
+
+	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
+	e := *everythingMessage
+	e.Description = ""
+	expectMessage(t, bundle, language.AmericanEnglish, "everything", &e)
+}
+
 func expectMessage(t *testing.T, bundle Bundle, tag language.Tag, messageID string, message *Message) {
 	expected := NewMessageTemplate(message)
 	actual := bundle.MessageTemplates[tag][messageID]

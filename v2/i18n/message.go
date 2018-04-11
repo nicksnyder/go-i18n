@@ -63,34 +63,9 @@ func MustNewMessage(data interface{}) *Message {
 
 // unmarshalInterface unmarshals a message from data.
 func (m *Message) unmarshalInterface(v interface{}) error {
-	strdata := make(map[string]string)
-	switch value := v.(type) {
-	case string:
-		strdata["other"] = value
-	case map[string]string:
-		strdata = value
-	case map[string]interface{}:
-		for k, v := range value {
-			vstr, ok := v.(string)
-			if !ok {
-				return fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
-			}
-			strdata[k] = vstr
-		}
-	case map[interface{}]interface{}:
-		for k, v := range value {
-			kstr, ok := k.(string)
-			if !ok {
-				return fmt.Errorf("expected key to be a string but got %#v", k)
-			}
-			vstr, ok := v.(string)
-			if !ok {
-				return fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
-			}
-			strdata[kstr] = vstr
-		}
-	default:
-		return fmt.Errorf("unsupported type %#v", value)
+	strdata, err := stringMap(v)
+	if err != nil {
+		return err
 	}
 	for k, v := range strdata {
 		switch strings.ToLower(k) {
@@ -119,4 +94,71 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 		}
 	}
 	return nil
+}
+
+func stringMap(v interface{}) (map[string]string, error) {
+	switch value := v.(type) {
+	case string:
+		return map[string]string{
+			"other": value,
+		}, nil
+	case map[string]string:
+		return value, nil
+	case map[string]interface{}:
+		strdata := map[string]string{}
+		for k, v := range value {
+			if k == "translation" {
+				switch vt := v.(type) {
+				case string:
+					strdata["other"] = vt
+				default:
+					v1Message, err := stringMap(v)
+					if err != nil {
+						return nil, err
+					}
+					for kk, vv := range v1Message {
+						strdata[kk] = vv
+					}
+				}
+				continue
+			}
+			vstr, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
+			}
+			strdata[k] = vstr
+		}
+		return strdata, nil
+	case map[interface{}]interface{}:
+		strdata := map[string]string{}
+		for k, v := range value {
+			kstr, ok := k.(string)
+			if !ok {
+				return nil, fmt.Errorf("expected key to be a string but got %#v", k)
+			}
+			if kstr == "translation" {
+				switch vt := v.(type) {
+				case string:
+					strdata["other"] = vt
+				default:
+					v1Message, err := stringMap(v)
+					if err != nil {
+						return nil, err
+					}
+					for kk, vv := range v1Message {
+						strdata[kk] = vv
+					}
+				}
+				continue
+			}
+			vstr, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
+			}
+			strdata[kstr] = vstr
+		}
+		return strdata, nil
+	default:
+		return nil, fmt.Errorf("unsupported type %#v", value)
+	}
 }

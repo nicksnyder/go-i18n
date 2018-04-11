@@ -105,18 +105,47 @@ func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, e
 	if unmarshalFunc == nil {
 		return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
 	}
-	var raw map[string]interface{}
+	var raw interface{}
 	if err := unmarshalFunc(buf, &raw); err != nil {
 		return nil, err
 	}
-	messageFile.Messages = make([]*Message, 0, len(raw))
-	for id, data := range raw {
-		m, err := NewMessage(data)
-		if err != nil {
-			return nil, err
+	switch data := raw.(type) {
+	case map[string]interface{}:
+		messageFile.Messages = make([]*Message, 0, len(data))
+		for id, data := range data {
+			m, err := NewMessage(data)
+			if err != nil {
+				return nil, err
+			}
+			m.ID = id
+			messageFile.Messages = append(messageFile.Messages, m)
 		}
-		m.ID = id
-		messageFile.Messages = append(messageFile.Messages, m)
+	case map[interface{}]interface{}:
+		messageFile.Messages = make([]*Message, 0, len(data))
+		for id, data := range data {
+			strid, ok := id.(string)
+			if !ok {
+				return nil, fmt.Errorf("expected key to be string but got %#v", id)
+			}
+			m, err := NewMessage(data)
+			if err != nil {
+				return nil, err
+			}
+			m.ID = strid
+			messageFile.Messages = append(messageFile.Messages, m)
+		}
+	case []interface{}:
+		// Backward compatability for v1 file format.
+		messageFile.Messages = make([]*Message, 0, len(data))
+		for _, data := range data {
+			m, err := NewMessage(data)
+			if err != nil {
+				return nil, err
+			}
+			messageFile.Messages = append(messageFile.Messages, m)
+		}
+	default:
+		return nil, fmt.Errorf("unsupported file format %T", raw)
 	}
 	if err := b.AddMessages(messageFile.Tag, messageFile.Messages...); err != nil {
 		return nil, err
