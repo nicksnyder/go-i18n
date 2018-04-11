@@ -22,8 +22,8 @@ type Bundle struct {
 	// pluralRules maps language tags to their plural rules.
 	pluralRules map[language.Base]*PluralRule
 
-	// UnmarshalFuncs maps file formats to unmarshal functions.
-	UnmarshalFuncs map[string]UnmarshalFunc
+	// unmarshalFuncs maps file formats to unmarshal functions.
+	unmarshalFuncs map[string]UnmarshalFunc
 
 	defaultTag language.Tag
 	tags       []language.Tag
@@ -36,7 +36,7 @@ func NewBundle(defaultTag language.Tag) *Bundle {
 	b := &Bundle{
 		defaultTag:  defaultTag,
 		pluralRules: DefaultPluralRules(),
-		UnmarshalFuncs: map[string]UnmarshalFunc{
+		unmarshalFuncs: map[string]UnmarshalFunc{
 			"json": json.Unmarshal,
 		},
 	}
@@ -46,10 +46,10 @@ func NewBundle(defaultTag language.Tag) *Bundle {
 
 // RegisterUnmarshalFunc registers an UnmarshalFunc for format.
 func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFunc) {
-	if b.UnmarshalFuncs == nil {
-		b.UnmarshalFuncs = make(map[string]UnmarshalFunc)
+	if b.unmarshalFuncs == nil {
+		b.unmarshalFuncs = make(map[string]UnmarshalFunc)
 	}
-	b.UnmarshalFuncs[format] = unmarshalFunc
+	b.unmarshalFuncs[format] = unmarshalFunc
 }
 
 // LoadMessageFile loads the bytes from path
@@ -99,8 +99,8 @@ func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, e
 		return messageFile, nil
 	}
 	var unmarshalFunc UnmarshalFunc
-	if b.UnmarshalFuncs != nil {
-		unmarshalFunc = b.UnmarshalFuncs[messageFile.Format]
+	if b.unmarshalFuncs != nil {
+		unmarshalFunc = b.unmarshalFuncs[messageFile.Format]
 	}
 	if unmarshalFunc == nil {
 		return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
