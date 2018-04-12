@@ -247,7 +247,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 }
 
 // activeDst returns the active part of the dst and whether dst is a complete translation of src.
-func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.PluralRule) (active *internal.MessageTemplate, translateMessageTemplate *internal.MessageTemplate) {
+func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.Rule) (active *internal.MessageTemplate, translateMessageTemplate *internal.MessageTemplate) {
 	pluralForms := pluralRule.PluralForms
 	if len(src.PluralTemplates) == 1 {
 		pluralForms = map[plural.Form]struct{}{

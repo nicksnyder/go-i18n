@@ -23,7 +23,7 @@ type Bundle struct {
 	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
 
 	// pluralRules maps language tags to their plural rules.
-	pluralRules map[language.Base]*plural.PluralRule
+	pluralRules map[language.Base]*plural.Rule
 
 	// unmarshalFuncs maps file formats to unmarshal functions.
 	unmarshalFuncs map[string]UnmarshalFunc

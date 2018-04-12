@@ -2,15 +2,15 @@ package plural
 
 import "golang.org/x/text/language"
 
-// PluralRule defines the CLDR plural rules for a language.
+// Rule defines the CLDR plural rules for a language.
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
-type PluralRule struct {
+type Rule struct {
 	PluralForms    map[Form]struct{}
 	PluralFormFunc func(*Operands) Form
 }
 
-func addPluralRules(rules map[language.Base]*PluralRule, ids []string, ps *PluralRule) {
+func addPluralRules(rules map[language.Base]*Rule, ids []string, ps *Rule) {
 	for _, id := range ids {
 		if id == "root" {
 			continue
