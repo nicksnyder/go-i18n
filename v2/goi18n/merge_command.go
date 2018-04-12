@@ -140,7 +140,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 		return nil, fmt.Errorf("no messages found for source locale %s", sourceLanguageTag)
 	}
 
-	pluralRules := plural.DefaultPluralRules()
+	pluralRules := plural.DefaultRules()
 	all := make(map[language.Tag]map[string]*internal.MessageTemplate)
 	all[sourceLanguageTag] = sourceMessageTemplates
 	for _, srcTemplate := range sourceMessageTemplates {

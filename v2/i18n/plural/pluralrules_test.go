@@ -17,7 +17,7 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 	if pluralRuleID == "root" {
 		return
 	}
-	pluralRules := DefaultPluralRules()
+	pluralRules := DefaultRules()
 	base := language.MustParseBase(pluralRuleID)
 	if rule := pluralRules[base]; rule != nil {
 		for _, test := range tests {

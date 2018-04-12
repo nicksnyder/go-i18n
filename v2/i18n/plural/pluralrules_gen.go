@@ -4,9 +4,8 @@ package plural
 
 import "golang.org/x/text/language"
 
-// DefaultPluralRules returns a map of PluralRules
-// generated from CLDR language data.
-func DefaultPluralRules() map[language.Base]*Rule {
+// DefaultRules returns a map of Rules generated from CLDR language data.
+func DefaultRules() map[language.Base]*Rule {
 	rules := make(map[language.Base]*Rule)
 
 	addPluralRules(rules, []string{"bm", "bo", "dz", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "root", "sah", "ses", "sg", "th", "to", "vi", "wo", "yo", "yue", "zh"}, &Rule{

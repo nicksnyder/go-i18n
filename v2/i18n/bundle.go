@@ -38,7 +38,7 @@ type Bundle struct {
 func NewBundle(defaultTag language.Tag) *Bundle {
 	b := &Bundle{
 		defaultTag:  defaultTag,
-		pluralRules: plural.DefaultPluralRules(),
+		pluralRules: plural.DefaultRules(),
 		unmarshalFuncs: map[string]UnmarshalFunc{
 			"json": json.Unmarshal,
 		},
@@ -131,7 +131,7 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 	if b.pluralRules == nil {
-		b.pluralRules = plural.DefaultPluralRules()
+		b.pluralRules = plural.DefaultRules()
 	}
 	base, _ := tag.Base()
 	pluralRule := b.pluralRules[base]
