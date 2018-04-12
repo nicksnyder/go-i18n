@@ -56,6 +56,74 @@ other = "{{.Count}} unread emails"
 			},
 		},
 		&testCase{
+			name:           "migrate source lang from v1 format",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.json": []byte(`[
+	{
+		"id": "simple",
+		"translation": "simple translation"
+	},
+	{
+		"id": "everything",
+		"translation": {
+			"zero": "zero translation",
+			"one": "one translation",
+			"two": "two translation",
+			"few": "few translation",
+			"many": "many translation",
+			"other": "other translation"
+		}
+	}
+]`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`
+simple = "simple translation"
+
+[everything]
+few = "few translation"
+many = "many translation"
+one = "one translation"
+other = "other translation"
+two = "two translation"
+zero = "zero translation"
+`),
+			},
+		},
+		&testCase{
+			name:           "migrate source lang from v1 flat format",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.json": []byte(`{
+	"simple": {
+		"other": "simple translation"
+	},
+	"everything": {
+		"zero": "zero translation",
+		"one": "one translation",
+		"two": "two translation",
+		"few": "few translation",
+		"many": "many translation",
+		"other": "other translation"
+	}
+}`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`
+simple = "simple translation"
+
+[everything]
+few = "few translation"
+many = "many translation"
+one = "one translation"
+other = "other translation"
+two = "two translation"
+zero = "zero translation"
+`),
+			},
+		},
+		&testCase{
 			name:           "merge source files",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
