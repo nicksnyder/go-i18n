@@ -32,7 +32,7 @@ bundle := i18n.NewBundle(language.English)
 Create a Localizer to use for a set of language preferences.
 
 ```go
-func(w http.ResponseWriter, r \*http.Request) {
+func(w http.ResponseWriter, r *http.Request) {
     lang := r.FormValue("lang")
     accept := r.Header.Get("Accept-Language")
     localizer := i18n.NewLocalizer(bundle, lang, accept)
