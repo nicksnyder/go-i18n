@@ -9,14 +9,14 @@ import (
 // MessageTemplate is an executable template for a message.
 type MessageTemplate struct {
 	*Message
-	PluralTemplates map[plural.PluralForm]*Template
+	PluralTemplates map[plural.Form]*Template
 }
 
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
 	mt := &MessageTemplate{
 		Message:         m,
-		PluralTemplates: make(map[plural.PluralForm]*Template),
+		PluralTemplates: make(map[plural.Form]*Template),
 	}
 	mt.setPluralTemplate(plural.Zero, m.Zero)
 	mt.setPluralTemplate(plural.One, m.One)
@@ -27,14 +27,14 @@ func NewMessageTemplate(m *Message) *MessageTemplate {
 	return mt
 }
 
-func (mt *MessageTemplate) setPluralTemplate(pluralForm plural.PluralForm, src string) {
+func (mt *MessageTemplate) setPluralTemplate(pluralForm plural.Form, src string) {
 	if src != "" {
 		mt.PluralTemplates[pluralForm] = &Template{Src: src}
 	}
 }
 
 // Execute executes the template for the plural form and template data.
-func (mt *MessageTemplate) Execute(pluralForm plural.PluralForm, data interface{}) (string, error) {
+func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
 	if err := t.parse(mt.LeftDelim, mt.RightDelim); err != nil {
 		return "", err

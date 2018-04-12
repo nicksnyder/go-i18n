@@ -10,7 +10,7 @@ import (
 
 type pluralFormTest struct {
 	num        interface{}
-	pluralForm PluralForm
+	pluralForm Form
 }
 
 func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
@@ -36,7 +36,7 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 
 }
 
-func appendIntegerTests(tests []pluralFormTest, plural PluralForm, examples []string) []pluralFormTest {
+func appendIntegerTests(tests []pluralFormTest, plural Form, examples []string) []pluralFormTest {
 	for _, ex := range expandExamples(examples) {
 		i, err := strconv.ParseInt(ex, 10, 64)
 		if err != nil {
@@ -47,7 +47,7 @@ func appendIntegerTests(tests []pluralFormTest, plural PluralForm, examples []st
 	return tests
 }
 
-func appendDecimalTests(tests []pluralFormTest, plural PluralForm, examples []string) []pluralFormTest {
+func appendDecimalTests(tests []pluralFormTest, plural Form, examples []string) []pluralFormTest {
 	for _, ex := range expandExamples(examples) {
 		tests = append(tests, pluralFormTest{ex, plural})
 	}

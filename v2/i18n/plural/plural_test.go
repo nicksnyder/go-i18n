@@ -7,7 +7,7 @@ import (
 func TestNewPluralForm(t *testing.T) {
 	tests := []struct {
 		src        string
-		pluralForm PluralForm
+		pluralForm Form
 		err        bool
 	}{
 		{"zero", Zero, false},

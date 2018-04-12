@@ -5,24 +5,24 @@ import (
 	"strings"
 )
 
-// PluralForm represents a language pluralization form as defined here:
+// Form represents a language pluralization form as defined here:
 // http://cldr.unicode.org/index/cldr-spec/plural-rules
-type PluralForm string
+type Form string
 
 // All defined plural categories.
 const (
-	Invalid PluralForm = ""
-	Zero    PluralForm = "zero"
-	One     PluralForm = "one"
-	Two     PluralForm = "two"
-	Few     PluralForm = "few"
-	Many    PluralForm = "many"
-	Other   PluralForm = "other"
+	Invalid Form = ""
+	Zero    Form = "zero"
+	One     Form = "one"
+	Two     Form = "two"
+	Few     Form = "few"
+	Many    Form = "many"
+	Other   Form = "other"
 )
 
 // NewPluralForm returns src as a PluralForm
 // or Invalid and a non-nil error if src is not a valid PluralForm.
-func NewPluralForm(src string) (PluralForm, error) {
+func NewPluralForm(src string) (Form, error) {
 	src = strings.ToLower(src)
 	switch src {
 	case "zero":

@@ -172,7 +172,7 @@ func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []la
 	return tag, nil
 }
 
-func (l *Localizer) pluralForm(base language.Base, operands *plural.Operands) plural.PluralForm {
+func (l *Localizer) pluralForm(base language.Base, operands *plural.Operands) plural.Form {
 	if operands == nil {
 		return plural.Other
 	}

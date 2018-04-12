@@ -166,7 +166,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 						Description: srcTemplate.Description,
 						Hash:        srcTemplate.Hash,
 					},
-					PluralTemplates: make(map[plural.PluralForm]*internal.Template),
+					PluralTemplates: make(map[plural.Form]*internal.Template),
 				}
 				all[dstLangTag][srcTemplate.ID] = dstMessageTemplate
 			}
@@ -250,7 +250,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.PluralRule) (active *internal.MessageTemplate, translateMessageTemplate *internal.MessageTemplate) {
 	pluralForms := pluralRule.PluralForms
 	if len(src.PluralTemplates) == 1 {
-		pluralForms = map[plural.PluralForm]struct{}{
+		pluralForms = map[plural.Form]struct{}{
 			plural.Other: struct{}{},
 		}
 	}
@@ -264,7 +264,7 @@ func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.PluralRule
 						Description: src.Description,
 						Hash:        src.Hash,
 					},
-					PluralTemplates: make(map[plural.PluralForm]*internal.Template),
+					PluralTemplates: make(map[plural.Form]*internal.Template),
 				}
 			}
 			translateMessageTemplate.PluralTemplates[pluralForm] = src.PluralTemplates[plural.Other]
@@ -277,7 +277,7 @@ func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.PluralRule
 					Description: src.Description,
 					Hash:        src.Hash,
 				},
-				PluralTemplates: make(map[plural.PluralForm]*internal.Template),
+				PluralTemplates: make(map[plural.Form]*internal.Template),
 			}
 		}
 		active.PluralTemplates[pluralForm] = dt

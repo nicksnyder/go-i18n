@@ -6,8 +6,8 @@ import "golang.org/x/text/language"
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 // http://unicode.org/reports/tr35/tr35-numbers.html#Operands
 type PluralRule struct {
-	PluralForms    map[PluralForm]struct{}
-	PluralFormFunc func(*Operands) PluralForm
+	PluralForms    map[Form]struct{}
+	PluralFormFunc func(*Operands) Form
 }
 
 func addPluralRules(rules map[language.Base]*PluralRule, ids []string, ps *PluralRule) {
@@ -20,8 +20,8 @@ func addPluralRules(rules map[language.Base]*PluralRule, ids []string, ps *Plura
 	}
 }
 
-func newPluralFormSet(pluralForms ...PluralForm) map[PluralForm]struct{} {
-	set := make(map[PluralForm]struct{}, len(pluralForms))
+func newPluralFormSet(pluralForms ...Form) map[Form]struct{} {
+	set := make(map[Form]struct{}, len(pluralForms))
 	for _, plural := range pluralForms {
 		set[plural] = struct{}{}
 	}
