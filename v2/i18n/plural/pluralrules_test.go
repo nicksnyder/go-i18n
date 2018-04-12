@@ -9,8 +9,8 @@ import (
 )
 
 type pluralFormTest struct {
-	num        interface{}
-	pluralForm Form
+	num  interface{}
+	form Form
 }
 
 func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
@@ -26,8 +26,8 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 				t.Errorf("%s: NewOperands(%d) errored with %s", pluralRuleID, test.num, err)
 				break
 			}
-			if pluralForm := rule.PluralFormFunc(ops); pluralForm != test.pluralForm {
-				t.Errorf("%s: PluralFormFunc(%#v) returned %q, %v; expected %q", pluralRuleID, ops, pluralForm, err, test.pluralForm)
+			if pluralForm := rule.PluralFormFunc(ops); pluralForm != test.form {
+				t.Errorf("%s: PluralFormFunc(%#v) returned %q, %v; expected %q", pluralRuleID, ops, pluralForm, err, test.form)
 			}
 		}
 	} else {
@@ -36,20 +36,20 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 
 }
 
-func appendIntegerTests(tests []pluralFormTest, plural Form, examples []string) []pluralFormTest {
+func appendIntegerTests(tests []pluralFormTest, form Form, examples []string) []pluralFormTest {
 	for _, ex := range expandExamples(examples) {
 		i, err := strconv.ParseInt(ex, 10, 64)
 		if err != nil {
 			panic(err)
 		}
-		tests = append(tests, pluralFormTest{ex, plural}, pluralFormTest{i, plural})
+		tests = append(tests, pluralFormTest{ex, form}, pluralFormTest{i, form})
 	}
 	return tests
 }
 
-func appendDecimalTests(tests []pluralFormTest, plural Form, examples []string) []pluralFormTest {
+func appendDecimalTests(tests []pluralFormTest, form Form, examples []string) []pluralFormTest {
 	for _, ex := range expandExamples(examples) {
-		tests = append(tests, pluralFormTest{ex, plural})
+		tests = append(tests, pluralFormTest{ex, form})
 	}
 	return tests
 }
