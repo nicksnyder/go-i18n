@@ -20,9 +20,10 @@ const (
 	Other   Form = "other"
 )
 
-// NewPluralForm returns src as a PluralForm
+// NewForm returns src as a PluralForm
 // or Invalid and a non-nil error if src is not a valid PluralForm.
-func NewPluralForm(src string) (Form, error) {
+// TODO(nick): unused?
+func NewForm(src string) (Form, error) {
 	src = strings.ToLower(src)
 	switch src {
 	case "zero":

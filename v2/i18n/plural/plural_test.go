@@ -26,7 +26,7 @@ func TestNewPluralForm(t *testing.T) {
 		{"asdf", Invalid, true},
 	}
 	for _, test := range tests {
-		pluralForm, err := NewPluralForm(test.src)
+		pluralForm, err := NewForm(test.src)
 		wrongErr := (err != nil && !test.err) || (err == nil && test.err)
 		if pluralForm != test.pluralForm || wrongErr {
 			t.Errorf("NewPlural(%#v) returned %#v,%#v; expected %#v", test.src, pluralForm, err, test.pluralForm)
