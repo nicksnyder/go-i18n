@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestNewPluralForm(t *testing.T) {
+func TestNewForm(t *testing.T) {
 	tests := []struct {
 		src        string
 		pluralForm Form
