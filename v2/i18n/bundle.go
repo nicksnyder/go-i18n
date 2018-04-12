@@ -47,6 +47,11 @@ func NewBundle(defaultTag language.Tag) *Bundle {
 	return b
 }
 
+// RegisterPluralRule registers a plural rule for a language base.
+func (b *Bundle) RegisterPluralRule(base language.Base, rule *plural.Rule) {
+	b.pluralRules[base] = rule
+}
+
 // RegisterUnmarshalFunc registers an UnmarshalFunc for format.
 func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFunc) {
 	if b.unmarshalFuncs == nil {
