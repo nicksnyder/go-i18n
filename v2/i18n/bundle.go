@@ -14,22 +14,16 @@ import (
 // UnmarshalFunc unmarshals data into v.
 type UnmarshalFunc = internal.UnmarshalFunc
 
-// Bundle stores all messages and pluralization rules.
-// Generally, your application should only need a single bundle
-// that is initialized early in your application's lifecycle.
+// Bundle stores a set of messages and pluralization rules.
+// Most applications only need a single bundle
+// that is initialized early in the application's lifecycle.
 type Bundle struct {
-	// messageTemplates maps language tags to language ids to message templates.
 	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
-
-	// pluralRules maps language tags to their plural rules.
-	pluralRules map[language.Base]*plural.Rule
-
-	// unmarshalFuncs maps file formats to unmarshal functions.
-	unmarshalFuncs map[string]UnmarshalFunc
-
-	defaultTag language.Tag
-	tags       []language.Tag
-	matcher    language.Matcher
+	pluralRules      map[language.Base]*plural.Rule
+	unmarshalFuncs   map[string]UnmarshalFunc
+	defaultTag       language.Tag
+	tags             []language.Tag
+	matcher          language.Matcher
 }
 
 // NewBundle returns a new bundle that contains the
@@ -84,7 +78,7 @@ type MessageFile = internal.MessageFile
 // It is useful for parsing translation files embedded with go-bindata.
 //
 // The format of the file is everything after the last ".".
-// The language tag .
+// the language tag of the tile is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
 	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {
