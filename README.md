@@ -8,6 +8,13 @@ go-i18n is a Go [package](#i18n-package) and a [command](#goi18n-command) that h
 * Supports message files of any format (e.g. JSON, TOML, YAML, etc.).
 * [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
+## Versions
+
+* v1 is available at 1.x.x tags.
+* v2 is available at 2.x.x tags.
+
+This README always documents the latest version (i.e. v2).
+
 ## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n)
 
 The i18n package provides support for looking up messages according to a set of locale preferences.
@@ -56,7 +63,7 @@ It requires Go 1.9 or newer.
 The goi18n command manages message files used by the i18n package.
 
 ```
-go get -u github.com/nicksnyder/go-i18n/goi18n
+go get -u github.com/nicksnyder/go-i18n/v2/goi18n
 goi18n -help
 ```
 
