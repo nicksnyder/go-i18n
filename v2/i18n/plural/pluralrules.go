@@ -1,4 +1,4 @@
-package i18n
+package plural
 
 import "golang.org/x/text/language"
 

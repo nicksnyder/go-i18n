@@ -3,6 +3,8 @@ package i18n
 import (
 	"fmt"
 
+	"github.com/nicksnyder/go-i18n/v2/i18n/plural"
+	"github.com/nicksnyder/go-i18n/v2/internal"
 	"golang.org/x/text/language"
 )
 
@@ -90,11 +92,11 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 		messageID = lc.DefaultMessage.ID
 	}
 
-	var operands *Operands
+	var operands *plural.Operands
 	templateData := lc.TemplateData
 	if lc.PluralCount != nil {
 		var err error
-		operands, err = newOperands(lc.PluralCount)
+		operands, err = plural.NewOperands(lc.PluralCount)
 		if err != nil {
 			return "", &invalidPluralCountErr{messageID: messageID, pluralCount: lc.PluralCount, err: err}
 		}
@@ -110,13 +112,13 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	}
 	base, _ := tag.Base()
 	pluralForm := l.pluralForm(base, operands)
-	if pluralForm == Invalid {
+	if pluralForm == plural.Invalid {
 		return "", &pluralizeErr{messageID: messageID, base: base}
 	}
 	return template.Execute(pluralForm, templateData)
 }
 
-func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate) {
+func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *internal.MessageTemplate) {
 	// Fast path.
 	// Optimistically assume this message id is defined in each language.
 	fastTag, template := l.matchTemplate(id, l.bundle.matcher, l.bundle.tags)
@@ -127,18 +129,18 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 		if defaultMessage == nil {
 			return fastTag, nil
 		}
-		return fastTag, NewMessageTemplate(defaultMessage)
+		return fastTag, internal.NewMessageTemplate(defaultMessage)
 	}
 	if len(l.bundle.tags) > 1 {
 		// Slow path.
 		// We didn't find a translation for the tag suggested by the default matcher
 		// so we need to create a new matcher that contains only the tags in the bundle
 		// that have this message.
-		foundTags := make([]language.Tag, 0, len(l.bundle.MessageTemplates))
+		foundTags := make([]language.Tag, 0, len(l.bundle.messageTemplates))
 		if l.bundle.defaultTag != fastTag {
 			foundTags = append(foundTags, l.bundle.defaultTag)
 		}
-		for t, templates := range l.bundle.MessageTemplates {
+		for t, templates := range l.bundle.messageTemplates {
 			if t == fastTag {
 				// We already tried this tag in the fast path
 				continue
@@ -157,26 +159,26 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 	if defaultMessage == nil {
 		return l.bundle.defaultTag, nil
 	}
-	return l.bundle.defaultTag, NewMessageTemplate(defaultMessage)
+	return l.bundle.defaultTag, internal.NewMessageTemplate(defaultMessage)
 }
 
-func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []language.Tag) (language.Tag, *MessageTemplate) {
+func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []language.Tag) (language.Tag, *internal.MessageTemplate) {
 	_, i, _ := matcher.Match(l.tags...)
 	tag := tags[i]
-	templates := l.bundle.MessageTemplates[tag]
+	templates := l.bundle.messageTemplates[tag]
 	if templates != nil && templates[id] != nil {
 		return tag, templates[id]
 	}
 	return tag, nil
 }
 
-func (l *Localizer) pluralForm(base language.Base, operands *Operands) PluralForm {
+func (l *Localizer) pluralForm(base language.Base, operands *plural.Operands) plural.PluralForm {
 	if operands == nil {
-		return Other
+		return plural.Other
 	}
 	pluralRule := l.bundle.pluralRules[base]
 	if pluralRule == nil {
-		return Invalid
+		return plural.Invalid
 	}
 	return pluralRule.PluralFormFunc(operands)
 }

@@ -1,4 +1,4 @@
-package i18n
+package plural
 
 import (
 	"strconv"
@@ -21,9 +21,9 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 	base := language.MustParseBase(pluralRuleID)
 	if rule := pluralRules[base]; rule != nil {
 		for _, test := range tests {
-			ops, err := newOperands(test.num)
+			ops, err := NewOperands(test.num)
 			if err != nil {
-				t.Errorf("%s: newOperands(%d) errored with %s", pluralRuleID, test.num, err)
+				t.Errorf("%s: NewOperands(%d) errored with %s", pluralRuleID, test.num, err)
 				break
 			}
 			if pluralForm := rule.PluralFormFunc(ops); pluralForm != test.pluralForm {

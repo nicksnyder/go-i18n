@@ -1,4 +1,4 @@
-package i18n
+package plural
 
 import (
 	"reflect"
@@ -25,20 +25,20 @@ func TestNewOperands(t *testing.T) {
 		{20.0230, nil, true},
 	}
 	for _, test := range tests {
-		ops, err := newOperands(test.input)
+		ops, err := NewOperands(test.input)
 		if err != nil && !test.err {
-			t.Errorf("newOperands(%#v) unexpected error: %s", test.input, err)
+			t.Errorf("NewOperands(%#v) unexpected error: %s", test.input, err)
 		} else if err == nil && test.err {
-			t.Errorf("newOperands(%#v) returned %#v; expected error", test.input, ops)
+			t.Errorf("NewOperands(%#v) returned %#v; expected error", test.input, ops)
 		} else if !reflect.DeepEqual(ops, test.ops) {
-			t.Errorf("newOperands(%#v) returned %#v; expected %#v", test.input, ops, test.ops)
+			t.Errorf("NewOperands(%#v) returned %#v; expected %#v", test.input, ops, test.ops)
 		}
 	}
 }
 
 func BenchmarkNewOperand(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		if _, err := newOperands("1234.56780000"); err != nil {
+		if _, err := NewOperands("1234.56780000"); err != nil {
 			b.Fatal(err)
 		}
 	}

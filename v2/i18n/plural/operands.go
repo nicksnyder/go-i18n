@@ -1,4 +1,4 @@
-package i18n
+package plural
 
 import (
 	"fmt"
@@ -48,8 +48,8 @@ func (o *Operands) NModInRange(mod, from, to int64) bool {
 	return o.T == 0 && from <= modI && modI <= to
 }
 
-// newOperands returns the operands for number.
-func newOperands(number interface{}) (*Operands, error) {
+// NewOperands returns the operands for number.
+func NewOperands(number interface{}) (*Operands, error) {
 	switch number := number.(type) {
 	case int:
 		return newOperandsInt64(int64(number)), nil

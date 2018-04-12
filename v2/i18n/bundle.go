@@ -6,21 +6,24 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/nicksnyder/go-i18n/v2/i18n/plural"
+	"github.com/nicksnyder/go-i18n/v2/internal"
+
 	"golang.org/x/text/language"
 )
 
 // UnmarshalFunc unmarshals data into v.
-type UnmarshalFunc func(data []byte, v interface{}) error
+type UnmarshalFunc = internal.UnmarshalFunc
 
 // Bundle stores all messages and pluralization rules.
 // Generally, your application should only need a single bundle
 // that is initialized early in your application's lifecycle.
 type Bundle struct {
-	// MessageTemplates maps language tags to language ids to message templates.
-	MessageTemplates map[language.Tag]map[string]*MessageTemplate
+	// messageTemplates maps language tags to language ids to message templates.
+	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
 
 	// pluralRules maps language tags to their plural rules.
-	pluralRules map[language.Base]*PluralRule
+	pluralRules map[language.Base]*plural.PluralRule
 
 	// unmarshalFuncs maps file formats to unmarshal functions.
 	unmarshalFuncs map[string]UnmarshalFunc
@@ -35,7 +38,7 @@ type Bundle struct {
 func NewBundle(defaultTag language.Tag) *Bundle {
 	b := &Bundle{
 		defaultTag:  defaultTag,
-		pluralRules: DefaultPluralRules(),
+		pluralRules: plural.DefaultPluralRules(),
 		unmarshalFuncs: map[string]UnmarshalFunc{
 			"json": json.Unmarshal,
 		},
@@ -71,81 +74,17 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 }
 
 // MessageFile represents a parsed message file.
-type MessageFile struct {
-	Path     string
-	Tag      language.Tag
-	Format   string
-	Messages []*Message
-}
+type MessageFile = internal.MessageFile
 
 // ParseMessageFileBytes parses the bytes in buf to add translations to the bundle.
 // It is useful for parsing translation files embedded with go-bindata.
 //
 // The format of the file is everything after the last ".".
-//
-// The language tag of path is the last match of LanguageTagRegex, excluding everything after the last ".".
+// The language tag .
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
-	lang, format := parsePath(path)
-	tag, err := language.Parse(lang)
+	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {
 		return nil, err
-	}
-	messageFile := &MessageFile{
-		Path:   path,
-		Tag:    tag,
-		Format: format,
-	}
-	if len(buf) == 0 {
-		return messageFile, nil
-	}
-	var unmarshalFunc UnmarshalFunc
-	if b.unmarshalFuncs != nil {
-		unmarshalFunc = b.unmarshalFuncs[messageFile.Format]
-	}
-	if unmarshalFunc == nil {
-		return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
-	}
-	var raw interface{}
-	if err := unmarshalFunc(buf, &raw); err != nil {
-		return nil, err
-	}
-	switch data := raw.(type) {
-	case map[string]interface{}:
-		messageFile.Messages = make([]*Message, 0, len(data))
-		for id, data := range data {
-			m, err := NewMessage(data)
-			if err != nil {
-				return nil, err
-			}
-			m.ID = id
-			messageFile.Messages = append(messageFile.Messages, m)
-		}
-	case map[interface{}]interface{}:
-		messageFile.Messages = make([]*Message, 0, len(data))
-		for id, data := range data {
-			strid, ok := id.(string)
-			if !ok {
-				return nil, fmt.Errorf("expected key to be string but got %#v", id)
-			}
-			m, err := NewMessage(data)
-			if err != nil {
-				return nil, err
-			}
-			m.ID = strid
-			messageFile.Messages = append(messageFile.Messages, m)
-		}
-	case []interface{}:
-		// Backward compatability for v1 file format.
-		messageFile.Messages = make([]*Message, 0, len(data))
-		for _, data := range data {
-			m, err := NewMessage(data)
-			if err != nil {
-				return nil, err
-			}
-			messageFile.Messages = append(messageFile.Messages, m)
-		}
-	default:
-		return nil, fmt.Errorf("unsupported file format %T", raw)
 	}
 	if err := b.AddMessages(messageFile.Tag, messageFile.Messages...); err != nil {
 		return nil, err
@@ -192,7 +131,7 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 	if b.pluralRules == nil {
-		b.pluralRules = DefaultPluralRules()
+		b.pluralRules = plural.DefaultPluralRules()
 	}
 	base, _ := tag.Base()
 	pluralRule := b.pluralRules[base]
@@ -200,15 +139,15 @@ func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 		return fmt.Errorf("no plural rule registered for %s", base)
 	}
 	b.pluralRules[base] = pluralRule
-	if b.MessageTemplates == nil {
-		b.MessageTemplates = map[language.Tag]map[string]*MessageTemplate{}
+	if b.messageTemplates == nil {
+		b.messageTemplates = map[language.Tag]map[string]*internal.MessageTemplate{}
 	}
-	if b.MessageTemplates[tag] == nil {
-		b.MessageTemplates[tag] = map[string]*MessageTemplate{}
+	if b.messageTemplates[tag] == nil {
+		b.messageTemplates[tag] = map[string]*internal.MessageTemplate{}
 		b.addTag(tag)
 	}
 	for _, m := range messages {
-		b.MessageTemplates[tag][m.ID] = NewMessageTemplate(m)
+		b.messageTemplates[tag][m.ID] = internal.NewMessageTemplate(m)
 	}
 	return nil
 }

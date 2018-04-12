@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/nicksnyder/go-i18n/v2/internal"
 )
 
 func usageExtract() {
@@ -92,9 +93,9 @@ func (ec *extractCommand) execute() error {
 			return err
 		}
 	}
-	messageTemplates := map[string]*i18n.MessageTemplate{}
+	messageTemplates := map[string]*internal.MessageTemplate{}
 	for _, m := range messages {
-		messageTemplates[m.ID] = i18n.NewMessageTemplate(m)
+		messageTemplates[m.ID] = internal.NewMessageTemplate(m)
 	}
 	path, content, err := writeFile(ec.outdir, "active", ec.sourceLanguage.Tag(), "toml", messageTemplates, true)
 	if err != nil {
@@ -174,7 +175,7 @@ func (e *extractor) extractMessage(node ast.Node) {
 		data[key.Name] = v
 	}
 	if se.Sel.Name == "Message" {
-		e.messages = append(e.messages, i18n.MustNewMessage(data))
+		e.messages = append(e.messages, internal.MustNewMessage(data))
 	} else if messageID := data["MessageID"]; messageID != "" {
 		e.messages = append(e.messages, &i18n.Message{ID: messageID})
 	}
