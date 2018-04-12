@@ -82,15 +82,14 @@ package plural
 
 import "golang.org/x/text/language"
 
-// DefaultPluralRules returns a map of PluralRules
-// generated from CLDR language data.
-func DefaultPluralRules() map[language.Base]*PluralRule {
-	rules := make(map[language.Base]*PluralRule)
+// DefaultRules returns a map of Rules generated from CLDR language data.
+func DefaultRules() map[language.Base]*Rule {
+	rules := make(map[language.Base]*Rule)
 
 {{range .PluralGroups}}
-	addPluralRules(rules, {{printf "%#v" .SplitLocales}}, &PluralRule{
+	addPluralRules(rules, {{printf "%#v" .SplitLocales}}, &Rule{
 		PluralForms: newPluralFormSet({{range $i, $e := .PluralRules}}{{if $i}}, {{end}}{{$e.CountTitle}}{{end}}),
-		PluralFormFunc: func(ops *Operands) PluralForm { {{range .PluralRules}}{{if .GoCondition}}
+		PluralFormFunc: func(ops *Operands) Form { {{range .PluralRules}}{{if .GoCondition}}
 			// {{.Condition}}
 			if {{.GoCondition}} {
 				return {{.CountTitle}}
