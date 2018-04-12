@@ -33,6 +33,53 @@ var everythingMessage = internal.MustNewMessage(map[string]string{
 	"other":       "other translation",
 })
 
+func TestPseudoLanguage(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	expected := "simple simple"
+	bundle.MustParseMessageFileBytes([]byte(`
+# Comment
+simple = "simple simple"
+`), "en-double.toml")
+	localizer := NewLocalizer(bundle, "en-double")
+	localized, err := localizer.Localize(&LocalizeConfig{MessageID: "simple"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if localized != expected {
+		t.Fatalf("expected %q\ngot %q", expected, localized)
+	}
+}
+
+func TestPseudoLanguagePlural(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`
+[everything]
+few = "few translation"
+many = "many translation"
+one = "one translation"
+other = "other translation"
+two = "two translation"
+zero = "zero translation"
+`), "en-double.toml")
+	localizer := NewLocalizer(bundle, "en-double")
+	{
+		expected := "other translation"
+		localized := localizer.MustLocalize(&LocalizeConfig{MessageID: "everything", PluralCount: 2})
+		if localized != expected {
+			t.Fatalf("expected %q\ngot %q", expected, localized)
+		}
+	}
+	{
+		expected := "one translation"
+		localized := localizer.MustLocalize(&LocalizeConfig{MessageID: "everything", PluralCount: 1})
+		if localized != expected {
+			t.Fatalf("expected %q\ngot %q", expected, localized)
+		}
+	}
+}
+
 func TestJSON(t *testing.T) {
 	var bundle Bundle
 	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)

@@ -21,10 +21,7 @@ type MessageFile struct {
 // ParseMessageFileBytes returns the messages parsed from file.
 func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]UnmarshalFunc) (*MessageFile, error) {
 	lang, format := parsePath(path)
-	tag, err := language.Parse(lang)
-	if err != nil {
-		return nil, err
-	}
+	tag := language.Make(lang)
 	messageFile := &MessageFile{
 		Path:   path,
 		Tag:    tag,
