@@ -177,7 +177,8 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 				if unmergedTemplate == nil {
 					continue
 				}
-				if unmergedTemplate.Hash != srcTemplate.Hash {
+				// Ignore empty hashes for v1 backward compatibility.
+				if unmergedTemplate.Hash != "" && unmergedTemplate.Hash != srcTemplate.Hash {
 					// This was translated from different content so discard.
 					continue
 				}

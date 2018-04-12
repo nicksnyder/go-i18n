@@ -135,6 +135,29 @@ zero = "zero translation"
 			},
 		},
 		&testCase{
+			name:           "missing hash",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"en-US.toml": []byte(`
+1HelloMessage = "Hello"
+`),
+				"es-ES.toml": []byte(`
+[1HelloMessage]
+other = "Hola"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`
+1HelloMessage = "Hello"
+`),
+				"active.es-ES.toml": expectFile(`
+[1HelloMessage]
+hash = "sha1-f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
+other = "Hola"
+`),
+			},
+		},
+		&testCase{
 			name:           "add single translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
