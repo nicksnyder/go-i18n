@@ -40,7 +40,7 @@ import (
 )
 
 func mainUsage() {
-	fmt.Fprintf(os.Stderr, `goi18n is a tool for managing message translations.
+	fmt.Fprintf(os.Stderr, `goi18n (v2) is a tool for managing message translations.
 
 Usage:
 
