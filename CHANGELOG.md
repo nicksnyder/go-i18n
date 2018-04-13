@@ -37,3 +37,5 @@ The goi18n command has similarities and differences:
 * `goi18n constants` no longer exists. Prefer to extract messages directly from Go source files.
 
 v2 makes changes to the canonical message file format, but you can use v1 message files with v2. Message files will be converted to the new format the first time they are processed by the new `goi18n merge` command.
+
+v2 requires Go 1.9 or newer.
