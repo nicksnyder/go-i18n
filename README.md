@@ -58,7 +58,7 @@ localizer.MustLocalize(&i18n.LocalizeConfig{
 
 It requires Go 1.9 or newer.
 
-## Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/goi18n)
+## Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/goi18n)
 
 The goi18n command manages message files used by the i18n package.
 
