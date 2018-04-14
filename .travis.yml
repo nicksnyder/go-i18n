@@ -10,7 +10,7 @@ matrix:
     - go: 1.10.x
       env: PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
 
-before_install:
+install:
   - go get -t -v $PKG
 
 script:
