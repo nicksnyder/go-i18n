@@ -11,7 +11,7 @@ matrix:
       env: PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
 
 before_install:
-  - go get -t -v ./...
+  - go get -t -v $PKG
 
 script:
   - go test $COVER $PKG
