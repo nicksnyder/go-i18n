@@ -22,7 +22,7 @@ v2 is rewrite of the API from first principals to make it more idiomatic Go, and
 * Automatically extract messages from Go source code (https://github.com/nicksnyder/go-i18n/issues/64)
 * Provide clearer documentation and examples (https://github.com/nicksnyder/go-i18n/issues/27)
 * Reduce complexity of file format for simple translations (https://github.com/nicksnyder/go-i18n/issues/85)
-* Support descirptions for messages (https://github.com/nicksnyder/go-i18n/issues/8)
+* Support descriptions for messages (https://github.com/nicksnyder/go-i18n/issues/8)
 * Support custom template delimiters (https://github.com/nicksnyder/go-i18n/issues/88)
 
 ### Upgrading from v1
