@@ -5,13 +5,13 @@ matrix:
   include:
     - go: 1.2.x
       env: PKG='./i18n/... ./goi18n/...'
-    - go: 1.7.x
+    - go: 1.9.x
       env: PKG='./...'
     - go: 1.10.x
       env: PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
 
-before_install:
-  - go get -t -v ./...
+install:
+  - go get -t -v $PKG
 
 script:
   - go test $COVER $PKG
