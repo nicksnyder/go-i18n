@@ -3,7 +3,7 @@ package internal
 import (
 	"bytes"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/plural"
+	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 )
 
 // MessageTemplate is an executable template for a message.

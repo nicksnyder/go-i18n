@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/plural"
 	"github.com/nicksnyder/go-i18n/v2/internal"
+	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 
 	"golang.org/x/text/language"
 )
