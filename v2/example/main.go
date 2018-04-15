@@ -1,3 +1,4 @@
+// Command example runs a sample webserver that uses go-i18n/v2/i18n.
 package main
 
 import (
