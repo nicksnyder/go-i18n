@@ -75,10 +75,10 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 type MessageFile = internal.MessageFile
 
 // ParseMessageFileBytes parses the bytes in buf to add translations to the bundle.
-// It is useful for parsing translation files embedded with go-bindata.
 //
 // The format of the file is everything after the last ".".
-// the language tag of the tile is everything after the second to last "." or after the last path separator, but before the format.
+//
+// The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
 	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {

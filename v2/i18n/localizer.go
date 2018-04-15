@@ -19,8 +19,8 @@ type Localizer struct {
 }
 
 // NewLocalizer returns a new Localizer that looks up messages
-// in the bundle in priority order of langs.
-// It can parse Accept-Language headers as defined in http://www.ietf.org/rfc/rfc2616.txt
+// in the bundle according to the language preferences in langs.
+// It can parse Accept-Language headers as defined in http://www.ietf.org/rfc/rfc2616.txt.
 func NewLocalizer(bundle *Bundle, langs ...string) *Localizer {
 	return &Localizer{
 		bundle: bundle,
@@ -47,7 +47,8 @@ type LocalizeConfig struct {
 	MessageID string
 
 	// TemplateData is the data passed when executing the message's template.
-	// If TemplateData is nil and PluralCount is not nil, then
+	// If TemplateData is nil and PluralCount is not nil, then the message template
+	// will be executed with data that contains the plural count.
 	TemplateData interface{}
 
 	// PluralCount determines which plural form of the message is used.
@@ -85,7 +86,6 @@ func (e *pluralizeErr) Error() string {
 }
 
 // Localize returns a localized message.
-// If no message is found in the bundle, it returns the empty string.
 func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	messageID := lc.MessageID
 	if lc.DefaultMessage != nil {

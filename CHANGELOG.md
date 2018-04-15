@@ -9,7 +9,6 @@ To see the documentation for minor or patch version, [view the release notes](ht
 ### Motivation
 
 The first commit to this project was January 2012 (go1 had not yet been released) and v1.0.0 was tagged June 2015 (go1.4).
-I built the first version of this library based on my experience using gettext templates in PHP, and as a means to learn Go.
 This project has evolved with the Go ecosystem since then in a backwards compatible way,
 but there is a growing list of issues and warts that cannot be addressed without breaking compatiblity.
 

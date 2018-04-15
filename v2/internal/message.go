@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Message is a message that can be localized.
+// Message is a string that can be localized.
 type Message struct {
 	// ID uniquely identifies the message.
 	ID string
