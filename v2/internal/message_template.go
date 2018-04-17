@@ -14,22 +14,25 @@ type MessageTemplate struct {
 
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
-	mt := &MessageTemplate{
-		Message:         m,
-		PluralTemplates: make(map[plural.Form]*Template),
+	pluralTemplates := map[plural.Form]*Template{}
+	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero)
+	setPluralTemplate(pluralTemplates, plural.One, m.One)
+	setPluralTemplate(pluralTemplates, plural.Two, m.Two)
+	setPluralTemplate(pluralTemplates, plural.Few, m.Few)
+	setPluralTemplate(pluralTemplates, plural.Many, m.Many)
+	setPluralTemplate(pluralTemplates, plural.Other, m.Other)
+	if len(pluralTemplates) == 0 {
+		return nil
 	}
-	mt.setPluralTemplate(plural.Zero, m.Zero)
-	mt.setPluralTemplate(plural.One, m.One)
-	mt.setPluralTemplate(plural.Two, m.Two)
-	mt.setPluralTemplate(plural.Few, m.Few)
-	mt.setPluralTemplate(plural.Many, m.Many)
-	mt.setPluralTemplate(plural.Other, m.Other)
-	return mt
+	return &MessageTemplate{
+		Message:         m,
+		PluralTemplates: pluralTemplates,
+	}
 }
 
-func (mt *MessageTemplate) setPluralTemplate(pluralForm plural.Form, src string) {
+func setPluralTemplate(pluralTemplates map[plural.Form]*Template, pluralForm plural.Form, src string) {
 	if src != "" {
-		mt.PluralTemplates[pluralForm] = &Template{Src: src}
+		pluralTemplates[pluralForm] = &Template{Src: src}
 	}
 }
 
