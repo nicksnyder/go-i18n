@@ -26,7 +26,17 @@ func TestLocalizer_Localize(t *testing.T) {
 			expectedLocalized: "",
 		},
 		{
-			name:            "empty translation",
+			name:            "empty translation without fallback",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.Spanish: []*Message{{ID: "HelloWorld"}},
+			},
+			acceptLangs: []string{"es"},
+			conf:        &LocalizeConfig{MessageID: "HelloWorld"},
+			expectedErr: &messageNotFoundErr{messageID: "HelloWorld"},
+		},
+		{
+			name:            "empty translation with fallback",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
 				language.English: []*Message{{ID: "HelloWorld", Other: "Hello World!"}},
