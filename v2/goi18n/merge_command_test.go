@@ -25,7 +25,7 @@ func expectFile(s string) []byte {
 
 func TestMerge(t *testing.T) {
 	testCases := []*testCase{
-		&testCase{
+		{
 			name:           "single identity",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -35,7 +35,7 @@ func TestMerge(t *testing.T) {
 				"active.en-US.toml": []byte("1HelloMessage = \"Hello\"\n"),
 			},
 		},
-		&testCase{
+		{
 			name:           "plural identity",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -55,7 +55,7 @@ other = "{{.Count}} unread emails"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "migrate source lang from v1 format",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -91,7 +91,7 @@ zero = "zero translation"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "migrate source lang from v1 flat format",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -123,7 +123,7 @@ zero = "zero translation"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "merge source files",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -134,7 +134,7 @@ zero = "zero translation"
 				"active.en-US.toml": []byte("1HelloMessage = \"Hello\"\n2GoodbyeMessage = \"Goodbye\"\n"),
 			},
 		},
-		&testCase{
+		{
 			name:           "missing hash",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -157,7 +157,7 @@ other = "Hola"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "add single translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -188,7 +188,7 @@ other = "Goodbye"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "remove single translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -216,7 +216,7 @@ other = "Hola"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "edit single translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -240,7 +240,7 @@ other = "Hi"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "add plural translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -287,7 +287,7 @@ other = "{{.Count}} unread emails"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "remove plural translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -352,7 +352,7 @@ other = "Hello"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "edit plural translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -425,7 +425,7 @@ other = "{{.Count}} unread emails!"
 `),
 			},
 		},
-		&testCase{
+		{
 			name:           "merge plural translation",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{

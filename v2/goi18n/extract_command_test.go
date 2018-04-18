@@ -37,7 +37,7 @@ func TestExtract(t *testing.T) {
 			}
 			`,
 			messages: []*i18n.Message{
-				&i18n.Message{
+				{
 					ID: "Plural ID",
 				},
 			},
@@ -56,7 +56,7 @@ func TestExtract(t *testing.T) {
 			}
 			`,
 			messages: []*i18n.Message{
-				&i18n.Message{
+				{
 					ID: "Plural ID",
 				},
 			},
@@ -75,7 +75,7 @@ func TestExtract(t *testing.T) {
 			}
 			`,
 			messages: []*i18n.Message{
-				&i18n.Message{
+				{
 					ID: "Plural ID",
 				},
 			},
@@ -94,7 +94,7 @@ func TestExtract(t *testing.T) {
 			}
 			`,
 			messages: []*i18n.Message{
-				&i18n.Message{
+				{
 					ID: "Plural ID",
 				},
 			},
@@ -120,7 +120,7 @@ func TestExtract(t *testing.T) {
 			}
 			`,
 			messages: []*i18n.Message{
-				&i18n.Message{
+				{
 					ID:          "Plural ID",
 					Description: "Plural description",
 					Zero:        "Zero translation",

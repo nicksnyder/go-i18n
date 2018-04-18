@@ -29,7 +29,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "empty translation without fallback",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.Spanish: []*Message{{ID: "HelloWorld"}},
+				language.Spanish: {{ID: "HelloWorld"}},
 			},
 			acceptLangs: []string{"es"},
 			conf:        &LocalizeConfig{MessageID: "HelloWorld"},
@@ -39,8 +39,8 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "empty translation with fallback",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{ID: "HelloWorld", Other: "Hello World!"}},
-				language.Spanish: []*Message{{ID: "HelloWorld"}},
+				language.English: {{ID: "HelloWorld", Other: "Hello World!"}},
+				language.Spanish: {{ID: "HelloWorld"}},
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
@@ -50,7 +50,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "missing translation from default language with other translation",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.Spanish: []*Message{{ID: "HelloWorld", Other: "other"}},
+				language.Spanish: {{ID: "HelloWorld", Other: "other"}},
 			},
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
@@ -69,7 +69,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "missing translation not default language with other translation",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.French: []*Message{{ID: "HelloWorld", Other: "other"}},
+				language.French: {{ID: "HelloWorld", Other: "other"}},
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
@@ -80,7 +80,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "accept default language, message in bundle",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{ID: "HelloWorld", Other: "other"}},
+				language.English: {{ID: "HelloWorld", Other: "other"}},
 			},
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
@@ -90,7 +90,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "accept default language, message in bundle, default message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{ID: "HelloWorld", Other: "bundle other"}},
+				language.English: {{ID: "HelloWorld", Other: "bundle other"}},
 			},
 			acceptLangs: []string{"en"},
 			conf: &LocalizeConfig{
@@ -102,7 +102,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "accept not default language, message in bundle",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.Spanish: []*Message{{ID: "HelloWorld", Other: "other"}},
+				language.Spanish: {{ID: "HelloWorld", Other: "other"}},
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
@@ -112,7 +112,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "accept not default language, other message in bundle, default message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{ID: "HelloWorld", Other: "bundle other"}},
+				language.English: {{ID: "HelloWorld", Other: "bundle other"}},
 			},
 			acceptLangs: []string{"es"},
 			conf: &LocalizeConfig{
@@ -124,7 +124,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "accept not default language, message in bundle, default message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.Spanish: []*Message{{ID: "HelloWorld", Other: "bundle other"}},
+				language.Spanish: {{ID: "HelloWorld", Other: "bundle other"}},
 			},
 			acceptLangs: []string{"es"},
 			conf: &LocalizeConfig{
@@ -154,7 +154,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "fallback to non-default less specific language",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.Spanish: []*Message{{ID: "HelloWorld", Other: "bundle other"}},
+				language.Spanish: {{ID: "HelloWorld", Other: "bundle other"}},
 			},
 			acceptLangs: []string{"es-ES"},
 			conf: &LocalizeConfig{
@@ -166,7 +166,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "fallback to non-default more specific language",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.EuropeanSpanish: []*Message{{ID: "HelloWorld", Other: "bundle other"}},
+				language.EuropeanSpanish: {{ID: "HelloWorld", Other: "bundle other"}},
 			},
 			acceptLangs: []string{"es"},
 			conf: &LocalizeConfig{
@@ -178,7 +178,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "plural count one, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "Cats",
 					One:   "I have {{.PluralCount}} cat",
 					Other: "I have {{.PluralCount}} cats",
@@ -195,7 +195,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "plural count other, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "Cats",
 					One:   "I have {{.PluralCount}} cat",
 					Other: "I have {{.PluralCount}} cats",
@@ -212,7 +212,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "plural count float, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "Cats",
 					One:   "I have {{.PluralCount}} cat",
 					Other: "I have {{.PluralCount}} cats",
@@ -271,7 +271,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "template data, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "HelloPerson",
 					Other: "Hello {{.Person}}",
 				}},
@@ -304,7 +304,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "template data, custom delims, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:         "HelloPerson",
 					Other:      "Hello <<.Person>>",
 					LeftDelim:  "<<",
@@ -341,7 +341,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "template data, plural count one, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "PersonCats",
 					One:   "{{.Person}} has {{.Count}} cat",
 					Other: "{{.Person}} has {{.Count}} cats",
@@ -362,7 +362,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "template data, plural count other, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "PersonCats",
 					One:   "{{.Person}} has {{.Count}} cat",
 					Other: "{{.Person}} has {{.Count}} cats",
@@ -383,7 +383,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "template data, plural count float, bundle message",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "PersonCats",
 					One:   "{{.Person}} has {{.Count}} cat",
 					Other: "{{.Person}} has {{.Count}} cats",
@@ -458,11 +458,11 @@ func TestLocalizer_Localize(t *testing.T) {
 			name:            "test slow path",
 			defaultLanguage: language.Spanish,
 			messages: map[language.Tag][]*Message{
-				language.English: []*Message{{
+				language.English: {{
 					ID:    "Hello",
 					Other: "Hello!",
 				}},
-				language.AmericanEnglish: []*Message{{
+				language.AmericanEnglish: {{
 					ID:    "Goodbye",
 					Other: "Goodbye!",
 				}},

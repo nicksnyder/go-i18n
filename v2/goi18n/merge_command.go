@@ -252,7 +252,7 @@ func activeDst(src, dst *internal.MessageTemplate, pluralRule *plural.Rule) (act
 	pluralForms := pluralRule.PluralForms
 	if len(src.PluralTemplates) == 1 {
 		pluralForms = map[plural.Form]struct{}{
-			plural.Other: struct{}{},
+			plural.Other: {},
 		}
 	}
 	for pluralForm := range pluralForms {
