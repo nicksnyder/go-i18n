@@ -2,10 +2,11 @@ package i18n_test
 
 import (
 	"fmt"
+
 	"github.com/nicksnyder/go-i18n/i18n"
 )
 
-func ExampleYAML() {
+func ExampleMustLoadTranslationFile_yaml() {
 	i18n.MustLoadTranslationFile("../goi18n/testdata/en-us.yaml")
 
 	T, _ := i18n.Tfunc("en-US")

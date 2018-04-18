@@ -138,9 +138,11 @@ func BenchmarkExecuteHelloNameTemplate(b *testing.B) {
 	}
 }
 
+var sprintfResult string
+
 func BenchmarkSprintf(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		fmt.Sprintf("hello %s", "nick")
+		sprintfResult = fmt.Sprintf("hello %s", "nick")
 	}
 }
