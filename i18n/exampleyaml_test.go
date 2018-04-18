@@ -6,7 +6,7 @@ import (
 	"github.com/nicksnyder/go-i18n/i18n"
 )
 
-func ExampleMustLoadTranslationFile_yaml() {
+func Example_yaml() {
 	i18n.MustLoadTranslationFile("../goi18n/testdata/en-us.yaml")
 
 	T, _ := i18n.Tfunc("en-US")
