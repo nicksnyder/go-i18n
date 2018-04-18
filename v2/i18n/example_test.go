@@ -10,6 +10,19 @@ import (
 
 func ExampleLocalizer_MustLocalize() {
 	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "HelloWorld",
+			Other: "Hello World!",
+		},
+	}))
+	// Output:
+	// Hello World!
+}
+
+func ExampleLocalizer_MustLocalize_noDefaultMessage() {
+	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 HelloWorld = "Hello World!"
@@ -29,19 +42,6 @@ HelloWorld = "Hola Mundo!"
 	// Output:
 	// Hello World!
 	// Hola Mundo!
-}
-
-func ExampleLocalizer_MustLocalize_defaultMessage() {
-	bundle := i18n.NewBundle(language.English)
-	localizer := i18n.NewLocalizer(bundle, "en")
-	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "HelloWorld",
-			Other: "Hello World!",
-		},
-	}))
-	// Output:
-	// Hello World!
 }
 
 func ExampleLocalizer_MustLocalize_plural() {
