@@ -110,13 +110,12 @@ func parseTranslations(filename string, buf []byte) ([]translation.Translation, 
 			return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
 		}
 		return parseStandardFormat(standardFormat)
-	} else {
-		var flatFormat map[string]map[string]interface{}
-		if err := unmarshal(ext, buf, &flatFormat); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
-		}
-		return parseFlatFormat(flatFormat)
 	}
+	var flatFormat map[string]map[string]interface{}
+	if err := unmarshal(ext, buf, &flatFormat); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %v: %v", filename, err)
+	}
+	return parseFlatFormat(flatFormat)
 }
 
 func isStandardFormat(ext string, buf []byte) bool {
