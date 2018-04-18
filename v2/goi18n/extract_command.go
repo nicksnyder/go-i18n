@@ -97,7 +97,7 @@ func (ec *extractCommand) execute() error {
 	for _, m := range messages {
 		messageTemplates[m.ID] = internal.NewMessageTemplate(m)
 	}
-	path, content, err := writeFile(ec.outdir, "active", ec.sourceLanguage.Tag(), "toml", messageTemplates, true)
+	path, content, err := writeFile(ec.outdir, "active", ec.sourceLanguage.Tag(), ec.format, messageTemplates, true)
 	if err != nil {
 		return err
 	}
