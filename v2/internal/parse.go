@@ -67,7 +67,7 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 			messageFile.Messages = append(messageFile.Messages, m)
 		}
 	case []interface{}:
-		// Backward compatability for v1 file format.
+		// Backward compatibility for v1 file format.
 		messageFile.Messages = make([]*Message, 0, len(data))
 		for _, data := range data {
 			m, err := NewMessage(data)
