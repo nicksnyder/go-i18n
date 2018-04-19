@@ -19,7 +19,7 @@ type UnmarshalFunc = internal.UnmarshalFunc
 // that is initialized early in the application's lifecycle.
 type Bundle struct {
 	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
-	pluralRules      map[language.Base]*plural.Rule
+	pluralRules      plural.Rules
 	unmarshalFuncs   map[string]UnmarshalFunc
 	defaultTag       language.Tag
 	tags             []language.Tag
@@ -39,11 +39,6 @@ func NewBundle(defaultTag language.Tag) *Bundle {
 	b.addTag(defaultTag)
 	return b
 }
-
-// RegisterPluralRule registers a plural rule for a language base.
-// func (b *Bundle) RegisterPluralRule(base language.Base, rule *plural.Rule) {
-// 	b.pluralRules[base] = rule
-// }
 
 // RegisterUnmarshalFunc registers an UnmarshalFunc for format.
 func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFunc) {
@@ -104,12 +99,10 @@ func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 	if b.pluralRules == nil {
 		b.pluralRules = plural.DefaultRules()
 	}
-	base, _ := tag.Base()
-	pluralRule := b.pluralRules[base]
+	pluralRule := b.pluralRules.Rule(tag)
 	if pluralRule == nil {
-		return fmt.Errorf("no plural rule registered for %s", base)
+		return fmt.Errorf("no plural rule registered for %s", tag)
 	}
-	b.pluralRules[base] = pluralRule
 	if b.messageTemplates == nil {
 		b.messageTemplates = map[language.Tag]map[string]*internal.MessageTemplate{}
 	}
