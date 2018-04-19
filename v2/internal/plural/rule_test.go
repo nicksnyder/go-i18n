@@ -18,8 +18,8 @@ func runTests(t *testing.T, pluralRuleID string, tests []pluralFormTest) {
 		return
 	}
 	pluralRules := DefaultRules()
-	base := language.MustParseBase(pluralRuleID)
-	if rule := pluralRules[base]; rule != nil {
+	tag := language.MustParse(pluralRuleID)
+	if rule := pluralRules.Rule(tag); rule != nil {
 		for _, test := range tests {
 			ops, err := NewOperands(test.num)
 			if err != nil {

@@ -80,11 +80,9 @@ var codeTemplate = template.Must(template.New("rule").Parse(`// This file is gen
 
 package plural
 
-import "golang.org/x/text/language"
-
 // DefaultRules returns a map of Rules generated from CLDR language data.
-func DefaultRules() map[language.Base]*Rule {
-	rules := make(map[language.Base]*Rule)
+func DefaultRules() Rules {
+	rules := Rules{}
 
 {{range .PluralGroups}}
 	addPluralRules(rules, {{printf "%#v" .SplitLocales}}, &Rule{

@@ -78,11 +78,11 @@ func (e *messageNotFoundErr) Error() string {
 
 type pluralizeErr struct {
 	messageID string
-	base      language.Base
+	tag       language.Tag
 }
 
 func (e *pluralizeErr) Error() string {
-	return fmt.Sprintf("unable to pluralize %q because there no plural rule for %q", e.messageID, e.base)
+	return fmt.Sprintf("unable to pluralize %q because there no plural rule for %q", e.messageID, e.tag)
 }
 
 // Localize returns a localized message.
@@ -110,10 +110,9 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	if template == nil {
 		return "", &messageNotFoundErr{messageID: messageID}
 	}
-	base, _ := tag.Base()
-	pluralForm := l.pluralForm(base, operands)
+	pluralForm := l.pluralForm(tag, operands)
 	if pluralForm == plural.Invalid {
-		return "", &pluralizeErr{messageID: messageID, base: base}
+		return "", &pluralizeErr{messageID: messageID, tag: tag}
 	}
 	return template.Execute(pluralForm, templateData)
 }
@@ -172,11 +171,11 @@ func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []la
 	return tag, nil
 }
 
-func (l *Localizer) pluralForm(base language.Base, operands *plural.Operands) plural.Form {
+func (l *Localizer) pluralForm(tag language.Tag, operands *plural.Operands) plural.Form {
 	if operands == nil {
 		return plural.Other
 	}
-	pluralRule := l.bundle.pluralRules[base]
+	pluralRule := l.bundle.pluralRules.Rule(tag)
 	if pluralRule == nil {
 		return plural.Invalid
 	}

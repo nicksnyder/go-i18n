@@ -148,8 +148,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 			if dstLangTag == sourceLanguageTag {
 				continue
 			}
-			dstBase, _ := dstLangTag.Base()
-			pluralRule := pluralRules[dstBase]
+			pluralRule := pluralRules.Rule(dstLangTag)
 			if pluralRule == nil {
 				// Non-standard languages not supported because
 				// we don't know if translations are complete or not.
@@ -202,8 +201,7 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 			active[langTag] = messageTemplates
 			continue
 		}
-		base, _ := langTag.Base()
-		pluralRule := pluralRules[base]
+		pluralRule := pluralRules.Rule(langTag)
 		if pluralRule == nil {
 			// Non-standard languages not supported because
 			// we don't know if translations are complete or not.
