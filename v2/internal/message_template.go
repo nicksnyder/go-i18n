@@ -3,6 +3,8 @@ package internal
 import (
 	"bytes"
 
+	"text/template"
+
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 )
 
@@ -37,9 +39,9 @@ func setPluralTemplate(pluralTemplates map[plural.Form]*Template, pluralForm plu
 }
 
 // Execute executes the template for the plural form and template data.
-func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}) (string, error) {
+func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs template.FuncMap) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
-	if err := t.parse(mt.LeftDelim, mt.RightDelim); err != nil {
+	if err := t.parse(mt.LeftDelim, mt.RightDelim, funcs); err != nil {
 		return "", err
 	}
 	if t.Template == nil {
