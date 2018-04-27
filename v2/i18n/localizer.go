@@ -3,6 +3,8 @@ package i18n
 import (
 	"fmt"
 
+	"text/template"
+
 	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
@@ -56,6 +58,9 @@ type LocalizeConfig struct {
 
 	// DefaultMessage is used if the message is not found in any message files.
 	DefaultMessage *Message
+
+	// Funcs is used to extend the Go template engines built in functions
+	Funcs template.FuncMap
 }
 
 type invalidPluralCountErr struct {
@@ -114,7 +119,7 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	if pluralForm == plural.Invalid {
 		return "", &pluralizeErr{messageID: messageID, tag: tag}
 	}
-	return template.Execute(pluralForm, templateData)
+	return template.Execute(pluralForm, templateData, lc.Funcs)
 }
 
 func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *internal.MessageTemplate) {

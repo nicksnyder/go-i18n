@@ -7,7 +7,7 @@ import (
 
 func TestParse(t *testing.T) {
 	tmpl := &Template{Src: "hello"}
-	if err := tmpl.parse("", ""); err != nil {
+	if err := tmpl.parse("", "", nil); err != nil {
 		t.Fatal(err)
 	}
 	if tmpl.ParseErr == nil {
@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
 func TestParseError(t *testing.T) {
 	expectedErr := fmt.Errorf("expected error")
 	tmpl := &Template{ParseErr: &expectedErr}
-	if err := tmpl.parse("", ""); err != expectedErr {
+	if err := tmpl.parse("", "", nil); err != expectedErr {
 		t.Fatalf("expected %#v; got %#v", expectedErr, err)
 	}
 }
