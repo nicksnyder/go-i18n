@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 	"text/template"
@@ -42,5 +43,12 @@ func TestParseWithFunc(t *testing.T) {
 	}
 	if tmpl.Template == nil {
 		t.Fatal("expected non-nil template")
+	}
+	var buf bytes.Buffer
+	if tmpl.Template.Execute(&buf, nil) != nil {
+		t.Fatal("expected nil template execute error")
+	}
+	if buf.String() != "bar" {
+		t.Fatalf("expected bar; got %s", buf.String())
 	}
 }
