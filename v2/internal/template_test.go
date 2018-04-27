@@ -28,7 +28,7 @@ func TestParseError(t *testing.T) {
 }
 
 func TestParseWithFunc(t *testing.T) {
-	tmpl := &Template{Src: "hello"}
+	tmpl := &Template{Src: "{{foo}}"}
 	funcs := template.FuncMap{
 		"foo": func() string {
 			return "bar"
