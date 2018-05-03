@@ -9,7 +9,7 @@ import (
 )
 
 func ExampleLocalizer_MustLocalize() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	localizer := i18n.NewLocalizer(bundle, "en")
 	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -22,7 +22,7 @@ func ExampleLocalizer_MustLocalize() {
 }
 
 func ExampleLocalizer_MustLocalize_noDefaultMessage() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 HelloWorld = "Hello World!"
@@ -45,7 +45,7 @@ HelloWorld = "Hola Mundo!"
 }
 
 func ExampleLocalizer_MustLocalize_plural() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	localizer := i18n.NewLocalizer(bundle, "en")
 	catsMessage := &i18n.Message{
 		ID:    "Cats",
@@ -71,7 +71,7 @@ func ExampleLocalizer_MustLocalize_plural() {
 }
 
 func ExampleLocalizer_MustLocalize_template() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	localizer := i18n.NewLocalizer(bundle, "en")
 	helloPersonMessage := &i18n.Message{
 		ID:    "HelloPerson",
@@ -86,7 +86,7 @@ func ExampleLocalizer_MustLocalize_template() {
 }
 
 func ExampleLocalizer_MustLocalize_plural_template() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	localizer := i18n.NewLocalizer(bundle, "en")
 	personCatsMessage := &i18n.Message{
 		ID:    "PersonCats",
@@ -124,7 +124,7 @@ func ExampleLocalizer_MustLocalize_plural_template() {
 }
 
 func ExampleLocalizer_MustLocalize_customTemplateDelims() {
-	bundle := i18n.NewBundle(language.English)
+	bundle := &i18n.Bundle{DefaultLanguage: language.English}
 	localizer := i18n.NewLocalizer(bundle, "en")
 	helloPersonMessage := &i18n.Message{
 		ID:         "HelloPerson",

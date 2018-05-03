@@ -476,7 +476,7 @@ func TestLocalizer_Localize(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			bundle := NewBundle(testCase.defaultLanguage)
+			bundle := &Bundle{DefaultLanguage: testCase.defaultLanguage}
 			for tag, messages := range testCase.messages {
 				bundle.AddMessages(tag, messages...)
 			}

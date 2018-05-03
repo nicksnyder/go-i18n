@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -30,12 +31,13 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 	if len(buf) == 0 {
 		return messageFile, nil
 	}
-	var unmarshalFunc UnmarshalFunc
-	if unmarshalFuncs != nil {
-		unmarshalFunc = unmarshalFuncs[messageFile.Format]
-	}
+	unmarshalFunc := unmarshalFuncs[messageFile.Format]
 	if unmarshalFunc == nil {
-		return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
+		if messageFile.Format == "json" {
+			unmarshalFunc = json.Unmarshal
+		} else {
+			return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
+		}
 	}
 	var raw interface{}
 	if err := unmarshalFunc(buf, &raw); err != nil {
