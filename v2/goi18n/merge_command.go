@@ -38,16 +38,16 @@ Flags:
 
 	-sourceLanguage tag
 		Translate messages from this language (e.g. en, en-US, zh-Hant-CN)
-        Default: en
+ 		Default: en
 
 	-outdir directory
 		Write message files to this directory.
-        Default: .
+		Default: .
 
 	-format format
 		Output message files in this format.
-        Supported formats: json, toml, yaml
-        Default: toml
+		Supported formats: json, toml, yaml
+		Default: toml
 `)
 }
 
