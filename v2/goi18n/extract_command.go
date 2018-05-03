@@ -18,6 +18,7 @@ func usageExtract() {
 	fmt.Fprintf(os.Stderr, `usage: goi18n extract [options] [paths]
 
 Extract walks the files and directories in paths and extracts all messages to a single file.
+If no files or paths are provided, it walks the current working directory.
 
 	xx-yy.active.format
 		This file contains messages that should be loaded at runtime.
@@ -64,7 +65,7 @@ func (ec *extractCommand) parse(args []string) {
 
 func (ec *extractCommand) execute() error {
 	if len(ec.paths) == 0 {
-		return fmt.Errorf("no paths to extract")
+		ec.paths = []string{"."}
 	}
 	messages := []*i18n.Message{}
 	for _, path := range ec.paths {
