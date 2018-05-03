@@ -34,7 +34,6 @@ func main() {
 	bundle.MustLoadMessageFile("active.es.toml")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
 		lang := r.FormValue("lang")
 		accept := r.Header.Get("Accept-Language")
 		localizer := i18n.NewLocalizer(bundle, lang, accept)
