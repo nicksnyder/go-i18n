@@ -29,9 +29,11 @@ var page = template.Must(template.New("").Parse(`
 func main() {
 	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	// No need to load active.en.toml since we are providing default translations.
+	// bundle.MustLoadMessageFile("active.en.toml")
+	bundle.MustLoadMessageFile("active.es.toml")
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
 		lang := r.FormValue("lang")
 		accept := r.Header.Get("Accept-Language")
 		localizer := i18n.NewLocalizer(bundle, lang, accept)
@@ -42,11 +44,6 @@ func main() {
 		}
 
 		unreadEmailCount, _ := strconv.ParseInt(r.FormValue("unreadEmailCount"), 10, 64)
-		catCount, _ := strconv.ParseInt(r.FormValue("catCount"), 10, 64)
-		catColor := r.FormValue("catColor")
-		if catColor == "" {
-			catColor = "black"
-		}
 
 		helloPerson := localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
@@ -58,35 +55,35 @@ func main() {
 			},
 		})
 
-		unreadEmails := localizer.MustLocalize(&i18n.LocalizeConfig{
+		myUnreadEmails := localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
-				ID:          "UnreadEmails",
-				Description: "The number of unread emails a person has",
+				ID:          "MyUnreadEmails",
+				Description: "The number of unread emails I have",
 				One:         "I have {{.PluralCount}} unread email.",
 				Other:       "I have {{.PluralCount}} unread emails.",
 			},
 			PluralCount: unreadEmailCount,
 		})
 
-		coloredCats := localizer.MustLocalize(&i18n.LocalizeConfig{
+		personUnreadEmails := localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
-				ID:          "ColoredCats",
-				Description: "The number of cats a person has",
-				One:         "I have {{.Count}} {{.Color}} cat.",
-				Other:       "I have {{.Count}} {{.Color}} cats.",
+				ID:          "PersonUnreadEmails",
+				Description: "The number of unread emails a person has",
+				One:         "{{.Name}} has {{.UnreadEmailCount}} unread email.",
+				Other:       "{{.Name}} has {{.UnreadEmailCount}} unread emails.",
 			},
-			PluralCount: catCount,
+			PluralCount: unreadEmailCount,
 			TemplateData: map[string]interface{}{
-				"Count": catCount,
-				"Color": catColor,
+				"Name":             name,
+				"UnreadEmailCount": unreadEmailCount,
 			},
 		})
 
 		err := page.Execute(w, map[string]interface{}{
 			"Title": helloPerson,
 			"Paragraphs": []string{
-				unreadEmails,
-				coloredCats,
+				myUnreadEmails,
+				personUnreadEmails,
 			},
 		})
 		if err != nil {

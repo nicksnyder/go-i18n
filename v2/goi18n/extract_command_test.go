@@ -162,15 +162,15 @@ func TestExtractCommand(t *testing.T) {
 	}
 	expected := []byte(`HelloPerson = "Hello {{.Name}}"
 
-[ColoredCats]
-description = "The number of cats a person has"
-one = "I have {{.Count}} {{.Color}} cat."
-other = "I have {{.Count}} {{.Color}} cats."
-
-[UnreadEmails]
-description = "The number of unread emails a person has"
+[MyUnreadEmails]
+description = "The number of unread emails I have"
 one = "I have {{.PluralCount}} unread email."
 other = "I have {{.PluralCount}} unread emails."
+
+[PersonUnreadEmails]
+description = "The number of unread emails a person has"
+one = "{{.Name}} has {{.UnreadEmailCount}} unread email."
+other = "{{.Name}} has {{.UnreadEmailCount}} unread emails."
 `)
 	if !bytes.Equal(actual, expected) {
 		t.Fatalf("files not equal\nactual:\n%s\nexpected:\n%s", actual, expected)
