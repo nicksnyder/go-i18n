@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"encoding/json"
 	"reflect"
 	"testing"
 
@@ -34,7 +33,7 @@ var everythingMessage = internal.MustNewMessage(map[string]string{
 })
 
 func TestPseudoLanguage(t *testing.T) {
-	bundle := NewBundle(language.English)
+	bundle := &Bundle{DefaultLanguage: language.English}
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	expected := "simple simple"
 	bundle.MustParseMessageFileBytes([]byte(`
@@ -52,7 +51,7 @@ simple = "simple simple"
 }
 
 func TestPseudoLanguagePlural(t *testing.T) {
-	bundle := NewBundle(language.English)
+	bundle := &Bundle{DefaultLanguage: language.English}
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 [everything]
@@ -82,7 +81,6 @@ zero = "zero translation"
 
 func TestJSON(t *testing.T) {
 	var bundle Bundle
-	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`{
 	"simple": "simple translation",
 	"detail": {
@@ -163,7 +161,6 @@ other = "other translation"
 
 func TestV1Format(t *testing.T) {
 	var bundle Bundle
-	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`[
 	{
 		"id": "simple",
@@ -191,7 +188,6 @@ func TestV1Format(t *testing.T) {
 
 func TestV1FlatFormat(t *testing.T) {
 	var bundle Bundle
-	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`{
 	"simple": {
 		"other": "simple translation"

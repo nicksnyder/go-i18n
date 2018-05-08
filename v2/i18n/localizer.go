@@ -24,6 +24,7 @@ type Localizer struct {
 // in the bundle according to the language preferences in langs.
 // It can parse Accept-Language headers as defined in http://www.ietf.org/rfc/rfc2616.txt.
 func NewLocalizer(bundle *Bundle, langs ...string) *Localizer {
+	bundle.init()
 	return &Localizer{
 		bundle: bundle,
 		tags:   parseTags(langs),
@@ -129,7 +130,7 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 	if template != nil {
 		return fastTag, template
 	}
-	if fastTag == l.bundle.defaultTag {
+	if fastTag == l.bundle.DefaultLanguage {
 		if defaultMessage == nil {
 			return fastTag, nil
 		}
@@ -141,8 +142,8 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 		// so we need to create a new matcher that contains only the tags in the bundle
 		// that have this message.
 		foundTags := make([]language.Tag, 0, len(l.bundle.messageTemplates))
-		if l.bundle.defaultTag != fastTag {
-			foundTags = append(foundTags, l.bundle.defaultTag)
+		if l.bundle.DefaultLanguage != fastTag {
+			foundTags = append(foundTags, l.bundle.DefaultLanguage)
 		}
 		for t, templates := range l.bundle.messageTemplates {
 			if t == fastTag {
@@ -161,9 +162,9 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 		}
 	}
 	if defaultMessage == nil {
-		return l.bundle.defaultTag, nil
+		return l.bundle.DefaultLanguage, nil
 	}
-	return l.bundle.defaultTag, internal.NewMessageTemplate(defaultMessage)
+	return l.bundle.DefaultLanguage, internal.NewMessageTemplate(defaultMessage)
 }
 
 func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []language.Tag) (language.Tag, *internal.MessageTemplate) {

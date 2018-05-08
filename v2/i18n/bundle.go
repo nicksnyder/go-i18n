@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 
@@ -18,34 +17,31 @@ type UnmarshalFunc = internal.UnmarshalFunc
 // Most applications only need a single bundle
 // that is initialized early in the application's lifecycle.
 type Bundle struct {
+	// DefaultLanguage is the default language of the bundle.
+	DefaultLanguage language.Tag
+
+	// UnmarshalFuncs is a map of file extensions to UnmarshalFuncs.
+	UnmarshalFuncs map[string]UnmarshalFunc
+
 	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
 	pluralRules      plural.Rules
-	unmarshalFuncs   map[string]UnmarshalFunc
-	defaultTag       language.Tag
 	tags             []language.Tag
 	matcher          language.Matcher
 }
 
-// NewBundle returns a new bundle that contains the
-// CLDR plural rules and a json unmarshaler.
-func NewBundle(defaultTag language.Tag) *Bundle {
-	b := &Bundle{
-		defaultTag:  defaultTag,
-		pluralRules: plural.DefaultRules(),
-		unmarshalFuncs: map[string]UnmarshalFunc{
-			"json": json.Unmarshal,
-		},
+func (b *Bundle) init() {
+	if b.pluralRules == nil {
+		b.pluralRules = plural.DefaultRules()
 	}
-	b.addTag(defaultTag)
-	return b
+	b.addTag(b.DefaultLanguage)
 }
 
 // RegisterUnmarshalFunc registers an UnmarshalFunc for format.
 func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFunc) {
-	if b.unmarshalFuncs == nil {
-		b.unmarshalFuncs = make(map[string]UnmarshalFunc)
+	if b.UnmarshalFuncs == nil {
+		b.UnmarshalFuncs = make(map[string]UnmarshalFunc)
 	}
-	b.unmarshalFuncs[format] = unmarshalFunc
+	b.UnmarshalFuncs[format] = unmarshalFunc
 }
 
 // LoadMessageFile loads the bytes from path
@@ -75,7 +71,7 @@ type MessageFile = internal.MessageFile
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
-	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
+	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.UnmarshalFuncs)
 	if err != nil {
 		return nil, err
 	}
@@ -96,9 +92,7 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 // AddMessages adds messages for a language.
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
-	if b.pluralRules == nil {
-		b.pluralRules = plural.DefaultRules()
-	}
+	b.init()
 	pluralRule := b.pluralRules.Rule(tag)
 	if pluralRule == nil {
 		return fmt.Errorf("no plural rule registered for %s", tag)
