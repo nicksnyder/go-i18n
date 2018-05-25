@@ -55,7 +55,7 @@ func (ec *extractCommand) parse(args []string) {
 	flags := flag.NewFlagSet("extract", flag.ExitOnError)
 	flags.Usage = usageExtract
 
-	flags.Var(&ec.sourceLanguage, "sourceLanguage", "")
+	flags.Var(&ec.sourceLanguage, "sourceLanguage", "en")
 	flags.StringVar(&ec.outdir, "outdir", ".", "")
 	flags.StringVar(&ec.format, "format", "toml", "")
 	flags.Parse(args)
