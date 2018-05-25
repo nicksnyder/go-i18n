@@ -96,7 +96,9 @@ func (ec *extractCommand) execute() error {
 	}
 	messageTemplates := map[string]*internal.MessageTemplate{}
 	for _, m := range messages {
-		messageTemplates[m.ID] = internal.NewMessageTemplate(m)
+		if mt := internal.NewMessageTemplate(m); mt != nil {
+			messageTemplates[m.ID] = mt
+		}
 	}
 	path, content, err := writeFile(ec.outdir, "active", ec.sourceLanguage.Tag(), ec.format, messageTemplates, true)
 	if err != nil {
@@ -174,6 +176,9 @@ func (e *extractor) extractMessage(node ast.Node) {
 		}
 		v := value.Value[1 : len(value.Value)-1]
 		data[key.Name] = v
+	}
+	if len(data) == 0 {
+		return
 	}
 	if se.Sel.Name == "Message" {
 		e.messages = append(e.messages, internal.MustNewMessage(data))
