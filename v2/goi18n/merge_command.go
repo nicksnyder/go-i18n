@@ -66,7 +66,7 @@ func (mc *mergeCommand) parse(args []string) {
 	flags := flag.NewFlagSet("merge", flag.ExitOnError)
 	flags.Usage = usageMerge
 
-	flags.Var(&mc.sourceLanguage, "sourceLanguage", "")
+	flags.Var(&mc.sourceLanguage, "sourceLanguage", "en")
 	flags.StringVar(&mc.outdir, "outdir", ".", "")
 	flags.StringVar(&mc.format, "format", "toml", "")
 	flags.Parse(args)

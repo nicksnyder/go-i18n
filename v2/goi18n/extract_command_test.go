@@ -15,16 +15,15 @@ import (
 func TestExtract(t *testing.T) {
 
 	tests := []struct {
-		name     string
-		file     string
-		messages []*i18n.Message
-		err      error
+		name       string
+		file       string
+		messages   []*i18n.Message
+		activeFile []byte
 	}{
 		{
 			name:     "no translations",
 			file:     `package main`,
 			messages: nil,
-			err:      nil,
 		},
 		{
 			name: "global declaration",
@@ -41,7 +40,6 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
-			err: nil,
 		},
 		{
 			name: "short form id only",
@@ -60,7 +58,6 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
-			err: nil,
 		},
 		{
 			name: "must short form id only",
@@ -79,7 +76,6 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
-			err: nil,
 		},
 		{
 			name: "custom package name",
@@ -98,7 +94,6 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
-			err: nil,
 		},
 		{
 			name: "exhaustive plural translation",
@@ -131,17 +126,62 @@ func TestExtract(t *testing.T) {
 					Other:       "Other translation",
 				},
 			},
-			err: nil,
+			activeFile: []byte(`["Plural ID"]
+description = "Plural description"
+few = "Few translation"
+many = "Many translation"
+one = "One translation"
+other = "Other translation"
+two = "Two translation"
+zero = "Zero translation"
+`),
 		},
 	}
 	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
+		t.Run(test.name+"messages", func(t *testing.T) {
 			actualMessages, err := extractMessages([]byte(test.file))
-			if err != test.err {
-				t.Errorf("expected error: %q\n     got error: %q", test.err, err)
+			if err != nil {
+				t.Fatal(err)
 			}
 			if !reflect.DeepEqual(actualMessages, test.messages) {
-				t.Errorf("file:\n%s\nexpected: %s\n     got: %s", test.file, marshalTest(test.messages), marshalTest(actualMessages))
+				t.Fatalf("file:\n%s\nexpected: %s\n     got: %s", test.file, marshalTest(test.messages), marshalTest(actualMessages))
+			}
+		})
+		t.Run(test.name+"active file", func(t *testing.T) {
+			indir := mustTempDir("TestExtractCommandIn")
+			defer os.RemoveAll(indir)
+			outdir := mustTempDir("TestExtractCommandOut")
+			defer os.RemoveAll(outdir)
+
+			inpath := filepath.Join(indir, "file.go")
+			if err := ioutil.WriteFile(inpath, []byte(test.file), 0666); err != nil {
+				t.Fatal(err)
+			}
+
+			if code := testableMain([]string{"extract", "-outdir", outdir, indir}); code != 0 {
+				t.Fatalf("expected exit code 0; got %d\n", code)
+			}
+
+			files, err := ioutil.ReadDir(outdir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(files) != 1 {
+				t.Fatalf("expected 1 file; got %#v", files)
+			}
+			actualFile := files[0]
+			expectedName := "active.en.toml"
+			if actualFile.Name() != expectedName {
+				t.Fatalf("expected %s; got %s", expectedName, actualFile.Name())
+			}
+
+			outpath := filepath.Join(outdir, actualFile.Name())
+			actual, err := ioutil.ReadFile(outpath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(actual, test.activeFile) {
+				t.Fatalf("\nexpected:\n%s\n\ngot:\n%s", test.activeFile, actual)
 			}
 		})
 	}
@@ -153,8 +193,8 @@ func TestExtractCommand(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(outdir)
-	if err := testableMain([]string{"goi18n", "extract", "-outdir", outdir, "../example/"}); err != nil {
-		t.Fatal(err)
+	if code := testableMain([]string{"extract", "-outdir", outdir, "../example/"}); code != 0 {
+		t.Fatalf("expected exit code 0; got %d", code)
 	}
 	actual, err := ioutil.ReadFile(filepath.Join(outdir, "active.en.toml"))
 	if err != nil {
