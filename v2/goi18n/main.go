@@ -84,7 +84,6 @@ Workflow:
 		bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 		bundle.MustLoadMessageFile("active.es.toml")
 `)
-	os.Exit(2)
 }
 
 type command interface {
@@ -94,31 +93,39 @@ type command interface {
 }
 
 func main() {
-	if err := testableMain(os.Args); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	os.Exit(testableMain(os.Args[1:]))
 }
 
-func testableMain(args []string) error {
-	flags := flag.NewFlagSet("goi18n", flag.ExitOnError)
+func testableMain(args []string) int {
+	flags := flag.NewFlagSet("goi18n", flag.ContinueOnError)
 	flags.Usage = mainUsage
-	flags.Parse(args)
-	if len(args) == 1 {
+	if err := flags.Parse(args); err != nil {
+		if err == flag.ErrHelp {
+			return 2
+		}
+		return 1
+	}
+	if flags.NArg() == 0 {
 		mainUsage()
+		return 2
 	}
 	commands := []command{
 		&mergeCommand{},
 		&extractCommand{},
 	}
-	cmdName := args[1]
+	cmdName := flags.Arg(0)
 	for _, cmd := range commands {
 		if cmd.name() == cmdName {
-			cmd.parse(args[2:])
-			return cmd.execute()
+			cmd.parse(flags.Args()[1:])
+			if err := cmd.execute(); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 1
+			}
+			return 0
 		}
 	}
-	return fmt.Errorf("goi18n: unknown subcommand %s", cmdName)
+	fmt.Fprintf(os.Stderr, "goi18n: unknown subcommand %s\n", cmdName)
+	return 1
 }
 
 type languageTag language.Tag

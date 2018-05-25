@@ -193,8 +193,8 @@ func TestExtractCommand(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(outdir)
-	if err := testableMain([]string{"goi18n", "extract", "-outdir", outdir, "../example/"}); err != nil {
-		t.Fatal(err)
+	if code := testableMain([]string{"extract", "-outdir", outdir, "../example/"}); code != 0 {
+		t.Fatalf("expected exit code 0; got %d", code)
 	}
 	actual, err := ioutil.ReadFile(filepath.Join(outdir, "active.en.toml"))
 	if err != nil {

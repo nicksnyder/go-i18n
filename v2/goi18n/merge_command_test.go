@@ -517,9 +517,9 @@ zero = "{{.Count}} unread emails"
 				}
 			}
 
-			args := append([]string{"goi18n", "merge", "-sourceLanguage", testCase.sourceLanguage.String(), "-outdir", outdir}, infiles...)
-			if err := testableMain(args); err != nil {
-				t.Fatal(err)
+			args := append([]string{"merge", "-sourceLanguage", testCase.sourceLanguage.String(), "-outdir", outdir}, infiles...)
+			if code := testableMain(args); code != 0 {
+				t.Fatalf("expected exit code 0; got %d\n", code)
 			}
 
 			files, err := ioutil.ReadDir(outdir)
