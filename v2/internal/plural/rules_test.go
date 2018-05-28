@@ -49,6 +49,22 @@ func TestRules(t *testing.T) {
 			tag:  language.EuropeanPortuguese,
 			rule: expectedRule,
 		},
+		{
+			name: "zh-Hans",
+			rules: Rules{
+				language.Chinese: expectedRule,
+			},
+			tag:  language.SimplifiedChinese,
+			rule: expectedRule,
+		},
+		{
+			name: "zh-Hant",
+			rules: Rules{
+				language.Chinese: expectedRule,
+			},
+			tag:  language.TraditionalChinese,
+			rule: expectedRule,
+		},
 	}
 
 	for _, testCase := range testCases {
