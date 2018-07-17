@@ -12,7 +12,7 @@ For terms of use, see http://www.unicode.org/copyright.html
 
         <!-- 1: other -->
 
-        <pluralRules locales="bm bo dz id ig ii in ja jbo jv jw kde kea km ko lkt lo ms my nqo root sah ses sg th to vi wo yo yue zh">
+        <pluralRules locales="bm bo dz id ig ii in ja jbo jv jw kde kea km ko lkt lo ms my nqo root sah ses sg th to wo yo yue zh">
             <pluralRule count="other"> @integer 0~15, 100, 1000, 10000, 100000, 1000000, … @decimal 0.0~1.5, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, …</pluralRule>
         </pluralRules>
 
@@ -30,7 +30,7 @@ For terms of use, see http://www.unicode.org/copyright.html
             <pluralRule count="one">i = 0..1 @integer 0, 1 @decimal 0.0~1.5</pluralRule>
             <pluralRule count="other"> @integer 2~17, 100, 1000, 10000, 100000, 1000000, … @decimal 2.0~3.5, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, …</pluralRule>
         </pluralRules>
-        <pluralRules locales="ast ca de en et fi fy gl it ji nl sv sw ur yi">
+        <pluralRules locales="ast ca de en et fi fy gl it ji nl sv sw ur yi vi">
             <pluralRule count="one">i = 1 and v = 0 @integer 1</pluralRule>
             <pluralRule count="other"> @integer 0, 2~16, 100, 1000, 10000, 100000, 1000000, … @decimal 0.0~1.5, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, …</pluralRule>
         </pluralRules>
