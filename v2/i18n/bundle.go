@@ -127,3 +127,9 @@ func (b *Bundle) addTag(tag language.Tag) {
 	b.tags = append(b.tags, tag)
 	b.matcher = language.NewMatcher(b.tags)
 }
+
+// LanguageTags returns the list of language tags
+// of all the translations loaded into the bundle
+func (b *Bundle) LanguageTags() []language.Tag {
+	return b.tags
+}
