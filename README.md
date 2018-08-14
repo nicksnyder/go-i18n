@@ -48,7 +48,7 @@ localizer.MustLocalize(&i18n.LocalizeConfig{
         One: "{{.Name}} has {{.Count}} cat.",
         Other: "{{.Name}} has {{.Count}} cats.",
     },
-    TemplateData: map[string]string{
+    TemplateData: map[string]interface{}{
         "Name": "Nick",
         "Count": 2,
     },
