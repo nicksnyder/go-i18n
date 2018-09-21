@@ -22,7 +22,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &messageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
@@ -33,7 +33,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			},
 			acceptLangs: []string{"es"},
 			conf:        &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr: &messageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr: &MessageNotFoundErr{messageID: "HelloWorld"},
 		},
 		{
 			name:            "empty translation with fallback",
@@ -54,7 +54,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			},
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &messageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
@@ -62,7 +62,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &messageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
@@ -73,7 +73,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &messageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
