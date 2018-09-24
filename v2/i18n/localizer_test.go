@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/BurntSushi/toml"
 	"golang.org/x/text/language"
 )
 
@@ -531,4 +532,43 @@ func TestLocalizer_Localize(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLocalizer_DefaultMessage(t *testing.T) {
+	en := "[hello]\nother = \"Hello, World!\""
+	es := "[hello]\nother = \"¡Hola, Mundo!\""
+	bndl := &Bundle{DefaultLanguage: language.English}
+	bndl.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+
+	_, err := bndl.ParseMessageFileBytes([]byte(en), "en.toml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = bndl.ParseMessageFileBytes([]byte(es), "es.toml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var defaultMessage = &Message{
+		ID:    "___I18N_DEFAULT",
+		Other: "I18N_MISSING",
+	}
+
+	_ = defaultMessage
+
+	localizer := NewLocalizer(bndl, "es")
+
+	translated, err := localizer.Localize(&LocalizeConfig{
+		DefaultMessage: defaultMessage,
+		MessageID:      "hello",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if translated != "¡Hola, Mundo!" {
+		t.Fatalf("Got %s, expected %s", translated, "¡Hola, Mundo!")
+	}
+
 }
