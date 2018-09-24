@@ -65,14 +65,20 @@ zero = "zero translation"
 	localizer := NewLocalizer(bundle, "en-double")
 	{
 		expected := "other translation"
-		localized := localizer.MustLocalize(&LocalizeConfig{MessageID: "everything", PluralCount: 2})
+		localized, err := localizer.Localize(&LocalizeConfig{MessageID: "everything", PluralCount: 2})
+		if err != nil {
+			t.Fatal(err)
+		}
 		if localized != expected {
 			t.Fatalf("expected %q\ngot %q", expected, localized)
 		}
 	}
 	{
 		expected := "one translation"
-		localized := localizer.MustLocalize(&LocalizeConfig{MessageID: "everything", PluralCount: 1})
+		localized, err := localizer.Localize(&LocalizeConfig{MessageID: "everything", PluralCount: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
 		if localized != expected {
 			t.Fatalf("expected %q\ngot %q", expected, localized)
 		}
