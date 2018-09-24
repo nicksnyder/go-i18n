@@ -490,10 +490,10 @@ func TestLocalizer_Localize(t *testing.T) {
 			conf: &LocalizeConfig{
 				DefaultMessage: &Message{
 					ID:    "Hello",
-					Other: "Hello!",
+					Other: "Hola!",
 				},
 			},
-			expectedLocalized: "Hello!",
+			expectedLocalized: "Hola!",
 		},
 		{
 			name:            "test slow path no message",
@@ -513,28 +513,6 @@ func TestLocalizer_Localize(t *testing.T) {
 				MessageID: "Hello",
 			},
 			expectedErr: &messageNotFoundErr{messageID: "Hello"},
-		},
-		{
-			name:            "test slow path no default message",
-			defaultLanguage: language.Spanish,
-			messages: map[language.Tag][]*Message{
-				language.English: {{
-					ID:    "Goodbye",
-					Other: "Goodbye!",
-				}},
-				language.AmericanEnglish: {{
-					ID:    "Goodbye",
-					Other: "Goodbye!",
-				}},
-			},
-			acceptLangs: []string{"en-US"},
-			conf: &LocalizeConfig{
-				DefaultMessage: &Message{
-					ID:    "Hello",
-					Other: "Hola!",
-				},
-			},
-			expectedLocalized: "Hola!",
 		},
 	}
 	for _, testCase := range testCases {
