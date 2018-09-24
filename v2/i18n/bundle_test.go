@@ -33,14 +33,14 @@ var everythingMessage = internal.MustNewMessage(map[string]string{
 })
 
 func TestPseudoLanguage(t *testing.T) {
-	bundle := &Bundle{DefaultLanguage: language.English}
+	bundle := &Bundle{DefaultLanguage: language.Spanish}
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	expected := "simple simple"
 	bundle.MustParseMessageFileBytes([]byte(`
 # Comment
 simple = "simple simple"
-`), "en-double.toml")
-	localizer := NewLocalizer(bundle, "en-double")
+`), "en-u-double.toml")
+	localizer := NewLocalizer(bundle, "en-u-double")
 	localized, err := localizer.Localize(&LocalizeConfig{MessageID: "simple"})
 	if err != nil {
 		t.Fatal(err)
@@ -51,7 +51,7 @@ simple = "simple simple"
 }
 
 func TestPseudoLanguagePlural(t *testing.T) {
-	bundle := &Bundle{DefaultLanguage: language.English}
+	bundle := &Bundle{DefaultLanguage: language.Spanish}
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 [everything]
@@ -61,8 +61,8 @@ one = "one translation"
 other = "other translation"
 two = "two translation"
 zero = "zero translation"
-`), "en-double.toml")
-	localizer := NewLocalizer(bundle, "en-double")
+`), "en-u-double.toml")
+	localizer := NewLocalizer(bundle, "en-u-double")
 	{
 		expected := "other translation"
 		localized, err := localizer.Localize(&LocalizeConfig{MessageID: "everything", PluralCount: 2})
