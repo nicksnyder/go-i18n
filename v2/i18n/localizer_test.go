@@ -532,3 +532,34 @@ func TestLocalizer_Localize(t *testing.T) {
 		})
 	}
 }
+
+func TestLocalizer_DefaultMessage(t *testing.T) {
+	en := "[hello]\nother = \"Hello, World!\""
+	es := "[hello]\nother = \"¡Hola, Mundo!\""
+
+	var defaultMessage = &Message{
+		ID:    "___I18N_DEFAULT",
+		Other: "I18N_MISSING",
+	}
+
+	bndl := &Bundle{DefaultLanguage: language.English}
+
+	bndl.ParseMessageFileBytes([]byte(en), "en.toml")
+	bndl.ParseMessageFileBytes([]byte(es), "es.toml")
+
+	localizer := NewLocalizer(bndl, "es")
+
+	translated, err := localizer.Localize(&LocalizeConfig{
+		DefaultMessage: defaultMessage,
+		MessageID:      "hello",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if translated != "¡Hola, Mundo!" {
+		t.Fatalf("Got %s, expected %s", translated, "¡Hola, Mundo!")
+	}
+
+}
