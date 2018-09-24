@@ -534,7 +534,7 @@ func TestLocalizer_Localize(t *testing.T) {
 					Other: "Hola!",
 				},
 			},
-			expectedErr: &messageNotFoundErr{messageID: "Hello"},
+			expectedLocalized: "Hola!",
 		},
 	}
 	for _, testCase := range testCases {
