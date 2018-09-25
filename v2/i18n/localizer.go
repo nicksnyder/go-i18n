@@ -91,10 +91,22 @@ func (e *pluralizeErr) Error() string {
 	return fmt.Sprintf("unable to pluralize %q because there no plural rule for %q", e.messageID, e.tag)
 }
 
+type messageIDMismatchErr struct {
+	messageID        string
+	defaultMessageID string
+}
+
+func (e *messageIDMismatchErr) Error() string {
+	return fmt.Sprintf("message id %q does not match default message id %q", e.messageID, e.defaultMessageID)
+}
+
 // Localize returns a localized message.
 func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	messageID := lc.MessageID
 	if lc.DefaultMessage != nil {
+		if messageID != "" && messageID != lc.DefaultMessage.ID {
+			return "", &messageIDMismatchErr{messageID: messageID, defaultMessageID: lc.DefaultMessage.ID}
+		}
 		messageID = lc.DefaultMessage.ID
 	}
 
