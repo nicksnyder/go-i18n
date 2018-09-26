@@ -18,6 +18,33 @@ func TestLocalizer_Localize(t *testing.T) {
 		expectedLocalized string
 	}{
 		{
+			name:            "message id mismatch",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloWorld",
+				DefaultMessage: &Message{
+					ID: "DefaultHelloWorld",
+				},
+			},
+			expectedErr: &messageIDMismatchErr{messageID: "HelloWorld", defaultMessageID: "DefaultHelloWorld"},
+		},
+		{
+			name:            "message id not mismatched",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "HelloWorld", Other: "Hello!"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloWorld",
+				DefaultMessage: &Message{
+					ID: "HelloWorld",
+				},
+			},
+			expectedLocalized: "Hello!",
+		},
+		{
 			name:              "missing translation from default language",
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"en"},
