@@ -74,7 +74,7 @@ func (e *invalidPluralCountErr) Error() string {
 	return fmt.Sprintf("invalid plural count %#v for message id %q: %s", e.pluralCount, e.messageID, e.err)
 }
 
-// MessageNotFoundErr is returned from Localize when a messate could not be found.
+// MessageNotFoundErr is returned from Localize when a message could not be found.
 type MessageNotFoundErr struct {
 	messageID string
 }
