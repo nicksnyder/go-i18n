@@ -539,7 +539,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			conf: &LocalizeConfig{
 				MessageID: "Hello",
 			},
-			expectedErr: &messageNotFoundErr{messageID: "Hello"},
+			expectedErr: &MessageNotFoundErr{messageID: "Hello"},
 		},
 	}
 	for _, testCase := range testCases {
