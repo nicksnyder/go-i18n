@@ -74,11 +74,12 @@ func (e *invalidPluralCountErr) Error() string {
 	return fmt.Sprintf("invalid plural count %#v for message id %q: %s", e.pluralCount, e.messageID, e.err)
 }
 
-type messageNotFoundErr struct {
+// MessageNotFoundErr is returned from Localize when a message could not be found.
+type MessageNotFoundErr struct {
 	messageID string
 }
 
-func (e *messageNotFoundErr) Error() string {
+func (e *MessageNotFoundErr) Error() string {
 	return fmt.Sprintf("message %q not found", e.messageID)
 }
 
@@ -126,7 +127,7 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	}
 	tag, template := l.getTemplate(messageID, lc.DefaultMessage)
 	if template == nil {
-		return "", &messageNotFoundErr{messageID: messageID}
+		return "", &MessageNotFoundErr{messageID: messageID}
 	}
 	pluralForm := l.pluralForm(tag, operands)
 	if pluralForm == plural.Invalid {
