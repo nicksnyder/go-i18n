@@ -18,6 +18,33 @@ func TestLocalizer_Localize(t *testing.T) {
 		expectedLocalized string
 	}{
 		{
+			name:            "message id mismatch",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloWorld",
+				DefaultMessage: &Message{
+					ID: "DefaultHelloWorld",
+				},
+			},
+			expectedErr: &messageIDMismatchErr{messageID: "HelloWorld", defaultMessageID: "DefaultHelloWorld"},
+		},
+		{
+			name:            "message id not mismatched",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "HelloWorld", Other: "Hello!"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloWorld",
+				DefaultMessage: &Message{
+					ID: "HelloWorld",
+				},
+			},
+			expectedLocalized: "Hello!",
+		},
+		{
 			name:              "missing translation from default language",
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"en"},
@@ -473,6 +500,47 @@ func TestLocalizer_Localize(t *testing.T) {
 			},
 			expectedLocalized: "Hello!",
 		},
+		{
+			name:            "test slow path default message",
+			defaultLanguage: language.Spanish,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:    "Goodbye",
+					Other: "Goodbye!",
+				}},
+				language.AmericanEnglish: {{
+					ID:    "Goodbye",
+					Other: "Goodbye!",
+				}},
+			},
+			acceptLangs: []string{"en-US"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "Hello",
+					Other: "Hola!",
+				},
+			},
+			expectedLocalized: "Hola!",
+		},
+		{
+			name:            "test slow path no message",
+			defaultLanguage: language.Spanish,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:    "Goodbye",
+					Other: "Goodbye!",
+				}},
+				language.AmericanEnglish: {{
+					ID:    "Goodbye",
+					Other: "Goodbye!",
+				}},
+			},
+			acceptLangs: []string{"en-US"},
+			conf: &LocalizeConfig{
+				MessageID: "Hello",
+			},
+			expectedErr: &messageNotFoundErr{messageID: "Hello"},
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
@@ -483,10 +551,10 @@ func TestLocalizer_Localize(t *testing.T) {
 			localizer := NewLocalizer(bundle, testCase.acceptLangs...)
 			localized, err := localizer.Localize(testCase.conf)
 			if !reflect.DeepEqual(err, testCase.expectedErr) {
-				t.Errorf("expected %#v; got %#v", testCase.expectedErr, err)
+				t.Errorf("expected error %#v; got %#v", testCase.expectedErr, err)
 			}
 			if localized != testCase.expectedLocalized {
-				t.Errorf("expected %q; got %q", testCase.expectedLocalized, localized)
+				t.Errorf("expected localized string %q; got %q", testCase.expectedLocalized, localized)
 			}
 		})
 	}
