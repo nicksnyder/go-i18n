@@ -60,7 +60,7 @@ type LocalizeConfig struct {
 	// DefaultMessage is used if the message is not found in any message files.
 	DefaultMessage *Message
 
-	// Funcs is used to extend the Go template engines built in functions
+	// Funcs is used to extend the Go template engine's built in functions
 	Funcs template.FuncMap
 }
 
@@ -139,53 +139,42 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *internal.MessageTemplate) {
 	// Fast path.
 	// Optimistically assume this message id is defined in each language.
-	fastTag, template := l.matchTemplate(id, l.bundle.matcher, l.bundle.tags)
+	fastTag, template := l.matchTemplate(id, defaultMessage, l.bundle.matcher, l.bundle.tags)
 	if template != nil {
 		return fastTag, template
 	}
-	if fastTag == l.bundle.DefaultLanguage {
-		if defaultMessage == nil {
-			return fastTag, nil
-		}
-		return fastTag, internal.NewMessageTemplate(defaultMessage)
-	}
-	if len(l.bundle.tags) > 1 {
-		// Slow path.
-		// We didn't find a translation for the tag suggested by the default matcher
-		// so we need to create a new matcher that contains only the tags in the bundle
-		// that have this message.
-		foundTags := make([]language.Tag, 0, len(l.bundle.messageTemplates))
-		if l.bundle.DefaultLanguage != fastTag {
-			foundTags = append(foundTags, l.bundle.DefaultLanguage)
-		}
-		for t, templates := range l.bundle.messageTemplates {
-			if t == fastTag {
-				// We already tried this tag in the fast path
-				continue
-			}
-			template := templates[id]
-			if template == nil || template.Other == "" {
-				continue
-			}
-			foundTags = append(foundTags, t)
-		}
-		tag, template := l.matchTemplate(id, language.NewMatcher(foundTags), foundTags)
-		if template != nil {
-			return tag, template
-		}
-	}
-	if defaultMessage == nil {
+
+	if len(l.bundle.tags) <= 1 {
 		return l.bundle.DefaultLanguage, nil
 	}
-	return l.bundle.DefaultLanguage, internal.NewMessageTemplate(defaultMessage)
+
+	// Slow path.
+	// We didn't find a translation for the tag suggested by the default matcher
+	// so we need to create a new matcher that contains only the tags in the bundle
+	// that have this message.
+	foundTags := make([]language.Tag, 0, len(l.bundle.messageTemplates)+1)
+	foundTags = append(foundTags, l.bundle.DefaultLanguage)
+
+	for t, templates := range l.bundle.messageTemplates {
+		template := templates[id]
+		if template == nil || template.Other == "" {
+			continue
+		}
+		foundTags = append(foundTags, t)
+	}
+
+	return l.matchTemplate(id, defaultMessage, language.NewMatcher(foundTags), foundTags)
 }
 
-func (l *Localizer) matchTemplate(id string, matcher language.Matcher, tags []language.Tag) (language.Tag, *internal.MessageTemplate) {
+func (l *Localizer) matchTemplate(id string, defaultMessage *Message, matcher language.Matcher, tags []language.Tag) (language.Tag, *internal.MessageTemplate) {
 	_, i, _ := matcher.Match(l.tags...)
 	tag := tags[i]
 	templates := l.bundle.messageTemplates[tag]
 	if templates != nil && templates[id] != nil {
 		return tag, templates[id]
+	}
+	if tag == l.bundle.DefaultLanguage && defaultMessage != nil {
+		return tag, internal.NewMessageTemplate(defaultMessage)
 	}
 	return tag, nil
 }
