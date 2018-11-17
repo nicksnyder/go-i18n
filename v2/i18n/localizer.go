@@ -103,10 +103,16 @@ func (e *messageIDMismatchErr) Error() string {
 
 // Localize returns a localized message.
 func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
+	msg, _, err := l.LocalizeWithTag(lc)
+	return msg, err
+}
+
+// LocalizeWithTag returns a localized message and the language tag.
+func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, error) {
 	messageID := lc.MessageID
 	if lc.DefaultMessage != nil {
 		if messageID != "" && messageID != lc.DefaultMessage.ID {
-			return "", &messageIDMismatchErr{messageID: messageID, defaultMessageID: lc.DefaultMessage.ID}
+			return "", language.Und, &messageIDMismatchErr{messageID: messageID, defaultMessageID: lc.DefaultMessage.ID}
 		}
 		messageID = lc.DefaultMessage.ID
 	}
@@ -117,7 +123,7 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 		var err error
 		operands, err = plural.NewOperands(lc.PluralCount)
 		if err != nil {
-			return "", &invalidPluralCountErr{messageID: messageID, pluralCount: lc.PluralCount, err: err}
+			return "", language.Und, &invalidPluralCountErr{messageID: messageID, pluralCount: lc.PluralCount, err: err}
 		}
 		if templateData == nil {
 			templateData = map[string]interface{}{
@@ -127,13 +133,17 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	}
 	tag, template := l.getTemplate(messageID, lc.DefaultMessage)
 	if template == nil {
-		return "", &MessageNotFoundErr{messageID: messageID}
+		return "", language.Und, &MessageNotFoundErr{messageID: messageID}
 	}
 	pluralForm := l.pluralForm(tag, operands)
 	if pluralForm == plural.Invalid {
-		return "", &pluralizeErr{messageID: messageID, tag: tag}
+		return "", language.Und, &pluralizeErr{messageID: messageID, tag: tag}
 	}
-	return template.Execute(pluralForm, templateData, lc.Funcs)
+	msg, err := template.Execute(pluralForm, templateData, lc.Funcs)
+	if err != nil {
+		return "", language.Und, err
+	}
+	return msg, tag, nil
 }
 
 func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *internal.MessageTemplate) {
