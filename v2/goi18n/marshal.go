@@ -26,7 +26,9 @@ func writeFile(outdir, label string, langTag language.Tag, format string, messag
 func marshalValue(messageTemplates map[string]*internal.MessageTemplate, sourceLanguage bool) interface{} {
 	v := make(map[string]interface{}, len(messageTemplates))
 	for id, template := range messageTemplates {
-		if other := template.PluralTemplates[plural.Other]; sourceLanguage && len(template.PluralTemplates) == 1 &&
+		if template == nil {
+			v[id] = ""
+		} else if other := template.PluralTemplates[plural.Other]; sourceLanguage && len(template.PluralTemplates) == 1 &&
 			other != nil && template.Description == "" && template.LeftDelim == "" && template.RightDelim == "" {
 			v[id] = other.Src
 		} else {

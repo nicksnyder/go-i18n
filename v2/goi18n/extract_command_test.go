@@ -40,6 +40,7 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
+			activeFile: []byte(`"Plural ID" = ""` + "\n"),
 		},
 		{
 			name: "short form id only",
@@ -58,6 +59,7 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
+			activeFile: []byte(`"Plural ID" = ""` + "\n"),
 		},
 		{
 			name: "must short form id only",
@@ -76,6 +78,7 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
+			activeFile: []byte(`"Plural ID" = ""` + "\n"),
 		},
 		{
 			name: "custom package name",
@@ -94,6 +97,7 @@ func TestExtract(t *testing.T) {
 					ID: "Plural ID",
 				},
 			},
+			activeFile: []byte(`"Plural ID" = ""` + "\n"),
 		},
 		{
 			name: "exhaustive plural translation",
@@ -138,7 +142,7 @@ zero = "Zero translation"
 		},
 	}
 	for _, test := range tests {
-		t.Run(test.name+"messages", func(t *testing.T) {
+		t.Run(test.name+" messages", func(t *testing.T) {
 			actualMessages, err := extractMessages([]byte(test.file))
 			if err != nil {
 				t.Fatal(err)
@@ -147,7 +151,7 @@ zero = "Zero translation"
 				t.Fatalf("file:\n%s\nexpected: %s\n     got: %s", test.file, marshalTest(test.messages), marshalTest(actualMessages))
 			}
 		})
-		t.Run(test.name+"active file", func(t *testing.T) {
+		t.Run(test.name+" active file", func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
 			defer os.RemoveAll(indir)
 			outdir := mustTempDir("TestExtractCommandOut")
