@@ -73,44 +73,56 @@ go get -u github.com/nicksnyder/go-i18n/v2/goi18n
 goi18n -help
 ```
 
-Use `goi18n extract` to create a message file that contains the messages defined in your Go source files.
+### Extracting messages
+
+Use `goi18n extract` to create a message file that contains all the messages defined in your Go source files.
 
 ```toml
-# en.toml
+# active.en.toml
 [PersonCats]
 description = "The number of cats a person has"
 one = "{{.Name}} has {{.Count}} cat."
 other = "{{.Name}} has {{.Count}} cats."
 ```
 
-Use `goi18n merge` to create message files for translation.
+You can customize the local of your source language with the `-sourceLanguage` flag.
 
-```toml
-# translate.es.toml
-[PersonCats]
-description = "The number of cats a person has"
-hash = "sha1-f937a0e05e19bfe6cd70937c980eaf1f9832f091"
-one = "{{.Name}} has {{.Count}} cat."
-other = "{{.Name}} has {{.Count}} cats."
-```
+### Translating a new language
 
-Use `goi18n merge` to merge translated message files with your existing message files.
+1. Create an empty message file for the language that you want to add (e.g. `translate.es.toml`).
+2. Run `goi18n merge active.en.toml translate.es.toml` to populate `translate.es.toml` with the mesages to be translated.
 
-```toml
-# active.es.toml
-[PersonCats]
-description = "The number of cats a person has"
-hash = "sha1-f937a0e05e19bfe6cd70937c980eaf1f9832f091"
-one = "{{.Name}} tiene {{.Count}} gato."
-other = "{{.Name}} tiene {{.Count}} gatos."
-```
+   ```toml
+   # translate.es.toml
+   [HelloPerson]
+   hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
+   other = "Hello {{.Name}}"
+   ```
 
-Load the active messages into your bundle.
+3. After `translate.es.toml` has been translated, rename it to `active.es.toml`.
 
-```go
-bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-bundle.MustLoadMessageFile("active.es.toml")
-```
+   ```toml
+   # active.es.toml
+   [HelloPerson]
+   hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
+   other = "Hola {{.Name}}"
+   ```
+
+4. Load `active.es.toml` into your bundle.
+
+   ```go
+   bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+   bundle.LoadMessageFile("active.ar.yaml")
+   ```
+
+### Translating new messages
+
+If you have added new messages to your program:
+
+1. Run `goi18n extract` to update `active.en.toml` with the new messages.
+2. Run `goi18n merge active.*.toml` to generate updated `translate.*.toml` files.
+3. Translate all the messages in the `translate.*.toml` files.
+4. Run `goi18n merge active.*.toml translate.*.toml` to merge the translated messages into the active message files.
 
 ## For more information and examples:
 
