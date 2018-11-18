@@ -89,29 +89,31 @@ You can customize the local of your source language with the `-sourceLanguage` f
 
 ### Translating a new language
 
-Create an empty message file for the language that you want to add (e.g. `translate.ar.toml`).
-Then run `goi18n merge active.en.toml translate.ar.toml` to populate `translate.ar.toml` with the mesages to be translated.
+1. Create an empty message file for the language that you want to add (e.g. `translate.ar.toml`).
+2. Run `goi18n merge active.en.toml translate.ar.toml` to populate `translate.ar.toml` with the mesages to be translated.
 
-```toml
-# translate.es.toml
-[HelloPerson]
-hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
-other = "Hello {{.Name}}"
-```
+   ```toml
+   # translate.es.toml
+   [HelloPerson]
+   hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
+   other = "Hello {{.Name}}"
+   ```
 
-When `translate.es.toml` has been translated, you should rename it to `active.es.toml` and then load it into your bundle.
+3. After `translate.es.toml` has been translated, rename it to `active.es.toml`.
 
-```toml
-# active.es.toml
-[HelloPerson]
-hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
-other = "Hola {{.Name}}"
-```
+   ```toml
+   # active.es.toml
+   [HelloPerson]
+   hash = "sha1-5b49bfdad81fedaeefb224b0ffc2acc58b09cff5"
+   other = "Hola {{.Name}}"
+   ```
 
-```go
-bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-bundle.LoadMessageFile("active.ar.yaml")
-```
+4. Load `active.es.toml` into your bundle.
+
+   ```go
+   bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+   bundle.LoadMessageFile("active.ar.yaml")
+   ```
 
 ### Translating new messages
 
