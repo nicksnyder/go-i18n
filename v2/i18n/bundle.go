@@ -16,6 +16,8 @@ type UnmarshalFunc = internal.UnmarshalFunc
 // Bundle stores a set of messages and pluralization rules.
 // Most applications only need a single bundle
 // that is initialized early in the application's lifecycle.
+// It is not goroutine safe to modify the bundle while Localizers
+// are reading from it.
 type Bundle struct {
 	// DefaultLanguage is the default language of the bundle.
 	DefaultLanguage language.Tag

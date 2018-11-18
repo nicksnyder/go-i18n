@@ -2,16 +2,16 @@
 
 go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that helps you translate Go programs into multiple languages.
 
-* Supports [pluralized strings](http://cldr.unicode.org/index/cldr-spec/plural-rules) for all 200+ languages in the [Unicode Common Locale Data Repository (CLDR)](http://www.unicode.org/cldr/charts/28/supplemental/language_plural_rules.html).
-  * Code and tests are [automatically generated](https://github.com/nicksnyder/go-i18n/tree/master/i18n/language/codegen) from [CLDR data](http://cldr.unicode.org/index/downloads).
-* Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
-* Supports message files of any format (e.g. JSON, TOML, YAML, etc.).
-* [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
+- Supports [pluralized strings](http://cldr.unicode.org/index/cldr-spec/plural-rules) for all 200+ languages in the [Unicode Common Locale Data Repository (CLDR)](http://www.unicode.org/cldr/charts/28/supplemental/language_plural_rules.html).
+  - Code and tests are [automatically generated](https://github.com/nicksnyder/go-i18n/tree/master/i18n/language/codegen) from [CLDR data](http://cldr.unicode.org/index/downloads).
+- Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
+- Supports message files of any format (e.g. JSON, TOML, YAML, etc.).
+- [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
 ## Versions
 
-* v1 is available at 1.x.x tags.
-* v2 is available at 2.x.x tags.
+- v1 is available at 1.x.x tags.
+- v2 is available at 2.x.x tags.
 
 This README always documents the latest version (i.e. v2).
 
@@ -27,6 +27,12 @@ Create a Bundle to use for the lifetime of your application.
 
 ```go
 bundle := &i18n.Bundle{DefaultLanguage: language.English}
+```
+
+Load translations into your bundle during initialization.
+
+```go
+bundle.LoadMessageFile("en-US.yaml")
 ```
 
 Create a Localizer to use for a set of language preferences.
@@ -108,9 +114,9 @@ bundle.MustLoadMessageFile("active.es.toml")
 
 ## For more information and examples:
 
-* Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n).
-* Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/localizer_test.go).
-* Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/v2/example).
+- Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n).
+- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/localizer_test.go).
+- Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/v2/example).
 
 ## License
 
