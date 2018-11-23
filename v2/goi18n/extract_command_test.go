@@ -136,9 +136,30 @@ two = "Two translation"
 zero = "Zero translation"
 `),
 		},
+		{
+			name: "concat id",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			func main() {
+				_ := &i18n.Message{
+					ID: "Plural" +
+						" " +
+						"ID",
+				}
+			}
+			`,
+			messages: []*i18n.Message{
+				{
+					ID: "Plural ID",
+				},
+			},
+		},
 	}
+
 	for _, test := range tests {
-		t.Run(test.name+"messages", func(t *testing.T) {
+		t.Run(test.name+" messages", func(t *testing.T) {
 			actualMessages, err := extractMessages([]byte(test.file))
 			if err != nil {
 				t.Fatal(err)
@@ -147,7 +168,7 @@ zero = "Zero translation"
 				t.Fatalf("file:\n%s\nexpected: %s\n     got: %s", test.file, marshalTest(test.messages), marshalTest(actualMessages))
 			}
 		})
-		t.Run(test.name+"active file", func(t *testing.T) {
+		t.Run(test.name+" active file", func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
 			defer os.RemoveAll(indir)
 			outdir := mustTempDir("TestExtractCommandOut")
@@ -218,7 +239,7 @@ other = "{{.Name}} has {{.UnreadEmailCount}} unread emails."
 }
 
 func marshalTest(value interface{}) string {
-	buf, err := json.Marshal(value)
+	buf, err := json.MarshalIndent(value, "", "  ")
 	if err != nil {
 		panic(err)
 	}

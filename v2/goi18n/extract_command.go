@@ -167,14 +167,10 @@ func (e *extractor) extractMessage(node ast.Node) {
 		if !ok {
 			continue
 		}
-		value, ok := kve.Value.(*ast.BasicLit)
+		v, ok := extractStringLiteral(kve.Value)
 		if !ok {
 			continue
 		}
-		if value.Kind != token.STRING {
-			continue
-		}
-		v := value.Value[1 : len(value.Value)-1]
 		data[key.Name] = v
 	}
 	if len(data) == 0 {
@@ -184,6 +180,31 @@ func (e *extractor) extractMessage(node ast.Node) {
 		e.messages = append(e.messages, internal.MustNewMessage(data))
 	} else if messageID := data["MessageID"]; messageID != "" {
 		e.messages = append(e.messages, &i18n.Message{ID: messageID})
+	}
+}
+
+func extractStringLiteral(expr ast.Expr) (string, bool) {
+	switch v := expr.(type) {
+	case *ast.BasicLit:
+		if v.Kind != token.STRING {
+			return "", false
+		}
+		return v.Value[1 : len(v.Value)-1], true
+	case *ast.BinaryExpr:
+		if v.Op != token.ADD {
+			return "", false
+		}
+		x, ok := extractStringLiteral(v.X)
+		if !ok {
+			return "", false
+		}
+		y, ok := extractStringLiteral(v.Y)
+		if !ok {
+			return "", false
+		}
+		return x + y, true
+	default:
+		return "", false
 	}
 }
 
