@@ -144,9 +144,9 @@ zero = "Zero translation"
 
 			func main() {
 				_ := &i18n.Message{
-					ID:          "Plural" +
-								 " " +
-								 "ID",
+					ID: "Plural" +
+						" " +
+						"ID",
 				}
 			}
 			`,
