@@ -1,4 +1,4 @@
 # https://github.com/golangci/golangci/wiki/Configuration
  service:
   prepare:
-    - go mod download
+    - GO111MODULE=on go mod download
