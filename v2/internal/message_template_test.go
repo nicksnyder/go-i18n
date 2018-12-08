@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
@@ -20,14 +20,14 @@ func TestNilMessageTemplate(t *testing.T) {
 	}
 }
 
-func TestMessageTemplatePluralFormMissed(t *testing.T) {
-	// test special case when appropriate plural form is not defined
-	mt := NewMessageTemplate(&Message{ID: "MissPluralForm", One: "Hello World", Other: "Hello World"})
-	// this plural form is not defined in NewMessageTemplate call
-	var undefined plural.Form = plural.Few
-	// it's OK to receive error on Execute exit, otherwise, one way or another, raise panic
-	_, err := mt.Execute(undefined, nil, nil)
-	if err == nil {
-		panic(fmt.Sprintf("Message template %v should return error when search for a %q plural form", mt, undefined))
+func TestMessageTemplatePluralFormMissing(t *testing.T) {
+	mt := NewMessageTemplate(&Message{ID: "HelloWorld", Other: "Hello World"})
+	s, err := mt.Execute(plural.Few, nil, nil)
+	if s != "" {
+		t.Errorf("expected %q; got %q", "", s)
+	}
+	expectedErr := pluralFormNotFoundError{pluralForm: plural.Few, messageID: "HelloWorld"}
+	if !reflect.DeepEqual(err, expectedErr) {
+		t.Errorf("expected error %#v; got %#v", expectedErr, err)
 	}
 }
