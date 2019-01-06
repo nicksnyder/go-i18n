@@ -75,9 +75,9 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 			m.Description = v
 		case "hash":
 			m.Hash = v
-		case "leftDelim":
+		case "leftdelim":
 			m.LeftDelim = v
-		case "rightDelim":
+		case "rightdelim":
 			m.RightDelim = v
 		case "zero":
 			m.Zero = v
