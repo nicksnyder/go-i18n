@@ -72,42 +72,61 @@ func recGetMessages(raw interface{}, isInitialCall bool) ([]*Message, error) {
 		messages = []*Message{m}
 
 	case map[string]interface{}:
-		messages = make([]*Message, 0, len(data))
-		for id, data := range data {
-			// recursively scan map items
-			childMessages, err := recGetMessages(data, false)
+		if isMessage(raw) {
+			m, err := NewMessage(data)
 			if err != nil {
 				return nil, err
 			}
-			for _, m := range childMessages {
-				if m.ID == "" {
-					m.ID = id // start with innermost key
-				} else {
-					m.ID = id + nestedSeparator + m.ID // update ID with each nested key on the way
+			messages = []*Message{m}
+		} else {
+			messages = make([]*Message, 0, len(data))
+			for id, data := range data {
+				// recursively scan map items
+				childMessages, err := recGetMessages(data, false)
+				if err != nil {
+					return nil, err
 				}
-				messages = append(messages, m)
+				for _, m := range childMessages {
+					if m.justCreated {
+						if m.ID == "" {
+							m.ID = id // start with innermost key
+						}
+					} else {
+						m.ID = id + nestedSeparator + m.ID // update ID with each nested key on the way
+					}
+					m.justCreated = false
+					messages = append(messages, m)
+				}
 			}
 		}
 
 	case map[interface{}]interface{}:
-		messages = make([]*Message, 0, len(data))
-		for id, data := range data {
-			strid, ok := id.(string)
-			if !ok {
-				return nil, fmt.Errorf("expected key to be string but got %#v", id)
-			}
-			// recursively scan map items
-			childMessages, err := recGetMessages(data, false)
+		if isMessage(raw) {
+			m, err := NewMessage(data)
 			if err != nil {
 				return nil, err
 			}
-			for _, m := range childMessages {
-				if m.ID == "" {
-					m.ID = strid // start with innermost key
-				} else {
-					m.ID = strid + nestedSeparator + m.ID // update ID with each nested key on the way
+			messages = []*Message{m}
+		} else {
+			messages = make([]*Message, 0, len(data))
+			for id, data := range data {
+				strid, ok := id.(string)
+				if !ok {
+					return nil, fmt.Errorf("expected key to be string but got %#v", id)
 				}
-				messages = append(messages, m)
+				// recursively scan map items
+				childMessages, err := recGetMessages(data, false)
+				if err != nil {
+					return nil, err
+				}
+				for _, m := range childMessages {
+					if m.ID == "" {
+						m.ID = strid // start with innermost key
+					} else {
+						m.ID = strid + nestedSeparator + m.ID // update ID with each nested key on the way
+					}
+					messages = append(messages, m)
+				}
 			}
 		}
 

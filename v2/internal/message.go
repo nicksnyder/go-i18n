@@ -41,6 +41,10 @@ type Message struct {
 
 	// Other is the content of the message for the CLDR plural form "other".
 	Other string
+
+	// justCreated is used internally, to know whether the message ID
+	// has to be set (creation) or prepended with prefix (recursive call)
+	justCreated bool
 }
 
 // NewMessage parses data and returns a new message.
@@ -67,6 +71,7 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 	if err != nil {
 		return err
 	}
+	m.justCreated = true
 	for k, v := range strdata {
 		switch strings.ToLower(k) {
 		case "id":
@@ -161,4 +166,49 @@ func stringMap(v interface{}) (map[string]string, error) {
 	default:
 		return nil, fmt.Errorf("unsupported type %#v", value)
 	}
+}
+
+// isMessage tells whether the given data is a message, or a map containing
+// nested messages.
+// A map is assumed to be a message if it contains any of the "reserved" keys:
+// "id", "description", "hash", "leftdelim", "rightdelim", "zero", "one", "two", "few", "many", "other"
+// with a string value.
+// e.g.,
+// - {"message": {"description": "world"}} is a message
+// - {"message": {"description": "world", "foo": "bar"}} is a message ("foo" key is ignored)
+// - {"notmessage": {"description": {"hello": "world"}}} is not
+// - {"notmessage": {"foo": "bar"}} is not
+func isMessage(v interface{}) bool {
+	reservedKeys := []string{"id", "description", "hash", "leftdelim", "rightdelim", "zero", "one", "two", "few", "many", "other"}
+	switch data := v.(type) {
+	case string:
+		return true
+	case map[string]interface{}:
+		for _, key := range reservedKeys {
+			val, ok := data[key]
+			if !ok {
+				continue
+			}
+			_, ok = val.(string)
+			if !ok {
+				continue
+			}
+			// v is a message if it contains a "reserved" key holding a string value
+			return true
+		}
+	case map[interface{}]interface{}:
+		for _, key := range reservedKeys {
+			val, ok := data[key]
+			if !ok {
+				continue
+			}
+			_, ok = val.(string)
+			if !ok {
+				continue
+			}
+			// v is a message if it contains a "reserved" key holding a string value
+			return true
+		}
+	}
+	return false
 }
