@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -39,49 +40,96 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 			return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
 		}
 	}
+	var err error
 	var raw interface{}
-	if err := unmarshalFunc(buf, &raw); err != nil {
+	if err = unmarshalFunc(buf, &raw); err != nil {
 		return nil, err
 	}
+
+	if messageFile.Messages, err = recGetMessages(raw, true); err != nil {
+		return nil, err
+	}
+
+	return messageFile, nil
+}
+
+const nestedSeparator = "."
+
+// recGetMessages looks for translation messages inside "raw" parameter,
+// scanning nested maps using recursion.
+func recGetMessages(raw interface{}, isInitialCall bool) ([]*Message, error) {
+	var messages []*Message
+
 	switch data := raw.(type) {
+	case string:
+		if isInitialCall {
+			return nil, errors.New("invalid translation file, expected key-values, got a single value")
+		}
+		m, err := NewMessage(data)
+		if err != nil {
+			return nil, err
+		}
+		messages = []*Message{m}
+
 	case map[string]interface{}:
-		messageFile.Messages = make([]*Message, 0, len(data))
+		messages = make([]*Message, 0, len(data))
 		for id, data := range data {
-			m, err := NewMessage(data)
+			// recursively scan map items
+			childMessages, err := recGetMessages(data, false)
 			if err != nil {
 				return nil, err
 			}
-			m.ID = id
-			messageFile.Messages = append(messageFile.Messages, m)
+			for _, m := range childMessages {
+				if m.ID == "" {
+					m.ID = id // start with innermost key
+				} else {
+					m.ID = id + nestedSeparator + m.ID // update ID with each nested key on the way
+				}
+				messages = append(messages, m)
+			}
 		}
+
 	case map[interface{}]interface{}:
-		messageFile.Messages = make([]*Message, 0, len(data))
+		messages = make([]*Message, 0, len(data))
 		for id, data := range data {
 			strid, ok := id.(string)
 			if !ok {
 				return nil, fmt.Errorf("expected key to be string but got %#v", id)
 			}
-			m, err := NewMessage(data)
+			// recursively scan map items
+			childMessages, err := recGetMessages(data, false)
 			if err != nil {
 				return nil, err
 			}
-			m.ID = strid
-			messageFile.Messages = append(messageFile.Messages, m)
+			for _, m := range childMessages {
+				if m.ID == "" {
+					m.ID = strid // start with innermost key
+				} else {
+					m.ID = strid + nestedSeparator + m.ID // update ID with each nested key on the way
+				}
+				messages = append(messages, m)
+			}
 		}
+
 	case []interface{}:
 		// Backward compatibility for v1 file format.
-		messageFile.Messages = make([]*Message, 0, len(data))
+		messages = make([]*Message, 0, len(data))
 		for _, data := range data {
-			m, err := NewMessage(data)
+			// recursively scan slice items
+			childMessages, err := recGetMessages(data, false)
 			if err != nil {
 				return nil, err
 			}
-			messageFile.Messages = append(messageFile.Messages, m)
+			for _, m := range childMessages {
+				messages = append(messages, m)
+			}
 		}
+
 	default:
 		return nil, fmt.Errorf("unsupported file format %T", raw)
 	}
-	return messageFile, nil
+
+	return messages, nil
 }
 
 func parsePath(path string) (langTag, format string) {
