@@ -139,9 +139,7 @@ func recGetMessages(raw interface{}, isInitialCall bool) ([]*Message, error) {
 			if err != nil {
 				return nil, err
 			}
-			for _, m := range childMessages {
-				messages = append(messages, m)
-			}
+			messages = append(messages, childMessages...)
 		}
 
 	default:
