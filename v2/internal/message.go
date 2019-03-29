@@ -2,8 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"reflect"
-	"sort"
 	"strings"
 )
 
@@ -47,15 +45,6 @@ type Message struct {
 	// justCreated is used internally, to know whether the message ID
 	// has to be set (creation) or prepended with prefix (recursive call)
 	justCreated bool
-}
-
-// Equal compares a message to another, ignoring private fields.
-func (m *Message) Equal(m2 *Message) bool {
-	justCreated := m.justCreated   // backup
-	m.justCreated = m2.justCreated // copy value, to ignore it on testing deep equality
-	eq := reflect.DeepEqual(m, m2)
-	m.justCreated = justCreated // restore
-	return eq
 }
 
 // NewMessage parses data and returns a new message.
@@ -222,27 +211,4 @@ func isMessage(v interface{}) bool {
 		}
 	}
 	return false
-}
-
-// EqualMessages compares two slices of messages, ignoring private fields and order.
-// Sorts both input slices, which are therefore modified by this function.
-func EqualMessages(m1, m2 []*Message) bool {
-	if len(m1) != len(m2) {
-		return false
-	}
-
-	var less = func(m []*Message) func(int, int) bool {
-		return func(i, j int) bool {
-			return m[i].ID < m[j].ID
-		}
-	}
-	sort.Slice(m1, less(m1))
-	sort.Slice(m2, less(m2))
-
-	for i, m := range m1 {
-		if !m.Equal(m2[i]) {
-			return false
-		}
-	}
-	return true
 }

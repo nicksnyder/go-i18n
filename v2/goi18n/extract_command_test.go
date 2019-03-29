@@ -6,10 +6,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/nicksnyder/go-i18n/v2/internal"
 )
 
 func TestExtract(t *testing.T) {
@@ -164,7 +164,7 @@ zero = "Zero translation"
 			if err != nil {
 				t.Fatal(err)
 			}
-			if !internal.EqualMessages(actualMessages, test.messages) {
+			if !reflect.DeepEqual(actualMessages, test.messages) {
 				t.Fatalf("file:\n%s\nexpected: %s\n     got: %s", test.file, marshalTest(test.messages), marshalTest(actualMessages))
 			}
 		})
