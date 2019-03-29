@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/BurntSushi/toml"
@@ -218,7 +217,7 @@ func TestV1FlatFormat(t *testing.T) {
 func expectMessage(t *testing.T, bundle Bundle, tag language.Tag, messageID string, message *Message) {
 	expected := internal.NewMessageTemplate(message)
 	actual := bundle.messageTemplates[tag][messageID]
-	if !reflect.DeepEqual(actual, expected) {
+	if !actual.Equal(expected) {
 		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, actual, expected)
 	}
 }

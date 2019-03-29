@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"reflect"
 	"testing"
 
 	"golang.org/x/text/language"
@@ -161,7 +160,7 @@ func TestParseMessageFileBytes(t *testing.T) {
 			t.Errorf("%s failed: expected format %q; got %q", testCase.name, testCase.messageFile.Format, actual.Format)
 			continue
 		}
-		if !reflect.DeepEqual(actual.Messages, testCase.messageFile.Messages) {
+		if !EqualMessages(actual.Messages, testCase.messageFile.Messages) {
 			t.Errorf("%s failed: expected %#v; got %#v", testCase.name, testCase.messageFile.Messages, actual.Messages)
 			continue
 		}

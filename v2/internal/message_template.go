@@ -3,6 +3,7 @@ package internal
 import (
 	"bytes"
 	"fmt"
+	"reflect"
 
 	"text/template"
 
@@ -13,6 +14,11 @@ import (
 type MessageTemplate struct {
 	*Message
 	PluralTemplates map[plural.Form]*Template
+}
+
+// Equal compares a message template to another, ignoring private fields.
+func (mt *MessageTemplate) Equal(mt2 *MessageTemplate) bool {
+	return mt.Message.Equal(mt2.Message) && reflect.DeepEqual(mt.PluralTemplates, mt2.PluralTemplates)
 }
 
 // NewMessageTemplate returns a new message template.
