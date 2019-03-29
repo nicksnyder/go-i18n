@@ -41,10 +41,6 @@ type Message struct {
 
 	// Other is the content of the message for the CLDR plural form "other".
 	Other string
-
-	// justCreated is used internally, to know whether the message ID
-	// has to be set (creation) or prepended with prefix (recursive call)
-	justCreated bool
 }
 
 // NewMessage parses data and returns a new message.
@@ -71,7 +67,6 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 	if err != nil {
 		return err
 	}
-	m.justCreated = true
 	for k, v := range strdata {
 		switch strings.ToLower(k) {
 		case "id":
