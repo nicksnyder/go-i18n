@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"golang.org/x/text/language"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func TestParseMessageFileBytes(t *testing.T) {
@@ -133,6 +134,24 @@ func TestParseMessageFileBytes(t *testing.T) {
 				}, {
 					ID:    "nested.bye",
 					Other: "all",
+				}},
+			},
+		},
+		{
+			name: "YAML nested test",
+			file: `
+outer:
+    nested:
+        inner: "value"`,
+			path:           "en.yaml",
+			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
+			messageFile: &MessageFile{
+				Path:   "en.yaml",
+				Tag:    language.English,
+				Format: "yaml",
+				Messages: []*Message{{
+					ID:    "outer.nested.inner",
+					Other: "value",
 				}},
 			},
 		},
