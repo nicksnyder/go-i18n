@@ -105,62 +105,54 @@ func stringMap(v interface{}) (map[string]string, error) {
 	case map[string]string:
 		return value, nil
 	case map[string]interface{}:
-		strdata := map[string]string{}
+		strdata := make(map[string]string, len(value))
 		for k, v := range value {
-			if k == "translation" {
-				switch vt := v.(type) {
-				case string:
-					strdata["other"] = vt
-				default:
-					v1Message, err := stringMap(v)
-					if err != nil {
-						return nil, err
-					}
-					for kk, vv := range v1Message {
-						strdata[kk] = vv
-					}
-				}
-				continue
+			err := stringSubmap(k, v, strdata)
+			if err != nil {
+				return nil, err
 			}
-			vstr, ok := v.(string)
-			if !ok {
-				return nil, fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
-			}
-			strdata[k] = vstr
 		}
 		return strdata, nil
 	case map[interface{}]interface{}:
-		strdata := map[string]string{}
+		strdata := make(map[string]string, len(value))
 		for k, v := range value {
 			kstr, ok := k.(string)
 			if !ok {
 				return nil, fmt.Errorf("expected key to be a string but got %#v", k)
 			}
-			if kstr == "translation" {
-				switch vt := v.(type) {
-				case string:
-					strdata["other"] = vt
-				default:
-					v1Message, err := stringMap(v)
-					if err != nil {
-						return nil, err
-					}
-					for kk, vv := range v1Message {
-						strdata[kk] = vv
-					}
-				}
-				continue
+			err := stringSubmap(kstr, v, strdata)
+			if err != nil {
+				return nil, err
 			}
-			vstr, ok := v.(string)
-			if !ok {
-				return nil, fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
-			}
-			strdata[kstr] = vstr
 		}
 		return strdata, nil
 	default:
 		return nil, fmt.Errorf("unsupported type %#v", value)
 	}
+}
+
+func stringSubmap(k string, v interface{}, strdata map[string]string) error {
+	if k == "translation" {
+		switch vt := v.(type) {
+		case string:
+			strdata["other"] = vt
+		default:
+			v1Message, err := stringMap(v)
+			if err != nil {
+				return err
+			}
+			for kk, vv := range v1Message {
+				strdata[kk] = vv
+			}
+		}
+		return nil
+	}
+	vstr, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
+	}
+	strdata[k] = vstr
+	return nil
 }
 
 // isMessage tells whether the given data is a message, or a map containing

@@ -59,6 +59,7 @@ const nestedSeparator = "."
 // scanning nested maps using recursion.
 func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Message, error) {
 	var messages []*Message
+	var err error
 
 	switch data := raw.(type) {
 	case string:
@@ -66,70 +67,37 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 			return nil, errors.New("invalid translation file, expected key-values, got a single value")
 		}
 		m, err := NewMessage(data)
-		if err != nil {
-			return nil, err
-		}
-		messages = []*Message{m}
+		return []*Message{m}, err
 
 	case map[string]interface{}:
 		if isMapMessage {
 			m, err := NewMessage(data)
+			return []*Message{m}, err
+		}
+		messages = make([]*Message, 0, len(data))
+		for id, data := range data {
+			// recursively scan map items
+			messages, err = addChildMessages(id, data, messages)
 			if err != nil {
 				return nil, err
-			}
-			messages = []*Message{m}
-		} else {
-			messages = make([]*Message, 0, len(data))
-			for id, data := range data {
-				// recursively scan map items
-				isChildMessage := isMessage(data)
-				childMessages, err := recGetMessages(data, isChildMessage, false)
-				if err != nil {
-					return nil, err
-				}
-				for _, m := range childMessages {
-					if isChildMessage {
-						if m.ID == "" {
-							m.ID = id // start with innermost key
-						}
-					} else {
-						m.ID = id + nestedSeparator + m.ID // update ID with each nested key on the way
-					}
-					messages = append(messages, m)
-				}
 			}
 		}
 
 	case map[interface{}]interface{}:
 		if isMapMessage {
 			m, err := NewMessage(data)
+			return []*Message{m}, err
+		}
+		messages = make([]*Message, 0, len(data))
+		for id, data := range data {
+			strid, ok := id.(string)
+			if !ok {
+				return nil, fmt.Errorf("expected key to be string but got %#v", id)
+			}
+			// recursively scan map items
+			messages, err = addChildMessages(strid, data, messages)
 			if err != nil {
 				return nil, err
-			}
-			messages = []*Message{m}
-		} else {
-			messages = make([]*Message, 0, len(data))
-			for id, data := range data {
-				strid, ok := id.(string)
-				if !ok {
-					return nil, fmt.Errorf("expected key to be string but got %#v", id)
-				}
-				// recursively scan map items
-				isChildMessage := isMessage(data)
-				childMessages, err := recGetMessages(data, isChildMessage, false)
-				if err != nil {
-					return nil, err
-				}
-				for _, m := range childMessages {
-					if isChildMessage {
-						if m.ID == "" {
-							m.ID = strid // start with innermost key
-						}
-					} else {
-						m.ID = strid + nestedSeparator + m.ID // update ID with each nested key on the way
-					}
-					messages = append(messages, m)
-				}
 			}
 		}
 
@@ -149,6 +117,25 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 		return nil, fmt.Errorf("unsupported file format %T", raw)
 	}
 
+	return messages, nil
+}
+
+func addChildMessages(id string, data interface{}, messages []*Message) ([]*Message, error) {
+	isChildMessage := isMessage(data)
+	childMessages, err := recGetMessages(data, isChildMessage, false)
+	if err != nil {
+		return nil, err
+	}
+	for _, m := range childMessages {
+		if isChildMessage {
+			if m.ID == "" {
+				m.ID = id // start with innermost key
+			}
+		} else {
+			m.ID = id + nestedSeparator + m.ID // update ID with each nested key on the way
+		}
+		messages = append(messages, m)
+	}
 	return messages, nil
 }
 
