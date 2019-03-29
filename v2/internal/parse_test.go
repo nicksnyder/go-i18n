@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"reflect"
+	"sort"
 	"testing"
 
 	"golang.org/x/text/language"
@@ -180,9 +181,32 @@ outer:
 			t.Errorf("%s failed: expected format %q; got %q", testCase.name, testCase.messageFile.Format, actual.Format)
 			continue
 		}
-		if !reflect.DeepEqual(actual.Messages, testCase.messageFile.Messages) {
+		if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
 			t.Errorf("%s failed: expected %#v; got %#v", testCase.name, testCase.messageFile.Messages, actual.Messages)
 			continue
 		}
 	}
+}
+
+// equalMessages compares two slices of messages, ignoring private fields and order.
+// Sorts both input slices, which are therefore modified by this function.
+func equalMessages(m1, m2 []*Message) bool {
+	if len(m1) != len(m2) {
+		return false
+	}
+
+	var less = func(m []*Message) func(int, int) bool {
+		return func(i, j int) bool {
+			return m[i].ID < m[j].ID
+		}
+	}
+	sort.Slice(m1, less(m1))
+	sort.Slice(m2, less(m2))
+
+	for i, m := range m1 {
+		if !reflect.DeepEqual(m, m2[i]) {
+			return false
+		}
+	}
+	return true
 }
