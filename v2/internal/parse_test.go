@@ -158,32 +158,34 @@ outer:
 		},
 	}
 	for _, testCase := range testCases {
-		actual, err := ParseMessageFileBytes([]byte(testCase.file), testCase.path, testCase.unmarshalFuncs)
-		if (err == nil && testCase.err != nil) ||
-			(err != nil && testCase.err == nil) ||
-			(err != nil && testCase.err != nil && err.Error() != testCase.err.Error()) {
-			t.Errorf("%s failed: expected error %#v; got %#v", testCase.name, testCase.err, err)
-			continue
-		}
-		if actual == nil {
-			continue
-		}
-		if actual.Path != testCase.messageFile.Path {
-			t.Errorf("%s failed: expected path %q; got %q", testCase.name, testCase.messageFile.Path, actual.Path)
-			continue
-		}
-		if actual.Tag != testCase.messageFile.Tag {
-			t.Errorf("%s failed: expected tag %q; got %q", testCase.name, testCase.messageFile.Tag, actual.Tag)
-			continue
-		}
-		if actual.Format != testCase.messageFile.Format {
-			t.Errorf("%s failed: expected format %q; got %q", testCase.name, testCase.messageFile.Format, actual.Format)
-			continue
-		}
-		if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
-			t.Errorf("%s failed: expected %#v; got %#v", testCase.name, testCase.messageFile.Messages, actual.Messages)
-			continue
-		}
+		t.Run(testCase.name, func(t *testing.T) {
+			actual, err := ParseMessageFileBytes([]byte(testCase.file), testCase.path, testCase.unmarshalFuncs)
+			if (err == nil && testCase.err != nil) ||
+				(err != nil && testCase.err == nil) ||
+				(err != nil && testCase.err != nil && err.Error() != testCase.err.Error()) {
+				t.Errorf("expected error %#v; got %#v", testCase.err, err)
+				return
+			}
+			if actual == nil {
+				return
+			}
+			if actual.Path != testCase.messageFile.Path {
+				t.Errorf("expected path %q; got %q", testCase.messageFile.Path, actual.Path)
+				return
+			}
+			if actual.Tag != testCase.messageFile.Tag {
+				t.Errorf("expected tag %q; got %q", testCase.messageFile.Tag, actual.Tag)
+				return
+			}
+			if actual.Format != testCase.messageFile.Format {
+				t.Errorf("expected format %q; got %q", testCase.messageFile.Format, actual.Format)
+				return
+			}
+			if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
+				t.Errorf("expected %#v; got %#v", testCase.messageFile.Messages, actual.Messages)
+				return
+			}
+		})
 	}
 }
 
