@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"reflect"
 	"sort"
 	"testing"
@@ -51,7 +50,7 @@ func TestParseMessageFileBytes(t *testing.T) {
 			name: "invalid test (no key)",
 			file: `"hello"`,
 			path: "en.json",
-			err:  errors.New("invalid translation file, expected key-values, got a single value"),
+			err:  errInvalidTranslationFile,
 		},
 		{
 			name: "nested test",

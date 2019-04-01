@@ -55,6 +55,8 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 
 const nestedSeparator = "."
 
+var errInvalidTranslationFile = errors.New("invalid translation file, expected key-values, got a single value")
+
 // recGetMessages looks for translation messages inside "raw" parameter,
 // scanning nested maps using recursion.
 func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Message, error) {
@@ -64,7 +66,7 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 	switch data := raw.(type) {
 	case string:
 		if isInitialCall {
-			return nil, errors.New("invalid translation file, expected key-values, got a single value")
+			return nil, errInvalidTranslationFile
 		}
 		m, err := NewMessage(data)
 		return []*Message{m}, err
