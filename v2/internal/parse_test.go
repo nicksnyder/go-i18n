@@ -163,27 +163,24 @@ outer:
 			if (err == nil && testCase.err != nil) ||
 				(err != nil && testCase.err == nil) ||
 				(err != nil && testCase.err != nil && err.Error() != testCase.err.Error()) {
-				t.Errorf("expected error %#v; got %#v", testCase.err, err)
-				return
+				t.Fatalf("expected error %#v; got %#v", testCase.err, err)
 			}
-			if actual == nil {
-				return
+			if testCase.messageFile == nil && actual != nil || testCase.messageFile != nil && actual == nil {
+				t.Fatalf("expected message file %#v; got %#v", testCase.messageFile, actual)
 			}
-			if actual.Path != testCase.messageFile.Path {
-				t.Errorf("expected path %q; got %q", testCase.messageFile.Path, actual.Path)
-				return
-			}
-			if actual.Tag != testCase.messageFile.Tag {
-				t.Errorf("expected tag %q; got %q", testCase.messageFile.Tag, actual.Tag)
-				return
-			}
-			if actual.Format != testCase.messageFile.Format {
-				t.Errorf("expected format %q; got %q", testCase.messageFile.Format, actual.Format)
-				return
-			}
-			if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
-				t.Errorf("expected %#v; got %#v", testCase.messageFile.Messages, actual.Messages)
-				return
+			if testCase.messageFile != nil {
+				if actual.Path != testCase.messageFile.Path {
+					t.Errorf("expected path %q; got %q", testCase.messageFile.Path, actual.Path)
+				}
+				if actual.Tag != testCase.messageFile.Tag {
+					t.Errorf("expected tag %q; got %q", testCase.messageFile.Tag, actual.Tag)
+				}
+				if actual.Format != testCase.messageFile.Format {
+					t.Errorf("expected format %q; got %q", testCase.messageFile.Format, actual.Format)
+				}
+				if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
+					t.Errorf("expected %#v; got %#v", testCase.messageFile.Messages, actual.Messages)
+				}
 			}
 		})
 	}
