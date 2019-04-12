@@ -380,7 +380,16 @@ func (b *Bundle) translate(lang *language.Language, translationID string, args .
 	p, _ := lang.Plural(count)
 	template := translation.Template(p)
 	if template == nil {
-		return translationID
+		if p == language.Other {
+			return translationID
+		}
+		countInt, ok := count.(int)
+		if ok && countInt > 1 {
+			template = translation.Template(language.Other)
+			if template == nil {
+				return translationID
+			}
+		}
 	}
 
 	s := template.Execute(data)
