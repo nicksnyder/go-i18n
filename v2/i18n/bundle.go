@@ -19,31 +19,29 @@ type UnmarshalFunc = internal.UnmarshalFunc
 // It is not goroutine safe to modify the bundle while Localizers
 // are reading from it.
 type Bundle struct {
-	// DefaultLanguage is the default language of the bundle.
-	DefaultLanguage language.Tag
-
-	// UnmarshalFuncs is a map of file extensions to UnmarshalFuncs.
-	UnmarshalFuncs map[string]UnmarshalFunc
-
+	defaultLanguage  language.Tag
+	unmarshalFuncs   map[string]UnmarshalFunc
 	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
 	pluralRules      plural.Rules
 	tags             []language.Tag
 	matcher          language.Matcher
 }
 
-func (b *Bundle) init() {
-	if b.pluralRules == nil {
-		b.pluralRules = plural.DefaultRules()
+func NewBundle(defaultLanguage language.Tag) *Bundle {
+	b := &Bundle{
+		defaultLanguage: defaultLanguage,
+		pluralRules:     plural.DefaultRules(),
 	}
-	b.addTag(b.DefaultLanguage)
+	b.addTag(defaultLanguage)
+	return b
 }
 
 // RegisterUnmarshalFunc registers an UnmarshalFunc for format.
 func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFunc) {
-	if b.UnmarshalFuncs == nil {
-		b.UnmarshalFuncs = make(map[string]UnmarshalFunc)
+	if b.unmarshalFuncs == nil {
+		b.unmarshalFuncs = make(map[string]UnmarshalFunc)
 	}
-	b.UnmarshalFuncs[format] = unmarshalFunc
+	b.unmarshalFuncs[format] = unmarshalFunc
 }
 
 // LoadMessageFile loads the bytes from path
@@ -73,7 +71,7 @@ type MessageFile = internal.MessageFile
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
-	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.UnmarshalFuncs)
+	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +92,6 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 // AddMessages adds messages for a language.
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
-	b.init()
 	pluralRule := b.pluralRules.Rule(tag)
 	if pluralRule == nil {
 		return fmt.Errorf("no plural rule registered for %s", tag)

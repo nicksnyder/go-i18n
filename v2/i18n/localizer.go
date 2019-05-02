@@ -24,7 +24,6 @@ type Localizer struct {
 // in the bundle according to the language preferences in langs.
 // It can parse Accept-Language headers as defined in http://www.ietf.org/rfc/rfc2616.txt.
 func NewLocalizer(bundle *Bundle, langs ...string) *Localizer {
-	bundle.init()
 	return &Localizer{
 		bundle: bundle,
 		tags:   parseTags(langs),
