@@ -2,7 +2,7 @@
 // according to a set of locale preferences.
 //
 // Create a Bundle to use for the lifetime of your application.
-//     bundle := &i18n.Bundle{DefaultLanguage: language.English}
+//     bundle := i18n.NewBundle(language.English)
 //
 // Load translations into your bundle during initialization.
 //     bundle.LoadMessageFile("en-US.yaml")

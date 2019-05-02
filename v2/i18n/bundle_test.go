@@ -33,7 +33,7 @@ var everythingMessage = internal.MustNewMessage(map[string]string{
 })
 
 func TestPseudoLanguage(t *testing.T) {
-	bundle := &Bundle{DefaultLanguage: language.English}
+	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	expected := "simple simple"
 	bundle.MustParseMessageFileBytes([]byte(`
@@ -51,7 +51,7 @@ simple = "simple simple"
 }
 
 func TestPseudoLanguagePlural(t *testing.T) {
-	bundle := &Bundle{DefaultLanguage: language.English}
+	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 [everything]
