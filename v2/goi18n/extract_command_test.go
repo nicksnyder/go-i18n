@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 func TestExtract(t *testing.T) {
@@ -16,14 +14,12 @@ func TestExtract(t *testing.T) {
 		name       string
 		fileName   string
 		file       string
-		messages   []*i18n.Message
 		activeFile []byte
 	}{
 		{
 			name:     "no translations",
 			fileName: "file.go",
 			file:     `package main`,
-			messages: nil,
 		},
 		{
 			name:     "global declaration",
@@ -36,11 +32,26 @@ func TestExtract(t *testing.T) {
 				ID: "Plural ID",
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID: "Plural ID",
-				},
-			},
+		},
+		{
+			name:     "escape",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var a = &i18n.Message{
+				ID:    "a",
+				Other: "a \" b",
+			}
+			var b = &i18n.Message{
+				ID:    "b",
+				Other: ` + "`" + `a " b` + "`" + `,
+			}
+			`,
+			activeFile: []byte(`a = "a \" b"
+b = "a \" b"
+`),
 		},
 		{
 			name:     "no extract from test",
@@ -55,11 +66,6 @@ func TestExtract(t *testing.T) {
 				l.Localize(&i18n.LocalizeConfig{MessageID: "Plural ID"})
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID: "Plural ID",
-				},
-			},
 		},
 		{
 			name:     "must short form id only",
@@ -74,11 +80,6 @@ func TestExtract(t *testing.T) {
 				l.MustLocalize(&i18n.LocalizeConfig{MessageID: "Plural ID"})
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID: "Plural ID",
-				},
-			},
 		},
 		{
 			name:     "custom package name",
@@ -93,11 +94,6 @@ func TestExtract(t *testing.T) {
 				}
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID: "Plural ID",
-				},
-			},
 		},
 		{
 			name:     "exhaustive plural translation",
@@ -119,18 +115,6 @@ func TestExtract(t *testing.T) {
 				}
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID:          "Plural ID",
-					Description: "Plural description",
-					Zero:        "Zero translation",
-					One:         "One translation",
-					Two:         "Two translation",
-					Few:         "Few translation",
-					Many:        "Many translation",
-					Other:       "Other translation",
-				},
-			},
 			activeFile: []byte(`["Plural ID"]
 description = "Plural description"
 few = "Few translation"
@@ -156,11 +140,6 @@ zero = "Zero translation"
 				}
 			}
 			`,
-			messages: []*i18n.Message{
-				{
-					ID: "Plural ID",
-				},
-			},
 		},
 	}
 
