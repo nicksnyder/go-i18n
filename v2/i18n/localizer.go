@@ -154,7 +154,7 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 	}
 
 	if len(l.bundle.tags) <= 1 {
-		return l.bundle.DefaultLanguage, nil
+		return l.bundle.defaultLanguage, nil
 	}
 
 	// Slow path.
@@ -162,7 +162,7 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 	// so we need to create a new matcher that contains only the tags in the bundle
 	// that have this message.
 	foundTags := make([]language.Tag, 0, len(l.bundle.messageTemplates)+1)
-	foundTags = append(foundTags, l.bundle.DefaultLanguage)
+	foundTags = append(foundTags, l.bundle.defaultLanguage)
 
 	for t, templates := range l.bundle.messageTemplates {
 		template := templates[id]
@@ -182,7 +182,7 @@ func (l *Localizer) matchTemplate(id string, defaultMessage *Message, matcher la
 	if templates != nil && templates[id] != nil {
 		return tag, templates[id]
 	}
-	if tag == l.bundle.DefaultLanguage && defaultMessage != nil {
+	if tag == l.bundle.defaultLanguage && defaultMessage != nil {
 		return tag, internal.NewMessageTemplate(defaultMessage)
 	}
 	return tag, nil
