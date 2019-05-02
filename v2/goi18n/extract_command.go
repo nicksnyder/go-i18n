@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/nicksnyder/go-i18n/v2/internal"
@@ -77,6 +78,11 @@ func (ec *extractCommand) execute() error {
 				return nil
 			}
 			if filepath.Ext(path) != ".go" {
+				return nil
+			}
+
+			// Don't extract from test files.
+			if strings.HasSuffix(path, "_test.go") {
 				return nil
 			}
 
