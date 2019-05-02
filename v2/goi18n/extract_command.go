@@ -197,7 +197,7 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 		}
 		s := v.Value[1 : len(v.Value)-1]
 		if v.Value[0] == '"' {
-			s = strings.ReplaceAll(s, `\"`, `"`)
+			s = strings.Replace(s, `\"`, `"`, -1)
 		}
 		return s, true
 	case *ast.BinaryExpr:
