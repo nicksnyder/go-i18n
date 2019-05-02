@@ -86,7 +86,7 @@ zero = "zero translation"
 }
 
 func TestJSON(t *testing.T) {
-	var bundle Bundle
+	bundle := NewBundle(language.English)
 	bundle.MustParseMessageFileBytes([]byte(`{
 	"simple": "simple translation",
 	"detail": {
@@ -110,7 +110,7 @@ func TestJSON(t *testing.T) {
 }
 
 func TestYAML(t *testing.T) {
-	var bundle Bundle
+	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 # Comment
@@ -138,7 +138,7 @@ everything:
 }
 
 func TestTOML(t *testing.T) {
-	var bundle Bundle
+	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 	bundle.MustParseMessageFileBytes([]byte(`
 # Comment
@@ -166,7 +166,7 @@ other = "other translation"
 }
 
 func TestV1Format(t *testing.T) {
-	var bundle Bundle
+	bundle := NewBundle(language.English)
 	bundle.MustParseMessageFileBytes([]byte(`[
 	{
 		"id": "simple",
@@ -193,7 +193,7 @@ func TestV1Format(t *testing.T) {
 }
 
 func TestV1FlatFormat(t *testing.T) {
-	var bundle Bundle
+	bundle := NewBundle(language.English)
 	bundle.MustParseMessageFileBytes([]byte(`{
 	"simple": {
 		"other": "simple translation"
@@ -215,7 +215,7 @@ func TestV1FlatFormat(t *testing.T) {
 	expectMessage(t, bundle, language.AmericanEnglish, "everything", &e)
 }
 
-func expectMessage(t *testing.T, bundle Bundle, tag language.Tag, messageID string, message *Message) {
+func expectMessage(t *testing.T, bundle *Bundle, tag language.Tag, messageID string, message *Message) {
 	expected := internal.NewMessageTemplate(message)
 	actual := bundle.messageTemplates[tag][messageID]
 	if !reflect.DeepEqual(actual, expected) {
