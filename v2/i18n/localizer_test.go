@@ -544,9 +544,11 @@ func TestLocalizer_Localize(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			bundle := &Bundle{DefaultLanguage: testCase.defaultLanguage}
+			bundle := NewBundle(testCase.defaultLanguage)
 			for tag, messages := range testCase.messages {
-				bundle.AddMessages(tag, messages...)
+				if err := bundle.AddMessages(tag, messages...); err != nil {
+					t.Fatal(err)
+				}
 			}
 			localizer := NewLocalizer(bundle, testCase.acceptLangs...)
 			localized, err := localizer.Localize(testCase.conf)

@@ -48,7 +48,7 @@ func TestExtract(t *testing.T) {
 			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
-				bundle := &i18n.Bundle{}
+				bundle := i18n.NewBundle(language.English)
 				l := i18n.NewLocalizer(bundle, "en")
 				l.Localize(&i18n.LocalizeConfig{MessageID: "Plural ID"})
 			}
@@ -66,7 +66,7 @@ func TestExtract(t *testing.T) {
 			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
-				bundle := &i18n.Bundle{}
+				bundle := i18n.NewBundle(language.English)
 				l := i18n.NewLocalizer(bundle, "en")
 				l.MustLocalize(&i18n.LocalizeConfig{MessageID: "Plural ID"})
 			}
