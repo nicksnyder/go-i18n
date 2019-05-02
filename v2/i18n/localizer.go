@@ -144,16 +144,25 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 			}
 		}
 	}
+
 	tag, template := l.getTemplate(messageID, lc.DefaultMessage)
 	if template == nil {
 		return "", language.Und, &MessageNotFoundErr{messageID: messageID}
 	}
+
 	pluralForm := l.pluralForm(tag, operands)
 	if pluralForm == plural.Invalid {
 		return "", language.Und, &pluralizeErr{messageID: messageID, tag: tag}
 	}
+
 	msg, err := template.Execute(pluralForm, templateData, lc.Funcs)
 	if err != nil {
+		if pluralForm != plural.Other {
+			msg2, err2 := template.Execute(plural.Other, templateData, lc.Funcs)
+			if err2 == nil {
+				return msg2, tag, err
+			}
+		}
 		return "", language.Und, err
 	}
 	return msg, tag, nil
