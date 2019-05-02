@@ -121,6 +121,7 @@ func (l *Localizer) LocalizeMessage(msg *Message) (string, error) {
 // }
 
 // LocalizeWithTag returns a localized message and the language tag.
+//
 func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, error) {
 	messageID := lc.MessageID
 	if lc.DefaultMessage != nil {
@@ -157,6 +158,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 
 	msg, err := template.Execute(pluralForm, templateData, lc.Funcs)
 	if err != nil {
+		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
 			msg2, err2 := template.Execute(plural.Other, templateData, lc.Funcs)
 			if err2 == nil {
