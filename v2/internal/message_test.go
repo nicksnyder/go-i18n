@@ -144,3 +144,17 @@ func TestNewMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestKeyTypeErr(t *testing.T) {
+	expected := "expected key to be a string but got 1"
+	if actual := (&keyTypeErr{key: 1}).Error(); actual != expected {
+		t.Fatalf("expected %#v; got %#v", expected, actual)
+	}
+}
+
+func TestValueTypeErr(t *testing.T) {
+	expected := "unsupported type 1"
+	if actual := (&valueTypeErr{value: 1}).Error(); actual != expected {
+		t.Fatalf("expected %#v; got %#v", expected, actual)
+	}
+}
