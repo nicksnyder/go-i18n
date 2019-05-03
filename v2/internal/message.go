@@ -96,6 +96,22 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 	return nil
 }
 
+type keyTypeErr struct {
+	key interface{}
+}
+
+func (err *keyTypeErr) Error() string {
+	return fmt.Sprintf("expected key to be a string but got %#v", err.key)
+}
+
+type valueTypeErr struct {
+	value interface{}
+}
+
+func (err *valueTypeErr) Error() string {
+	return fmt.Sprintf("unsupported type %#v", err.value)
+}
+
 func stringMap(v interface{}) (map[string]string, error) {
 	switch value := v.(type) {
 	case string:
@@ -118,7 +134,7 @@ func stringMap(v interface{}) (map[string]string, error) {
 		for k, v := range value {
 			kstr, ok := k.(string)
 			if !ok {
-				return nil, fmt.Errorf("expected key to be a string but got %#v", k)
+				return nil, &keyTypeErr{key: k}
 			}
 			err := stringSubmap(kstr, v, strdata)
 			if err != nil {
@@ -127,7 +143,7 @@ func stringMap(v interface{}) (map[string]string, error) {
 		}
 		return strdata, nil
 	default:
-		return nil, fmt.Errorf("unsupported type %#v", value)
+		return nil, &valueTypeErr{value: value}
 	}
 }
 
@@ -147,12 +163,16 @@ func stringSubmap(k string, v interface{}, strdata map[string]string) error {
 		}
 		return nil
 	}
-	vstr, ok := v.(string)
-	if !ok {
+
+	switch vt := v.(type) {
+	case string:
+		strdata[k] = vt
+		return nil
+	case nil:
+		return nil
+	default:
 		return fmt.Errorf("expected value for key %q be a string but got %#v", k, v)
 	}
-	strdata[k] = vstr
-	return nil
 }
 
 // isMessage tells whether the given data is a message, or a map containing
