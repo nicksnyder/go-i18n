@@ -26,7 +26,7 @@ import "github.com/nicksnyder/go-i18n/v2/i18n"
 Create a Bundle to use for the lifetime of your application.
 
 ```go
-bundle := &i18n.Bundle{DefaultLanguage: language.English}
+bundle := i18n.NewBundle(language.English)
 ```
 
 Load translations into your bundle during initialization.
