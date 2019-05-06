@@ -156,7 +156,6 @@ func (e *extractor) extractMessages(node ast.Node) {
 		}
 		e.extractMessage(cl)
 	case *ast.ArrayType:
-		// se := unwrapSelectorExpr(t.Elt)
 		if !e.isMessageType(t.Elt) {
 			return
 		}
@@ -168,7 +167,6 @@ func (e *extractor) extractMessages(node ast.Node) {
 			e.extractMessage(ecl)
 		}
 	case *ast.MapType:
-		// se := unwrapSelectorExpr(t.Value)
 		if !e.isMessageType(t.Value) {
 			return
 		}
