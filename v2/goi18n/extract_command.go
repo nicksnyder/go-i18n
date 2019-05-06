@@ -132,11 +132,6 @@ func newExtractor(file *ast.File) *extractor {
 type extractor struct {
 	i18nPackageName string
 	messages        []*i18n.Message
-	errs            []error
-}
-
-func (e *extractor) err(err error) {
-	e.errs = append(e.errs, err)
 }
 
 func (e *extractor) Visit(node ast.Node) ast.Visitor {

@@ -6,7 +6,7 @@ import (
 )
 
 // Check this here to avoid unnecessary import of sort package.
-var _ = sort.Interface(make(SortableByID, 0, 0))
+var _ = sort.Interface(make(SortableByID, 0))
 
 func TestNewSingleTranslation(t *testing.T) {
 	t.Skipf("not implemented")

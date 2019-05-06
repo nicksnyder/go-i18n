@@ -3,7 +3,7 @@ package translation
 import (
 	"bytes"
 	"fmt"
-	//"launchpad.net/goyaml"
+
 	"testing"
 	gotemplate "text/template"
 )
@@ -32,7 +32,9 @@ func TestMarshalText(t *testing.T) {
 
 func TestUnmarshalText(t *testing.T) {
 	tmpl := &template{}
-	tmpl.UnmarshalText([]byte("hello {{.World}}"))
+	if err := tmpl.UnmarshalText([]byte("hello {{.World}}")); err != nil {
+		t.Fatal(err)
+	}
 	result := tmpl.Execute(map[string]string{
 		"World": "world!",
 	})
@@ -41,67 +43,6 @@ func TestUnmarshalText(t *testing.T) {
 		t.Errorf("expected %#v; got %#v", expected, result)
 	}
 }
-
-/*
-func TestYAMLMarshal(t *testing.T) {
-	src := "hello {{.World}}"
-	tmpl, err := newTemplate(src)
-	if err != nil {
-		t.Fatal(err)
-	}
-	buf, err := goyaml.Marshal(tmpl)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !bytes.Equal(buf, []byte(src)) {
-		t.Fatalf(`expected "%s"; got "%s"`, src, buf)
-	}
-}
-
-func TestYAMLUnmarshal(t *testing.T) {
-	buf := []byte(`Tmpl: "hello"`)
-
-	var out struct {
-		Tmpl *template
-	}
-	var foo map[string]string
-	if err := goyaml.Unmarshal(buf, &foo); err != nil {
-		t.Fatal(err)
-	}
-	if out.Tmpl == nil {
-		t.Fatalf("out.Tmpl was nil")
-	}
-	if out.Tmpl.tmpl == nil {
-		t.Fatalf("out.Tmpl.tmpl was nil")
-	}
-	if expected := "hello {{.World}}"; out.Tmpl.src != expected {
-		t.Fatalf("expected %s; got %s", expected, out.Tmpl.src)
-	}
-}
-
-func TestGetYAML(t *testing.T) {
-	src := "hello"
-	tmpl := &template{
-		tmpl: nil,
-		src:  src,
-	}
-	if tag, value := tmpl.GetYAML(); tag != "" || value != src {
-		t.Errorf("GetYAML() returned (%#v, %#v); expected (%#v, %#v)", tag, value, "", src)
-	}
-}
-
-func TestSetYAML(t *testing.T) {
-	tmpl := &template{}
-	tmpl.SetYAML("tagDoesntMatter", "hello {{.World}}")
-	result := tmpl.Execute(map[string]string{
-		"World": "world!",
-	})
-	expected := "hello world!"
-	if result != expected {
-		t.Errorf("expected %#v; got %#v", expected, result)
-	}
-}
-*/
 
 func BenchmarkExecuteNilTemplate(b *testing.B) {
 	template := &template{src: "hello world"}
