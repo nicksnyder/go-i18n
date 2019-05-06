@@ -3,3 +3,6 @@
 service:
   prepare:
     - go get -t ./...
+linters:
+  enable:
+    - gofmt
