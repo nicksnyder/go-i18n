@@ -187,7 +187,7 @@ func (e *extractor) extractMessages(node ast.Node) {
 func (e *extractor) isMessageType(expr ast.Expr) bool {
 	se := unwrapSelectorExpr(expr)
 	if se == nil {
-		return  false
+		return false
 	}
 	if se.Sel.Name != "Message" && se.Sel.Name != "LocalizeConfig" {
 		return false
