@@ -140,29 +140,78 @@ func (e *extractor) err(err error) {
 }
 
 func (e *extractor) Visit(node ast.Node) ast.Visitor {
-	e.extractMessage(node)
+	e.extractMessages(node)
 	return e
 }
 
-func (e *extractor) extractMessage(node ast.Node) {
+func (e *extractor) extractMessages(node ast.Node) {
 	cl, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return
 	}
-	se, ok := cl.Type.(*ast.SelectorExpr)
-	if !ok {
-		return
+	switch t := cl.Type.(type) {
+	case *ast.SelectorExpr:
+		if !e.isMessageType(t) {
+			return
+		}
+		e.extractMessage(cl)
+	case *ast.ArrayType:
+		if !e.isMessageType(t.Elt) {
+			return
+		}
+		for _, el := range cl.Elts {
+			ecl, ok := el.(*ast.CompositeLit)
+			if !ok {
+				continue
+			}
+			e.extractMessage(ecl)
+		}
+	case *ast.MapType:
+		if !e.isMessageType(t.Value) {
+			return
+		}
+		for _, el := range cl.Elts {
+			kve, ok := el.(*ast.KeyValueExpr)
+			if !ok {
+				continue
+			}
+			vcl, ok := kve.Value.(*ast.CompositeLit)
+			if !ok {
+				continue
+			}
+			e.extractMessage(vcl)
+		}
+	}
+}
+
+func (e *extractor) isMessageType(expr ast.Expr) bool {
+	se := unwrapSelectorExpr(expr)
+	if se == nil {
+		return false
 	}
 	if se.Sel.Name != "Message" && se.Sel.Name != "LocalizeConfig" {
-		return
+		return false
 	}
 	x, ok := se.X.(*ast.Ident)
 	if !ok {
-		return
+		return false
 	}
-	if x.Name != e.i18nPackageName {
-		return
+	return x.Name == e.i18nPackageName
+}
+
+func unwrapSelectorExpr(e ast.Expr) *ast.SelectorExpr {
+	switch et := e.(type) {
+	case *ast.SelectorExpr:
+		return et
+	case *ast.StarExpr:
+		se, _ := et.X.(*ast.SelectorExpr)
+		return se
+	default:
+		return nil
 	}
+}
+
+func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	data := make(map[string]string)
 	for _, elt := range cl.Elts {
 		kve, ok := elt.(*ast.KeyValueExpr)
@@ -182,11 +231,10 @@ func (e *extractor) extractMessage(node ast.Node) {
 	if len(data) == 0 {
 		return
 	}
-	if se.Sel.Name == "Message" {
-		e.messages = append(e.messages, internal.MustNewMessage(data))
-	} else if messageID := data["MessageID"]; messageID != "" {
-		e.messages = append(e.messages, &i18n.Message{ID: messageID})
+	if messageID := data["MessageID"]; messageID != "" {
+		data["ID"] = messageID
 	}
+	e.messages = append(e.messages, internal.MustNewMessage(data))
 }
 
 func extractStringLiteral(expr ast.Expr) (string, bool) {

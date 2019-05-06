@@ -54,6 +54,50 @@ b = "a \" b"
 `),
 		},
 		{
+			name:     "array",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var a = []*i18n.Message{
+				{
+					ID:    "a",
+					Other: "a",
+				},
+				{
+					ID:    "b",
+					Other: "b",
+				},
+			}
+			`,
+			activeFile: []byte(`a = "a"
+b = "b"
+`),
+		},
+		{
+			name:     "map",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var a = map[string]*i18n.Message{
+				"a": {
+					ID:    "a",
+					Other: "a",
+				},
+				"b": {
+					ID:    "b",
+					Other: "b",
+				},
+			}
+			`,
+			activeFile: []byte(`a = "a"
+b = "b"
+`),
+		},
+		{
 			name:     "no extract from test",
 			fileName: "file_test.go",
 			file: `package main
@@ -144,7 +188,7 @@ zero = "Zero translation"
 	}
 
 	for _, test := range tests {
-		t.Run(test.name+" active file", func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
 			defer os.RemoveAll(indir)
 			outdir := mustTempDir("TestExtractCommandOut")
