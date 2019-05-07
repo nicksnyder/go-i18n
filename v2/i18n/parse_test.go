@@ -1,4 +1,4 @@
-package internal
+package i18n
 
 import (
 	"reflect"

@@ -5,23 +5,22 @@ import (
 	"testing"
 
 	"github.com/BurntSushi/toml"
-	"github.com/nicksnyder/go-i18n/v2/internal"
 	"golang.org/x/text/language"
 	yaml "gopkg.in/yaml.v2"
 )
 
-var simpleMessage = internal.MustNewMessage(map[string]string{
+var simpleMessage = MustNewMessage(map[string]string{
 	"id":    "simple",
 	"other": "simple translation",
 })
 
-var detailMessage = internal.MustNewMessage(map[string]string{
+var detailMessage = MustNewMessage(map[string]string{
 	"id":          "detail",
 	"description": "detail description",
 	"other":       "detail translation",
 })
 
-var everythingMessage = internal.MustNewMessage(map[string]string{
+var everythingMessage = MustNewMessage(map[string]string{
 	"id":          "everything",
 	"description": "everything description",
 	"zero":        "zero translation",
@@ -216,7 +215,7 @@ func TestV1FlatFormat(t *testing.T) {
 }
 
 func expectMessage(t *testing.T, bundle *Bundle, tag language.Tag, messageID string, message *Message) {
-	expected := internal.NewMessageTemplate(message)
+	expected := NewMessageTemplate(message)
 	actual := bundle.messageTemplates[tag][messageID]
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, actual, expected)

@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/nicksnyder/go-i18n/v2/internal"
 )
 
 func usageExtract() {
@@ -100,9 +99,9 @@ func (ec *extractCommand) execute() error {
 			return err
 		}
 	}
-	messageTemplates := map[string]*internal.MessageTemplate{}
+	messageTemplates := map[string]*i18n.MessageTemplate{}
 	for _, m := range messages {
-		if mt := internal.NewMessageTemplate(m); mt != nil {
+		if mt := i18n.NewMessageTemplate(m); mt != nil {
 			messageTemplates[m.ID] = mt
 		}
 	}
@@ -229,7 +228,7 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	if messageID := data["MessageID"]; messageID != "" {
 		data["ID"] = messageID
 	}
-	e.messages = append(e.messages, internal.MustNewMessage(data))
+	e.messages = append(e.messages, i18n.MustNewMessage(data))
 }
 
 func extractStringLiteral(expr ast.Expr) (string, bool) {

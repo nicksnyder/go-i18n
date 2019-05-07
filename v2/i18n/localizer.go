@@ -5,7 +5,6 @@ import (
 
 	"text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
@@ -145,7 +144,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	return msg, tag, nil
 }
 
-func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *internal.MessageTemplate) {
+func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate) {
 	// Fast path.
 	// Optimistically assume this message id is defined in each language.
 	fastTag, template := l.matchTemplate(id, defaultMessage, l.bundle.matcher, l.bundle.tags)
@@ -175,7 +174,7 @@ func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Ta
 	return l.matchTemplate(id, defaultMessage, language.NewMatcher(foundTags), foundTags)
 }
 
-func (l *Localizer) matchTemplate(id string, defaultMessage *Message, matcher language.Matcher, tags []language.Tag) (language.Tag, *internal.MessageTemplate) {
+func (l *Localizer) matchTemplate(id string, defaultMessage *Message, matcher language.Matcher, tags []language.Tag) (language.Tag, *MessageTemplate) {
 	_, i, _ := matcher.Match(l.tags...)
 	tag := tags[i]
 	templates := l.bundle.messageTemplates[tag]
@@ -183,7 +182,7 @@ func (l *Localizer) matchTemplate(id string, defaultMessage *Message, matcher la
 		return tag, templates[id]
 	}
 	if tag == l.bundle.defaultLanguage && defaultMessage != nil {
-		return tag, internal.NewMessageTemplate(defaultMessage)
+		return tag, NewMessageTemplate(defaultMessage)
 	}
 	return tag, nil
 }

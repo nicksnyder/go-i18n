@@ -1,4 +1,4 @@
-package internal
+package i18n
 
 import (
 	"bytes"
@@ -6,18 +6,19 @@ import (
 
 	"text/template"
 
+	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 )
 
 // MessageTemplate is an executable template for a message.
 type MessageTemplate struct {
 	*Message
-	PluralTemplates map[plural.Form]*Template
+	PluralTemplates map[plural.Form]*internal.Template
 }
 
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
-	pluralTemplates := map[plural.Form]*Template{}
+	pluralTemplates := map[plural.Form]*internal.Template{}
 	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero)
 	setPluralTemplate(pluralTemplates, plural.One, m.One)
 	setPluralTemplate(pluralTemplates, plural.Two, m.Two)
@@ -33,9 +34,9 @@ func NewMessageTemplate(m *Message) *MessageTemplate {
 	}
 }
 
-func setPluralTemplate(pluralTemplates map[plural.Form]*Template, pluralForm plural.Form, src string) {
+func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src string) {
 	if src != "" {
-		pluralTemplates[pluralForm] = &Template{Src: src}
+		pluralTemplates[pluralForm] = &internal.Template{Src: src}
 	}
 }
 
@@ -57,7 +58,7 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 			messageID:  mt.Message.ID,
 		}
 	}
-	if err := t.parse(mt.LeftDelim, mt.RightDelim, funcs); err != nil {
+	if err := t.Parse(mt.LeftDelim, mt.RightDelim, funcs); err != nil {
 		return "", err
 	}
 	if t.Template == nil {

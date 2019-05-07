@@ -12,7 +12,7 @@ type Template struct {
 	ParseErr *error
 }
 
-func (t *Template) parse(leftDelim, rightDelim string, funcs gotemplate.FuncMap) error {
+func (t *Template) Parse(leftDelim, rightDelim string, funcs gotemplate.FuncMap) error {
 	if t.ParseErr == nil {
 		if strings.Contains(t.Src, leftDelim) {
 			gt, err := gotemplate.New("").Funcs(funcs).Delims(leftDelim, rightDelim).Parse(t.Src)
