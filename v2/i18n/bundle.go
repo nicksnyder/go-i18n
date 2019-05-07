@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 
 	"golang.org/x/text/language"
 )
 
 // UnmarshalFunc unmarshals data into v.
-type UnmarshalFunc = internal.UnmarshalFunc
+type UnmarshalFunc func(data []byte, v interface{}) error
 
 // Bundle stores a set of messages and pluralization rules.
 // Most applications only need a single bundle
@@ -21,7 +20,7 @@ type UnmarshalFunc = internal.UnmarshalFunc
 type Bundle struct {
 	defaultLanguage  language.Tag
 	unmarshalFuncs   map[string]UnmarshalFunc
-	messageTemplates map[language.Tag]map[string]*internal.MessageTemplate
+	messageTemplates map[language.Tag]map[string]*MessageTemplate
 	pluralRules      plural.Rules
 	tags             []language.Tag
 	matcher          language.Matcher
@@ -62,16 +61,13 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 	}
 }
 
-// MessageFile represents a parsed message file.
-type MessageFile = internal.MessageFile
-
 // ParseMessageFileBytes parses the bytes in buf to add translations to the bundle.
 //
 // The format of the file is everything after the last ".".
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
-	messageFile, err := internal.ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
+	messageFile, err := ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {
 		return nil, err
 	}
@@ -97,14 +93,14 @@ func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 		return fmt.Errorf("no plural rule registered for %s", tag)
 	}
 	if b.messageTemplates == nil {
-		b.messageTemplates = map[language.Tag]map[string]*internal.MessageTemplate{}
+		b.messageTemplates = map[language.Tag]map[string]*MessageTemplate{}
 	}
 	if b.messageTemplates[tag] == nil {
-		b.messageTemplates[tag] = map[string]*internal.MessageTemplate{}
+		b.messageTemplates[tag] = map[string]*MessageTemplate{}
 		b.addTag(tag)
 	}
 	for _, m := range messages {
-		b.messageTemplates[tag][m.ID] = internal.NewMessageTemplate(m)
+		b.messageTemplates[tag][m.ID] = NewMessageTemplate(m)
 	}
 	return nil
 }

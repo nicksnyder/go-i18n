@@ -1,4 +1,4 @@
-package internal
+package i18n
 
 import (
 	"encoding/json"
@@ -8,9 +8,6 @@ import (
 
 	"golang.org/x/text/language"
 )
-
-// UnmarshalFunc unmarshals data into v.
-type UnmarshalFunc func(data []byte, v interface{}) error
 
 // MessageFile represents a parsed message file.
 type MessageFile struct {
