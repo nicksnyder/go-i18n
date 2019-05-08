@@ -26,11 +26,17 @@ type Bundle struct {
 	matcher          language.Matcher
 }
 
+// artTag is the language tag used for artifical languages
+// https://en.wikipedia.org/wiki/Codes_for_constructed_languages
+var artTag = language.MustParse("art")
+
+// NewBundle returns a bundle with a default language and a default set of plural rules.
 func NewBundle(defaultLanguage language.Tag) *Bundle {
 	b := &Bundle{
 		defaultLanguage: defaultLanguage,
 		pluralRules:     plural.DefaultRules(),
 	}
+	b.pluralRules[artTag] = b.pluralRules.Rule(language.English)
 	b.addTag(defaultLanguage)
 	return b
 }
