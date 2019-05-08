@@ -34,37 +34,13 @@ var everythingMessage = MustNewMessage(map[string]string{
 func TestPseudoLanguage(t *testing.T) {
 	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	expected := "simple simple"
+	expected := "nuqneH"
 	bundle.MustParseMessageFileBytes([]byte(`
 # Comment
-simple = "simple simple"
-`), "en-double.toml")
-	localizer := NewLocalizer(bundle, "en-double")
-	localized, err := localizer.Localize(&LocalizeConfig{MessageID: "simple"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if localized != expected {
-		t.Fatalf("expected %q\ngot %q", expected, localized)
-	}
-}
-
-func TestPseudoLanguagePlural(t *testing.T) {
-	bundle := NewBundle(language.English)
-	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	bundle.MustParseMessageFileBytes([]byte(`
-[everything]
-few = "few translation"
-many = "many translation"
-one = "one translation"
-other = "other translation"
-two = "two translation"
-zero = "zero translation"
-`), "en-double.toml")
-	localizer := NewLocalizer(bundle, "en-double")
+hello = "`+expected+`"
+`), "art-x-klingon.toml")
 	{
-		expected := "other translation"
-		localized, err := localizer.Localize(&LocalizeConfig{MessageID: "everything", PluralCount: 2})
+		localized, err := NewLocalizer(bundle, "art-x-klingon").Localize(&LocalizeConfig{MessageID: "hello"})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -73,9 +49,18 @@ zero = "zero translation"
 		}
 	}
 	{
-		expected := "one translation"
-		localized, err := localizer.Localize(&LocalizeConfig{MessageID: "everything", PluralCount: 1})
+		localized, err := NewLocalizer(bundle, "art").Localize(&LocalizeConfig{MessageID: "hello"})
 		if err != nil {
+			t.Fatal(err)
+		}
+		if localized != expected {
+			t.Fatalf("expected %q\ngot %q", expected, localized)
+		}
+	}
+	{
+		expected := ""
+		localized, err := NewLocalizer(bundle, "en").Localize(&LocalizeConfig{MessageID: "hello"})
+		if err == nil {
 			t.Fatal(err)
 		}
 		if localized != expected {
