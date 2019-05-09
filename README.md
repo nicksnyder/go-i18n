@@ -8,13 +8,6 @@ go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that h
 - Supports message files of any format (e.g. JSON, TOML, YAML, etc.).
 - [Documented](http://godoc.org/github.com/nicksnyder/go-i18n) and [tested](https://travis-ci.org/nicksnyder/go-i18n)!
 
-## Versions
-
-- v1 is available at 1.x.x tags.
-- v2 is available at 2.x.x tags.
-
-This README always documents the latest version (i.e. v2).
-
 ## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n)
 
 The i18n package provides support for looking up messages according to a set of locale preferences.
@@ -32,7 +25,8 @@ bundle := i18n.NewBundle(language.English)
 Load translations into your bundle during initialization.
 
 ```go
-bundle.LoadMessageFile("en-US.yaml")
+bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+bundle.LoadMessageFile("es.toml")
 ```
 
 Create a Localizer to use for a set of language preferences.
@@ -48,7 +42,7 @@ func(w http.ResponseWriter, r *http.Request) {
 Use the Localizer to lookup messages.
 
 ```go
-localizer.MustLocalize(&i18n.LocalizeConfig{
+localizer.Localize(&i18n.LocalizeConfig{
     DefaultMessage: &i18n.Message{
         ID: "PersonCats",
         One: "{{.Name}} has {{.Count}} cat.",
@@ -62,8 +56,6 @@ localizer.MustLocalize(&i18n.LocalizeConfig{
 }) // Nick has 2 cats.
 ```
 
-It requires Go 1.9 or newer.
-
 ## Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/goi18n)
 
 The goi18n command manages message files used by the i18n package.
@@ -75,7 +67,7 @@ goi18n -help
 
 ### Extracting messages
 
-Use `goi18n extract` to create a message file that contains all the messages defined in your Go source files.
+Use `goi18n extract` to extract all i18n.Message struct literals in Go source files to a message file for translation.
 
 ```toml
 # active.en.toml
@@ -84,8 +76,6 @@ description = "The number of cats a person has"
 one = "{{.Name}} has {{.Count}} cat."
 other = "{{.Name}} has {{.Count}} cats."
 ```
-
-You can customize the local of your source language with the `-sourceLanguage` flag.
 
 ### Translating a new language
 
@@ -112,7 +102,7 @@ You can customize the local of your source language with the `-sourceLanguage` f
 
    ```go
    bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-   bundle.LoadMessageFile("active.ar.yaml")
+   bundle.LoadMessageFile("active.es.toml")
    ```
 
 ### Translating new messages
