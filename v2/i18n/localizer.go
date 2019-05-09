@@ -105,6 +105,20 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	return msg, err
 }
 
+// Localize returns a localized message.
+func (l *Localizer) LocalizeMessage(msg *Message) (string, error) {
+	return l.Localize(&LocalizeConfig{
+		DefaultMessage: msg,
+	})
+}
+
+// Localize returns a localized message.
+func (l *Localizer) LocalizeMessageID(messageID string) (string, error) {
+	return l.Localize(&LocalizeConfig{
+		MessageID: messageID,
+	})
+}
+
 // LocalizeWithTag returns a localized message and the language tag.
 func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, error) {
 	messageID := lc.MessageID
