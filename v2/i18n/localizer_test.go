@@ -567,9 +567,9 @@ func TestLocalizer_Localize(t *testing.T) {
 				check(localizer.LocalizeMessage(test.conf.DefaultMessage))
 			}
 
-			if test.conf.MessageID != "" && reflect.DeepEqual(test.conf, &LocalizeConfig{MessageID: test.conf.MessageID}) {
-				check(localizer.LocalizeMessageID(test.conf.MessageID))
-			}
+			// if test.conf.MessageID != "" && reflect.DeepEqual(test.conf, &LocalizeConfig{MessageID: test.conf.MessageID}) {
+			// 	check(localizer.LocalizeMessageID(test.conf.MessageID))
+			// }
 		})
 	}
 }

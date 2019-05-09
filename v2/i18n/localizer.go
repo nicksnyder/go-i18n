@@ -112,12 +112,13 @@ func (l *Localizer) LocalizeMessage(msg *Message) (string, error) {
 	})
 }
 
+// TODO: uncomment this (and the test) when extract has been updated to extract these call sites too.
 // Localize returns a localized message.
-func (l *Localizer) LocalizeMessageID(messageID string) (string, error) {
-	return l.Localize(&LocalizeConfig{
-		MessageID: messageID,
-	})
-}
+// func (l *Localizer) LocalizeMessageID(messageID string) (string, error) {
+// 	return l.Localize(&LocalizeConfig{
+// 		MessageID: messageID,
+// 	})
+// }
 
 // LocalizeWithTag returns a localized message and the language tag.
 func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, error) {
@@ -156,6 +157,15 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 		return "", language.Und, err
 	}
 	return msg, tag, nil
+}
+
+			MessageID:    messageID,
+			PluralCount:  kv["PluralCount"],
+			TemplateData: args,
+		}
+
+		return l.Localize(lc)
+	}
 }
 
 func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate) {
