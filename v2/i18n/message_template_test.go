@@ -26,7 +26,7 @@ func TestMessageTemplatePluralFormMissing(t *testing.T) {
 	if s != "" {
 		t.Errorf("expected %q; got %q", "", s)
 	}
-	expectedErr := PluralFormNotFoundError{pluralForm: plural.Few, messageID: "HelloWorld"}
+	expectedErr := pluralFormNotFoundError{pluralForm: plural.Few, messageID: "HelloWorld"}
 	if !reflect.DeepEqual(err, expectedErr) {
 		t.Errorf("expected error %#v; got %#v", expectedErr, err)
 	}

@@ -40,12 +40,12 @@ func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, plura
 	}
 }
 
-type PluralFormNotFoundError struct {
+type pluralFormNotFoundError struct {
 	pluralForm plural.Form
 	messageID  string
 }
 
-func (e PluralFormNotFoundError) Error() string {
+func (e pluralFormNotFoundError) Error() string {
 	return fmt.Sprintf("message %q has no plural form %q", e.messageID, e.pluralForm)
 }
 
@@ -53,7 +53,7 @@ func (e PluralFormNotFoundError) Error() string {
 func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs template.FuncMap) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
 	if t == nil {
-		return "", PluralFormNotFoundError{
+		return "", pluralFormNotFoundError{
 			pluralForm: pluralForm,
 			messageID:  mt.Message.ID,
 		}
