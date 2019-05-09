@@ -159,15 +159,6 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	return msg, tag, nil
 }
 
-			MessageID:    messageID,
-			PluralCount:  kv["PluralCount"],
-			TemplateData: args,
-		}
-
-		return l.Localize(lc)
-	}
-}
-
 func (l *Localizer) getTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate) {
 	// Fast path.
 	// Optimistically assume this message id is defined in each language.
