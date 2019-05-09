@@ -121,7 +121,7 @@ func (l *Localizer) LocalizeMessage(msg *Message) (string, error) {
 // }
 
 // LocalizeWithTag returns a localized message and the language tag.
-//
+// It may return a best effort localized message even if an error happens.
 func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, error) {
 	messageID := lc.MessageID
 	if lc.DefaultMessage != nil {
