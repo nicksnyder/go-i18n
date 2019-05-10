@@ -282,6 +282,20 @@ func TestLocalizer_Localize(t *testing.T) {
 			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.One},
 		},
 		{
+			name:            "plural count missing other, default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				PluralCount: 2,
+				DefaultMessage: &Message{
+					ID:  "Cats",
+					One: "I have {{.PluralCount}} cat",
+				},
+			},
+			expectedLocalized: "",
+			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.One},
+		},
+		{
 			name:            "plural count other, default message",
 			defaultLanguage: language.English,
 			acceptLangs:     []string{"en"},
