@@ -1,4 +1,4 @@
-module github.com/nicksnyder/test
+module github.com/nicksnyder/go-i18n
 
 require (
 	github.com/pelletier/go-toml v1.2.0

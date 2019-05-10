@@ -4,7 +4,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/nicksnyder/test/i18n"
+	"github.com/nicksnyder/go-i18n/i18n"
 )
 
 var funcMap = map[string]interface{}{

@@ -26,7 +26,7 @@ func TestExtract(t *testing.T) {
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			var m = &i18n.Message{
 				ID: "Plural ID",
@@ -38,7 +38,7 @@ func TestExtract(t *testing.T) {
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			var a = &i18n.Message{
 				ID:    "a",
@@ -58,7 +58,7 @@ b = "a \" b"
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			var a = []*i18n.Message{
 				{
@@ -80,7 +80,7 @@ b = "b"
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			var a = map[string]*i18n.Message{
 				"a": {
@@ -102,7 +102,7 @@ b = "b"
 			fileName: "file_test.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				bundle := i18n.NewBundle(language.English)
@@ -116,7 +116,7 @@ b = "b"
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				bundle := i18n.NewBundle(language.English)
@@ -130,7 +130,7 @@ b = "b"
 			fileName: "file.go",
 			file: `package main
 
-			import bar "github.com/nicksnyder/test/v2/i18n"
+			import bar "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				_ := &bar.Message{
@@ -144,7 +144,7 @@ b = "b"
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				_ := &i18n.Message{
@@ -174,7 +174,7 @@ zero = "Zero translation"
 			fileName: "file.go",
 			file: `package main
 
-			import "github.com/nicksnyder/test/v2/i18n"
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
 
 			func main() {
 				_ := &i18n.Message{

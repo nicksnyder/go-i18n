@@ -1,6 +1,6 @@
 // Command goi18n manages message files used by the i18n package.
 //
-//     go get -u github.com/nicksnyder/test/v2/goi18n
+//     go get -u github.com/nicksnyder/go-i18n/v2/goi18n
 //     goi18n -help
 //
 // Use `goi18n extract` to create a message file that contains the messages defined in your Go source files.
