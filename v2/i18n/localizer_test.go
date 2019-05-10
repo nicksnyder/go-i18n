@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
 
@@ -265,6 +266,34 @@ func TestLocalizer_Localize(t *testing.T) {
 				},
 			},
 			expectedLocalized: "I have 1 cat",
+		},
+		{
+			name:            "plural count missing one, default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				PluralCount: 1,
+				DefaultMessage: &Message{
+					ID:    "Cats",
+					Other: "I have {{.PluralCount}} cats",
+				},
+			},
+			expectedLocalized: "I have 1 cats",
+			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.One},
+		},
+		{
+			name:            "plural count missing other, default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				PluralCount: 2,
+				DefaultMessage: &Message{
+					ID:  "Cats",
+					One: "I have {{.PluralCount}} cat",
+				},
+			},
+			expectedLocalized: "",
+			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.Other},
 		},
 		{
 			name:            "plural count other, default message",
