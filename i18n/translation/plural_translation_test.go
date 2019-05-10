@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/test/i18n/language"
 )
 
 func mustTemplate(t *testing.T, src string) *template {

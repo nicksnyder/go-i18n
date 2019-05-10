@@ -3,7 +3,7 @@ package i18n
 import (
 	"testing"
 
-	"github.com/nicksnyder/go-i18n/i18n/bundle"
+	"github.com/nicksnyder/test/i18n/bundle"
 )
 
 var bobMap = map[string]interface{}{"Person": "Bob"}

@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
+	"github.com/nicksnyder/test/i18n/language"
+	"github.com/nicksnyder/test/i18n/translation"
 )
 
 func TestMustLoadTranslationFile(t *testing.T) {
