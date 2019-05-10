@@ -293,7 +293,7 @@ func TestLocalizer_Localize(t *testing.T) {
 				},
 			},
 			expectedLocalized: "",
-			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.One},
+			expectedErr:       pluralFormNotFoundError{messageID: "Cats", pluralForm: plural.Other},
 		},
 		{
 			name:            "plural count other, default message",
