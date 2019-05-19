@@ -2,8 +2,6 @@ language: go
 
 matrix:
   include:
-    - go: 1.2.x
-      env: PKG='./i18n/... ./goi18n/...'
     - go: 1.9.x
       env: PKG='./...'
     - go: 1.12.x

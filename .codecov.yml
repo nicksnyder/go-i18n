@@ -4,13 +4,5 @@ coverage:
       default:
         threshold: 50%
     project:
-      default: false
-      v1:
+      default:
         threshold: 0.1%
-        paths:
-          - i18n
-          - goi18n
-      v2:
-        threshold: 0.1%
-        paths:
-          - v2

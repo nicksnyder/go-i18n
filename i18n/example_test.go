@@ -3,95 +3,139 @@ package i18n_test
 import (
 	"fmt"
 
-	"github.com/nicksnyder/go-i18n/i18n"
+	"github.com/BurntSushi/toml"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
 )
 
-func Example() {
-	i18n.MustLoadTranslationFile("../goi18n/testdata/expected/en-us.all.json")
-
-	T, _ := i18n.Tfunc("en-US")
-
-	bobMap := map[string]interface{}{"Person": "Bob"}
-	bobStruct := struct{ Person string }{Person: "Bob"}
-
-	fmt.Println(T("program_greeting"))
-	fmt.Println(T("person_greeting", bobMap))
-	fmt.Println(T("person_greeting", bobStruct))
-
-	fmt.Println(T("your_unread_email_count", 0))
-	fmt.Println(T("your_unread_email_count", 1))
-	fmt.Println(T("your_unread_email_count", 2))
-	fmt.Println(T("my_height_in_meters", "1.7"))
-
-	fmt.Println(T("person_unread_email_count", 0, bobMap))
-	fmt.Println(T("person_unread_email_count", 1, bobMap))
-	fmt.Println(T("person_unread_email_count", 2, bobMap))
-	fmt.Println(T("person_unread_email_count", 0, bobStruct))
-	fmt.Println(T("person_unread_email_count", 1, bobStruct))
-	fmt.Println(T("person_unread_email_count", 2, bobStruct))
-
-	type Count struct{ Count int }
-	fmt.Println(T("your_unread_email_count", Count{0}))
-	fmt.Println(T("your_unread_email_count", Count{1}))
-	fmt.Println(T("your_unread_email_count", Count{2}))
-
-	fmt.Println(T("your_unread_email_count", map[string]interface{}{"Count": 0}))
-	fmt.Println(T("your_unread_email_count", map[string]interface{}{"Count": "1"}))
-	fmt.Println(T("your_unread_email_count", map[string]interface{}{"Count": "3.14"}))
-
-	fmt.Println(T("person_unread_email_count_timeframe", 3, map[string]interface{}{
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 0),
+func ExampleLocalizer_MustLocalize() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "HelloWorld",
+			Other: "Hello World!",
+		},
 	}))
-	fmt.Println(T("person_unread_email_count_timeframe", 3, map[string]interface{}{
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 1),
-	}))
-	fmt.Println(T("person_unread_email_count_timeframe", 3, map[string]interface{}{
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 2),
-	}))
-
-	fmt.Println(T("person_unread_email_count_timeframe", 1, map[string]interface{}{
-		"Count":     30,
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 0),
-	}))
-	fmt.Println(T("person_unread_email_count_timeframe", 2, map[string]interface{}{
-		"Count":     20,
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 1),
-	}))
-	fmt.Println(T("person_unread_email_count_timeframe", 3, map[string]interface{}{
-		"Count":     10,
-		"Person":    "Bob",
-		"Timeframe": T("d_days", 2),
-	}))
-
 	// Output:
-	// Hello world
-	// Hello Bob
-	// Hello Bob
-	// You have 0 unread emails.
-	// You have 1 unread email.
-	// You have 2 unread emails.
-	// I am 1.7 meters tall.
-	// Bob has 0 unread emails.
-	// Bob has 1 unread email.
-	// Bob has 2 unread emails.
-	// Bob has 0 unread emails.
-	// Bob has 1 unread email.
-	// Bob has 2 unread emails.
-	// You have 0 unread emails.
-	// You have 1 unread email.
-	// You have 2 unread emails.
-	// You have 0 unread emails.
-	// You have 1 unread email.
-	// You have 3.14 unread emails.
-	// Bob has 3 unread emails in the past 0 days.
-	// Bob has 3 unread emails in the past 1 day.
-	// Bob has 3 unread emails in the past 2 days.
-	// Bob has 1 unread email in the past 0 days.
-	// Bob has 2 unread emails in the past 1 day.
-	// Bob has 3 unread emails in the past 2 days.
+	// Hello World!
+}
+
+func ExampleLocalizer_MustLocalize_noDefaultMessage() {
+	bundle := i18n.NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`
+HelloWorld = "Hello World!"
+`), "en.toml")
+	bundle.MustParseMessageFileBytes([]byte(`
+HelloWorld = "Hola Mundo!"
+`), "es.toml")
+
+	{
+		localizer := i18n.NewLocalizer(bundle, "en-US")
+		fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "HelloWorld"}))
+	}
+	{
+		localizer := i18n.NewLocalizer(bundle, "es-ES")
+		fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{MessageID: "HelloWorld"}))
+	}
+	// Output:
+	// Hello World!
+	// Hola Mundo!
+}
+
+func ExampleLocalizer_MustLocalize_plural() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	catsMessage := &i18n.Message{
+		ID:    "Cats",
+		One:   "I have {{.PluralCount}} cat.",
+		Other: "I have {{.PluralCount}} cats.",
+	}
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: catsMessage,
+		PluralCount:    1,
+	}))
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: catsMessage,
+		PluralCount:    2,
+	}))
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: catsMessage,
+		PluralCount:    "2.5",
+	}))
+	// Output:
+	// I have 1 cat.
+	// I have 2 cats.
+	// I have 2.5 cats.
+}
+
+func ExampleLocalizer_MustLocalize_template() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	helloPersonMessage := &i18n.Message{
+		ID:    "HelloPerson",
+		Other: "Hello {{.Name}}!",
+	}
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: helloPersonMessage,
+		TemplateData:   map[string]string{"Name": "Nick"},
+	}))
+	// Output:
+	// Hello Nick!
+}
+
+func ExampleLocalizer_MustLocalize_plural_template() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	personCatsMessage := &i18n.Message{
+		ID:    "PersonCats",
+		One:   "{{.Name}} has {{.Count}} cat.",
+		Other: "{{.Name}} has {{.Count}} cats.",
+	}
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: personCatsMessage,
+		PluralCount:    1,
+		TemplateData: map[string]interface{}{
+			"Name":  "Nick",
+			"Count": 1,
+		},
+	}))
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: personCatsMessage,
+		PluralCount:    2,
+		TemplateData: map[string]interface{}{
+			"Name":  "Nick",
+			"Count": 2,
+		},
+	}))
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: personCatsMessage,
+		PluralCount:    "2.5",
+		TemplateData: map[string]interface{}{
+			"Name":  "Nick",
+			"Count": "2.5",
+		},
+	}))
+	// Output:
+	// Nick has 1 cat.
+	// Nick has 2 cats.
+	// Nick has 2.5 cats.
+}
+
+func ExampleLocalizer_MustLocalize_customTemplateDelims() {
+	bundle := i18n.NewBundle(language.English)
+	localizer := i18n.NewLocalizer(bundle, "en")
+	helloPersonMessage := &i18n.Message{
+		ID:         "HelloPerson",
+		Other:      "Hello <<.Name>>!",
+		LeftDelim:  "<<",
+		RightDelim: ">>",
+	}
+	fmt.Println(localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: helloPersonMessage,
+		TemplateData:   map[string]string{"Name": "Nick"},
+	}))
+	// Output:
+	// Hello Nick!
 }

@@ -1,239 +1,295 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"path/filepath"
-	"reflect"
-	"sort"
+	"os"
 
-	"gopkg.in/yaml.v2"
-
-	"github.com/nicksnyder/go-i18n/i18n/bundle"
-	"github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/nicksnyder/go-i18n/i18n/translation"
-	toml "github.com/pelletier/go-toml"
+	"github.com/BurntSushi/toml"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/nicksnyder/go-i18n/v2/internal"
+	"github.com/nicksnyder/go-i18n/v2/internal/plural"
+	"golang.org/x/text/language"
+	yaml "gopkg.in/yaml.v2"
 )
 
+func usageMerge() {
+	fmt.Fprintf(os.Stderr, `usage: goi18n merge [options] [message files]
+
+Merge reads all messages in the message files and produces two files per language.
+
+	xx-yy.active.format
+		This file contains messages that should be loaded at runtime.
+
+	xx-yy.translate.format
+		This file contains messages that are empty and should be translated.
+
+Message file names must have a suffix of a supported format (e.g. ".json") and
+contain a valid language tag as defined by RFC 5646 (e.g. "en-us", "fr", "zh-hant", etc.).
+
+To add support for a new language, create an empty translation file with the
+appropriate name and pass it in to goi18n merge.
+
+Flags:
+
+	-sourceLanguage tag
+		Translate messages from this language (e.g. en, en-US, zh-Hant-CN)
+ 		Default: en
+
+	-outdir directory
+		Write message files to this directory.
+		Default: .
+
+	-format format
+		Output message files in this format.
+		Supported formats: json, toml, yaml
+		Default: toml
+`)
+}
+
 type mergeCommand struct {
-	translationFiles []string
-	sourceLanguage   string
-	outdir           string
-	format           string
-	flat             bool
+	messageFiles   []string
+	sourceLanguage languageTag
+	outdir         string
+	format         string
 }
 
-func (mc *mergeCommand) execute() error {
-	if len(mc.translationFiles) < 1 {
-		return fmt.Errorf("need at least one translation file to parse")
-	}
-
-	if lang := language.Parse(mc.sourceLanguage); lang == nil {
-		return fmt.Errorf("invalid source locale: %s", mc.sourceLanguage)
-	}
-
-	bundle := bundle.New()
-	for _, tf := range mc.translationFiles {
-		if err := bundle.LoadTranslationFile(tf); err != nil {
-			return fmt.Errorf("failed to load translation file %s: %s\n", tf, err)
-		}
-	}
-
-	translations := bundle.Translations()
-	sourceLanguageTag := language.NormalizeTag(mc.sourceLanguage)
-	sourceTranslations := translations[sourceLanguageTag]
-	if sourceTranslations == nil {
-		return fmt.Errorf("no translations found for source locale %s", sourceLanguageTag)
-	}
-	for translationID, src := range sourceTranslations {
-		for _, localeTranslations := range translations {
-			if dst := localeTranslations[translationID]; dst == nil || reflect.TypeOf(src) != reflect.TypeOf(dst) {
-				localeTranslations[translationID] = src.UntranslatedCopy()
-			}
-		}
-	}
-
-	for localeID, localeTranslations := range translations {
-		lang := language.MustParse(localeID)[0]
-		all := filter(localeTranslations, func(t translation.Translation) translation.Translation {
-			return t.Normalize(lang)
-		})
-		if err := mc.writeFile("all", all, localeID); err != nil {
-			return err
-		}
-
-		untranslated := filter(localeTranslations, func(t translation.Translation) translation.Translation {
-			if t.Incomplete(lang) {
-				return t.Normalize(lang).Backfill(sourceTranslations[t.ID()])
-			}
-			return nil
-		})
-		if err := mc.writeFile("untranslated", untranslated, localeID); err != nil {
-			return err
-		}
-	}
-	return nil
+func (mc *mergeCommand) name() string {
+	return "merge"
 }
 
-func (mc *mergeCommand) parse(arguments []string) {
+func (mc *mergeCommand) parse(args []string) error {
 	flags := flag.NewFlagSet("merge", flag.ExitOnError)
 	flags.Usage = usageMerge
 
-	sourceLanguage := flags.String("sourceLanguage", "en-us", "")
-	outdir := flags.String("outdir", ".", "")
-	format := flags.String("format", "json", "")
-	flat := flags.Bool("flat", true, "")
-
-	flags.Parse(arguments)
-
-	mc.translationFiles = flags.Args()
-	mc.sourceLanguage = *sourceLanguage
-	mc.outdir = *outdir
-	mc.format = *format
-	if *format == "toml" {
-		mc.flat = true
-	} else {
-		mc.flat = *flat
-	}
-}
-
-func (mc *mergeCommand) SetArgs(args []string) {
-	mc.translationFiles = args
-}
-
-func (mc *mergeCommand) writeFile(label string, translations []translation.Translation, localeID string) error {
-	sort.Sort(translation.SortableByID(translations))
-
-	var convert func([]translation.Translation) interface{}
-	if mc.flat {
-		convert = marshalFlatInterface
-	} else {
-		convert = marshalInterface
+	flags.Var(&mc.sourceLanguage, "sourceLanguage", "en")
+	flags.StringVar(&mc.outdir, "outdir", ".", "")
+	flags.StringVar(&mc.format, "format", "toml", "")
+	if err := flags.Parse(args); err != nil {
+		return err
 	}
 
-	buf, err := mc.marshal(convert(translations))
+	mc.messageFiles = flags.Args()
+	return nil
+}
+
+func (mc *mergeCommand) execute() error {
+	if len(mc.messageFiles) < 1 {
+		return fmt.Errorf("need at least one message file to parse")
+	}
+	inFiles := make(map[string][]byte)
+	for _, path := range mc.messageFiles {
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		inFiles[path] = content
+	}
+	ops, err := merge(inFiles, mc.sourceLanguage.Tag(), mc.outdir, mc.format)
 	if err != nil {
-		return fmt.Errorf("failed to marshal %s strings to %s: %s", localeID, mc.format, err)
+		return err
 	}
-
-	filename := filepath.Join(mc.outdir, fmt.Sprintf("%s.%s.%s", localeID, label, mc.format))
-
-	if err := ioutil.WriteFile(filename, buf, 0666); err != nil {
-		return fmt.Errorf("failed to write %s: %s", filename, err)
+	for path, content := range ops.writeFiles {
+		if err := ioutil.WriteFile(path, content, 0666); err != nil {
+			return err
+		}
+	}
+	for _, path := range ops.deleteFiles {
+		// Ignore error since it isn't guaranteed to exist.
+		os.Remove(path)
 	}
 	return nil
 }
 
-func filter(translations map[string]translation.Translation, f func(translation.Translation) translation.Translation) []translation.Translation {
-	filtered := make([]translation.Translation, 0, len(translations))
-	for _, translation := range translations {
-		if t := f(translation); t != nil {
-			filtered = append(filtered, t)
+type fileSystemOp struct {
+	writeFiles  map[string][]byte
+	deleteFiles []string
+}
+
+func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdir, outputFormat string) (*fileSystemOp, error) {
+	unmerged := make(map[language.Tag][]map[string]*i18n.MessageTemplate)
+	sourceMessageTemplates := make(map[string]*i18n.MessageTemplate)
+	unmarshalFuncs := map[string]i18n.UnmarshalFunc{
+		"json": json.Unmarshal,
+		"toml": toml.Unmarshal,
+		"yaml": yaml.Unmarshal,
+	}
+	for path, content := range messageFiles {
+		mf, err := i18n.ParseMessageFileBytes(content, path, unmarshalFuncs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to load message file %s: %s", path, err)
+		}
+		templates := map[string]*i18n.MessageTemplate{}
+		for _, m := range mf.Messages {
+			templates[m.ID] = i18n.NewMessageTemplate(m)
+		}
+		if mf.Tag == sourceLanguageTag {
+			for _, template := range templates {
+				if sourceMessageTemplates[template.ID] != nil {
+					return nil, fmt.Errorf("multiple source translations for id %s", template.ID)
+				}
+				template.Hash = hash(template)
+				sourceMessageTemplates[template.ID] = template
+			}
+		}
+		unmerged[mf.Tag] = append(unmerged[mf.Tag], templates)
+	}
+
+	if len(sourceMessageTemplates) == 0 {
+		return nil, fmt.Errorf("no messages found for source locale %s", sourceLanguageTag)
+	}
+
+	pluralRules := plural.DefaultRules()
+	all := make(map[language.Tag]map[string]*i18n.MessageTemplate)
+	all[sourceLanguageTag] = sourceMessageTemplates
+	for _, srcTemplate := range sourceMessageTemplates {
+		for dstLangTag, messageTemplates := range unmerged {
+			if dstLangTag == sourceLanguageTag {
+				continue
+			}
+			pluralRule := pluralRules.Rule(dstLangTag)
+			if pluralRule == nil {
+				// Non-standard languages not supported because
+				// we don't know if translations are complete or not.
+				continue
+			}
+			if all[dstLangTag] == nil {
+				all[dstLangTag] = make(map[string]*i18n.MessageTemplate)
+			}
+			dstMessageTemplate := all[dstLangTag][srcTemplate.ID]
+			if dstMessageTemplate == nil {
+				dstMessageTemplate = &i18n.MessageTemplate{
+					Message: &i18n.Message{
+						ID:          srcTemplate.ID,
+						Description: srcTemplate.Description,
+						Hash:        srcTemplate.Hash,
+					},
+					PluralTemplates: make(map[plural.Form]*internal.Template),
+				}
+				all[dstLangTag][srcTemplate.ID] = dstMessageTemplate
+			}
+
+			// Check all unmerged message templates for this message id.
+			for _, messageTemplates := range messageTemplates {
+				unmergedTemplate := messageTemplates[srcTemplate.ID]
+				if unmergedTemplate == nil {
+					continue
+				}
+				// Ignore empty hashes for v1 backward compatibility.
+				if unmergedTemplate.Hash != "" && unmergedTemplate.Hash != srcTemplate.Hash {
+					// This was translated from different content so discard.
+					continue
+				}
+
+				// Merge in the translated messages.
+				for pluralForm := range pluralRule.PluralForms {
+					dt := unmergedTemplate.PluralTemplates[pluralForm]
+					if dt != nil && dt.Src != "" {
+						dstMessageTemplate.PluralTemplates[pluralForm] = dt
+					}
+				}
+			}
 		}
 	}
-	return filtered
 
+	translate := make(map[language.Tag]map[string]*i18n.MessageTemplate)
+	active := make(map[language.Tag]map[string]*i18n.MessageTemplate)
+	for langTag, messageTemplates := range all {
+		active[langTag] = make(map[string]*i18n.MessageTemplate)
+		if langTag == sourceLanguageTag {
+			active[langTag] = messageTemplates
+			continue
+		}
+		pluralRule := pluralRules.Rule(langTag)
+		if pluralRule == nil {
+			// Non-standard languages not supported because
+			// we don't know if translations are complete or not.
+			continue
+		}
+		for _, messageTemplate := range messageTemplates {
+			srcMessageTemplate := sourceMessageTemplates[messageTemplate.ID]
+			activeMessageTemplate, translateMessageTemplate := activeDst(srcMessageTemplate, messageTemplate, pluralRule)
+			if translateMessageTemplate != nil {
+				if translate[langTag] == nil {
+					translate[langTag] = make(map[string]*i18n.MessageTemplate)
+				}
+				translate[langTag][messageTemplate.ID] = translateMessageTemplate
+			}
+			if activeMessageTemplate != nil {
+				active[langTag][messageTemplate.ID] = activeMessageTemplate
+			}
+		}
+	}
+
+	writeFiles := make(map[string][]byte, len(translate)+len(active))
+	for langTag, messageTemplates := range translate {
+		path, content, err := writeFile(outdir, "translate", langTag, outputFormat, messageTemplates, false)
+		if err != nil {
+			return nil, err
+		}
+		writeFiles[path] = content
+	}
+	deleteFiles := []string{}
+	for langTag, messageTemplates := range active {
+		path, content, err := writeFile(outdir, "active", langTag, outputFormat, messageTemplates, langTag == sourceLanguageTag)
+		if err != nil {
+			return nil, err
+		}
+		if len(content) > 0 {
+			writeFiles[path] = content
+		} else {
+			deleteFiles = append(deleteFiles, path)
+		}
+	}
+	return &fileSystemOp{writeFiles: writeFiles, deleteFiles: deleteFiles}, nil
 }
 
-func marshalFlatInterface(translations []translation.Translation) interface{} {
-	mi := make(map[string]interface{}, len(translations))
-	for _, translation := range translations {
-		mi[translation.ID()] = translation.MarshalFlatInterface()
+// activeDst returns the active part of the dst and whether dst is a complete translation of src.
+func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active *i18n.MessageTemplate, translateMessageTemplate *i18n.MessageTemplate) {
+	pluralForms := pluralRule.PluralForms
+	if len(src.PluralTemplates) == 1 {
+		pluralForms = map[plural.Form]struct{}{
+			plural.Other: {},
+		}
 	}
-	return mi
+	for pluralForm := range pluralForms {
+		dt := dst.PluralTemplates[pluralForm]
+		if dt == nil || dt.Src == "" {
+			if translateMessageTemplate == nil {
+				translateMessageTemplate = &i18n.MessageTemplate{
+					Message: &i18n.Message{
+						ID:          src.ID,
+						Description: src.Description,
+						Hash:        src.Hash,
+					},
+					PluralTemplates: make(map[plural.Form]*internal.Template),
+				}
+			}
+			translateMessageTemplate.PluralTemplates[pluralForm] = src.PluralTemplates[plural.Other]
+			continue
+		}
+		if active == nil {
+			active = &i18n.MessageTemplate{
+				Message: &i18n.Message{
+					ID:          src.ID,
+					Description: src.Description,
+					Hash:        src.Hash,
+				},
+				PluralTemplates: make(map[plural.Form]*internal.Template),
+			}
+		}
+		active.PluralTemplates[pluralForm] = dt
+	}
+	return
 }
 
-func marshalInterface(translations []translation.Translation) interface{} {
-	mi := make([]interface{}, len(translations))
-	for i, translation := range translations {
-		mi[i] = translation.MarshalInterface()
-	}
-	return mi
-}
-
-func (mc mergeCommand) marshal(v interface{}) ([]byte, error) {
-	switch mc.format {
-	case "json":
-		return json.MarshalIndent(v, "", "  ")
-	case "toml":
-		return marshalTOML(v)
-	case "yaml":
-		return yaml.Marshal(v)
-	}
-	return nil, fmt.Errorf("unsupported format: %s\n", mc.format)
-}
-
-func marshalTOML(v interface{}) ([]byte, error) {
-	m, ok := v.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("invalid format for marshaling to TOML")
-	}
-	tree, err := toml.TreeFromMap(m)
-	if err != nil {
-		return nil, err
-	}
-	s, err := tree.ToTomlString()
-	return []byte(s), err
-}
-
-func usageMerge() {
-	fmt.Printf(`Merge translation files.
-
-Usage:
-
-    goi18n merge [options] [files...]
-
-Translation files:
-
-    A translation file contains the strings and translations for a single language.
-
-    Translation file names must have a suffix of a supported format (e.g. .json) and
-    contain a valid language tag as defined by RFC 5646 (e.g. en-us, fr, zh-hant, etc.).
-
-    For each language represented by at least one input translation file, goi18n will produce 2 output files:
-
-        xx-yy.all.format
-            This file contains all strings for the language (translated and untranslated).
-            Use this file when loading strings at runtime.
-
-        xx-yy.untranslated.format
-            This file contains the strings that have not been translated for this language.
-            The translations for the strings in this file will be extracted from the source language.
-            After they are translated, merge them back into xx-yy.all.format using goi18n.
-
-Merging:
-
-    goi18n will merge multiple translation files for the same language.
-    Duplicate translations will be merged into the existing translation.
-    Non-empty fields in the duplicate translation will overwrite those fields in the existing translation.
-    Empty fields in the duplicate translation are ignored.
-
-Adding a new language:
-
-    To produce translation files for a new language, create an empty translation file with the
-    appropriate name and pass it in to goi18n.
-
-Options:
-
-    -sourceLanguage tag
-        goi18n uses the strings from this language to seed the translations for other languages.
-        Default: en-us
-
-    -outdir directory
-        goi18n writes the output translation files to this directory.
-        Default: .
-
-    -format format
-        goi18n encodes the output translation files in this format.
-        Supported formats: json, toml, yaml
-        Default: json
-
-    -flat
-        goi18n writes the output translation files in flat format.
-        Usage of '-format toml' automitically sets this flag.
-        Default: true
-
-`)
+func hash(t *i18n.MessageTemplate) string {
+	h := sha1.New()
+	_, _ = io.WriteString(h, t.Description)
+	_, _ = io.WriteString(h, t.PluralTemplates[plural.Other].Src)
+	return fmt.Sprintf("sha1-%x", h.Sum(nil))
 }
