@@ -88,7 +88,7 @@ Workflow:
 
 type command interface {
 	name() string
-	parse(arguments []string)
+	parse(arguments []string) error
 	execute() error
 }
 
@@ -116,7 +116,10 @@ func testableMain(args []string) int {
 	cmdName := flags.Arg(0)
 	for _, cmd := range commands {
 		if cmd.name() == cmdName {
-			cmd.parse(flags.Args()[1:])
+			if err := cmd.parse(flags.Args()[1:]); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				return 1
+			}
 			if err := cmd.execute(); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				return 1
