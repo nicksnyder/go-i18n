@@ -649,7 +649,7 @@ func TestKw(t *testing.T) {
 	tests = appendDecimalTests(tests, Many, []string{"21.0", "41.0", "61.0", "81.0", "101.0", "121.0", "141.0", "161.0", "1001.0"})
 
 	tests = appendIntegerTests(tests, Other, []string{"4~19", "100", "1000000"})
-	tests = appendDecimalTests(tests, Other, []string{"0.1~0.9", "1.1~1.7", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0"})
+	tests = appendDecimalTests(tests, Other, []string{"0.1~0.9", "1.1~1.7", "10.0", "100.0", "1000000.0"})
 
 	locales := []string{"kw"}
 	for _, locale := range locales {
