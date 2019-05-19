@@ -9,9 +9,9 @@ builds:
       - amd64
     env:
       - CGO_ENABLED=0
-archive:
-  format: binary
-  name_template: "{{ .Binary }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
+archives:
+  - format: binary
+    name_template: "{{ .Binary }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
 before:
   hooks:
     - go mod download
