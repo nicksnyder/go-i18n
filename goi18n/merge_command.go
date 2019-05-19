@@ -286,7 +286,7 @@ func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active 
 
 func hash(t *i18n.MessageTemplate) string {
 	h := sha1.New()
-	io.WriteString(h, t.Description)
-	io.WriteString(h, t.PluralTemplates[plural.Other].Src)
+	_, _ = io.WriteString(h, t.Description)
+	_, _ = io.WriteString(h, t.PluralTemplates[plural.Other].Src)
 	return fmt.Sprintf("sha1-%x", h.Sum(nil))
 }
