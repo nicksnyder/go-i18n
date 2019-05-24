@@ -1,4 +1,4 @@
-// Command example runs a sample webserver that uses go-i18n/v2/i18n.
+// Command example runs a sample webserver that uses go-i18n/i18n.
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/BurntSushi/toml"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/nicksnyder/go-i18n/i18n"
 	"golang.org/x/text/language"
 )
 

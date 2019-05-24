@@ -27,7 +27,7 @@ v2 is rewrite of the API from first principals to make it more idiomatic Go, and
 ### Upgrading from v1
 
 The i18n package in v2 is completely different than v1.
-Refer to the [documentation](https://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n) and [README](https://github.com/nicksnyder/go-i18n/blob/master/README.md) for guidance.
+Refer to the [documentation](https://godoc.org/github.com/nicksnyder/go-i18n/i18n) and [README](https://github.com/nicksnyder/go-i18n/blob/master/README.md) for guidance.
 
 The goi18n command has similarities and differences:
 

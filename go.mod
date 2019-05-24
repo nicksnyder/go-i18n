@@ -1,4 +1,4 @@
-module github.com/nicksnyder/go-i18n/v2
+module github.com/nicksnyder/go-i18n
 
 require (
 	github.com/BurntSushi/toml v0.3.0

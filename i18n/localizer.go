@@ -5,7 +5,7 @@ import (
 
 	"text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/internal/plural"
+	"github.com/nicksnyder/go-i18n/internal/plural"
 	"golang.org/x/text/language"
 )
 
