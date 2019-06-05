@@ -3,9 +3,9 @@ language: go
 matrix:
   include:
     - go: 1.9.x
-      env: PKG='./...'
+      env: GO111MODULE=on PKG='./...'
     - go: 1.12.x
-      env: PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
+      env: GO111MODULE=on PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
 
 install:
   - go get -t -v $PKG
