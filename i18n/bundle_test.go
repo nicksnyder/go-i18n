@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -30,6 +31,34 @@ var everythingMessage = MustNewMessage(map[string]string{
 	"many":        "many translation",
 	"other":       "other translation",
 })
+
+func TestConcurrentAccess(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`
+# Comment
+hello = "world"
+`), "en.toml")
+
+	count := 10
+	errch := make(chan error, count)
+	for i := 0; i < count; i++ {
+		go func() {
+			localized := NewLocalizer(bundle, "en").MustLocalize(&LocalizeConfig{MessageID: "hello"})
+			if localized != "world" {
+				errch <- fmt.Errorf(`expected "world"; got %q`, localized)
+			} else {
+				errch <- nil
+			}
+		}()
+	}
+
+	for i := 0; i < count; i++ {
+		if err := <-errch; err != nil {
+			t.Fatal(err)
+		}
+	}
+}
 
 func TestPseudoLanguage(t *testing.T) {
 	bundle := NewBundle(language.English)

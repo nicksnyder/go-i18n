@@ -1,54 +1,77 @@
 package internal
 
 import (
-	"bytes"
-	"fmt"
 	"testing"
 	"text/template"
 )
 
-func TestParse(t *testing.T) {
-	tmpl := &Template{Src: "hello"}
-	if err := tmpl.Parse("", "", nil); err != nil {
-		t.Fatal(err)
-	}
-	if tmpl.ParseErr == nil {
-		t.Fatal("expected non-nil parse error")
-	}
-	if tmpl.Template == nil {
-		t.Fatal("expected non-nil template")
-	}
-}
-
-func TestParseError(t *testing.T) {
-	expectedErr := fmt.Errorf("expected error")
-	tmpl := &Template{ParseErr: &expectedErr}
-	if err := tmpl.Parse("", "", nil); err != expectedErr {
-		t.Fatalf("expected %#v; got %#v", expectedErr, err)
-	}
-}
-
-func TestParseWithFunc(t *testing.T) {
-	tmpl := &Template{Src: "{{foo}}"}
-	funcs := template.FuncMap{
-		"foo": func() string {
-			return "bar"
+func TestExecute(t *testing.T) {
+	tests := []struct {
+		template *Template
+		funcs    template.FuncMap
+		data     interface{}
+		result   string
+		err      string
+		noallocs bool
+	}{
+		{
+			template: &Template{
+				Src: "hello",
+			},
+			result:   "hello",
+			noallocs: true,
+		},
+		{
+			template: &Template{
+				Src: "hello {{.Noun}}",
+			},
+			data: map[string]string{
+				"Noun": "world",
+			},
+			result: "hello world",
+		},
+		{
+			template: &Template{
+				Src: "hello {{world}}",
+			},
+			funcs: template.FuncMap{
+				"world": func() string {
+					return "world"
+				},
+			},
+			result: "hello world",
+		},
+		{
+			template: &Template{
+				Src: "hello {{",
+			},
+			err:      "template: :1: unexpected unclosed action in command",
+			noallocs: true,
 		},
 	}
-	if err := tmpl.Parse("", "", funcs); err != nil {
-		t.Fatal(err)
+
+	for _, test := range tests {
+		t.Run(test.template.Src, func(t *testing.T) {
+			result, err := test.template.Execute(test.funcs, test.data)
+			if actual := str(err); actual != test.err {
+				t.Errorf("expected err %q; got %q", test.err, actual)
+			}
+			if result != test.result {
+				t.Errorf("expected result %q; got %q", test.result, result)
+			}
+			allocs := testing.AllocsPerRun(10, func() {
+				_, _ = test.template.Execute(test.funcs, test.data)
+			})
+			if test.noallocs && allocs > 0 {
+				t.Errorf("expected no allocations; got %f", allocs)
+			}
+		})
 	}
-	if tmpl.ParseErr == nil {
-		t.Fatal("expected non-nil parse error")
+}
+
+func str(err error) string {
+	if err == nil {
+		return ""
 	}
-	if tmpl.Template == nil {
-		t.Fatal("expected non-nil template")
-	}
-	var buf bytes.Buffer
-	if tmpl.Template.Execute(&buf, nil) != nil {
-		t.Fatal("expected nil template execute error")
-	}
-	if buf.String() != "bar" {
-		t.Fatalf("expected bar; got %s", buf.String())
-	}
+	return err.Error()
 }

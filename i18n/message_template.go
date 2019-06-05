@@ -1,7 +1,6 @@
 package i18n
 
 import (
-	"bytes"
 	"fmt"
 
 	"text/template"
@@ -19,12 +18,12 @@ type MessageTemplate struct {
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
 	pluralTemplates := map[plural.Form]*internal.Template{}
-	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero)
-	setPluralTemplate(pluralTemplates, plural.One, m.One)
-	setPluralTemplate(pluralTemplates, plural.Two, m.Two)
-	setPluralTemplate(pluralTemplates, plural.Few, m.Few)
-	setPluralTemplate(pluralTemplates, plural.Many, m.Many)
-	setPluralTemplate(pluralTemplates, plural.Other, m.Other)
+	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.One, m.One, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.Two, m.Two, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.Few, m.Few, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.Many, m.Many, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.Other, m.Other, m.LeftDelim, m.RightDelim)
 	if len(pluralTemplates) == 0 {
 		return nil
 	}
@@ -34,9 +33,13 @@ func NewMessageTemplate(m *Message) *MessageTemplate {
 	}
 }
 
-func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src string) {
+func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src, leftDelim, rightDelim string) {
 	if src != "" {
-		pluralTemplates[pluralForm] = &internal.Template{Src: src}
+		pluralTemplates[pluralForm] = &internal.Template{
+			Src:        src,
+			LeftDelim:  leftDelim,
+			RightDelim: rightDelim,
+		}
 	}
 }
 
@@ -58,15 +61,5 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 			messageID:  mt.Message.ID,
 		}
 	}
-	if err := t.Parse(mt.LeftDelim, mt.RightDelim, funcs); err != nil {
-		return "", err
-	}
-	if t.Template == nil {
-		return t.Src, nil
-	}
-	var buf bytes.Buffer
-	if err := t.Template.Execute(&buf, data); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
+	return t.Execute(funcs, data)
 }

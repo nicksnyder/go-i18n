@@ -3,15 +3,15 @@ language: go
 matrix:
   include:
     - go: 1.9.x
-      env: PKG='./...'
+      env: GO111MODULE=on
     - go: 1.12.x
-      env: PKG='./...' COVER='-coverprofile=coverage.txt -covermode=count'
+      env: GO111MODULE=on COVER='-coverprofile=coverage.txt -covermode=atomic'
 
 install:
-  - go get -t -v $PKG
+  - go get -t -v ./...
 
 script:
-  - go test $COVER $PKG
+  - go test -race $COVER ./...
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
