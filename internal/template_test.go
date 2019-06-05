@@ -12,12 +12,14 @@ func TestExecute(t *testing.T) {
 		data     interface{}
 		result   string
 		err      string
+		noallocs bool
 	}{
 		{
 			template: &Template{
 				Src: "hello",
 			},
-			result: "hello",
+			result:   "hello",
+			noallocs: true,
 		},
 		{
 			template: &Template{
@@ -43,7 +45,8 @@ func TestExecute(t *testing.T) {
 			template: &Template{
 				Src: "hello {{",
 			},
-			err: "template: :1: unexpected unclosed action in command",
+			err:      "template: :1: unexpected unclosed action in command",
+			noallocs: true,
 		},
 	}
 
@@ -55,6 +58,12 @@ func TestExecute(t *testing.T) {
 			}
 			if result != test.result {
 				t.Errorf("expected result %q; got %q", test.result, result)
+			}
+			allocs := testing.AllocsPerRun(10, func() {
+				_, _ = test.template.Execute(test.funcs, test.data)
+			})
+			if test.noallocs && allocs > 0 {
+				t.Errorf("expected no allocations; got %f", allocs)
 			}
 		})
 	}
