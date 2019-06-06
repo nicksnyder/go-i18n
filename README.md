@@ -7,7 +7,7 @@ go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that h
 - Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
 - Supports message files of any format (e.g. JSON, TOML, YAML).
 
-## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n)
+## Package i18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/i18n)
 
 The i18n package provides support for looking up messages according to a set of locale preferences.
 
@@ -55,7 +55,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 }) // Nick has 2 cats.
 ```
 
-## Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/v2/goi18n)
+## Command goi18n [![GoDoc](http://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](http://godoc.org/github.com/nicksnyder/go-i18n/goi18n)
 
 The goi18n command manages message files used by the i18n package.
 
@@ -115,9 +115,9 @@ If you have added new messages to your program:
 
 ## For more information and examples:
 
-- Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n).
-- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/localizer_test.go).
-- Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/v2/example).
+- Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/).
+- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/i18n/localizer_test.go).
+- Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/example).
 
 ## License
 
