@@ -1,8 +1,5 @@
 # https://github.com/golangci/golangci/wiki/Configuration
 
-# service:
-#   prepare:
-#     - go get -t ./...
 linters:
   enable:
     - gofmt
