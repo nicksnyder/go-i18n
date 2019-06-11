@@ -4,8 +4,8 @@ matrix:
   include:
     - go: 1.9.x
       env: GO111MODULE=on
-    - go: 1.12.x
-      env: GO111MODULE=on COVER='-coverprofile=coverage.txt -covermode=atomic'
+    - go: 1.x
+      env: GO111MODULE=on LATEST=true COVER='-coverprofile=coverage.txt -covermode=atomic'
 
 script:
   - cd v2; go test -race $COVER ./...
@@ -19,4 +19,4 @@ deploy:
   script: cd v2; curl -sL https://git.io/goreleaser | bash
   on:
     tags: true
-    condition: $TRAVIS_OS_NAME = linux
+    condition: $LATEST = true
