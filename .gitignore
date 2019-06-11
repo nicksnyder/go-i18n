@@ -5,7 +5,7 @@ output/
 *.test
 *.swp
 
-example/example
-goi18n/goi18n
+v2/example/example
+v2/goi18n/goi18n
 
-dist/
+v2/dist/
