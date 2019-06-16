@@ -8,6 +8,10 @@ import (
 )
 
 func TestAppend(t *testing.T) {
+	err1 := errors.New("err1")
+	err2 := errors.New("err2")
+	err3 := errors.New("err3")
+	err4 := errors.New("err4")
 	tests := []struct {
 		err1        error
 		err2        error
@@ -19,19 +23,44 @@ func TestAppend(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
-			err1:        errors.New("err1"),
+			err1:        err1,
 			err2:        nil,
-			expectedErr: errors.New("err1"),
+			expectedErr: err1,
 		},
 		{
 			err1:        nil,
-			err2:        errors.New("err2"),
-			expectedErr: errors.New("err2"),
+			err2:        err2,
+			expectedErr: err2,
 		},
 		{
-			err1:        errors.New("err1"),
-			err2:        errors.New("err2"),
-			expectedErr: multierr{errors.New("err1"), errors.New("err2")},
+			err1:        err1,
+			err2:        err2,
+			expectedErr: multierr{err1, err2},
+		},
+		{
+			err1:        multierr{err1},
+			err2:        err2,
+			expectedErr: multierr{err1, err2},
+		},
+		{
+			err1:        multierr{err1, err2},
+			err2:        err3,
+			expectedErr: multierr{err1, err2, err3},
+		},
+		{
+			err1:        err1,
+			err2:        multierr{err2},
+			expectedErr: multierr{err1, err2},
+		},
+		{
+			err1:        err1,
+			err2:        multierr{err2, err3},
+			expectedErr: multierr{err1, err2, err3},
+		},
+		{
+			err1:        multierr{err1, err2},
+			err2:        multierr{err3, err4},
+			expectedErr: multierr{err1, err2, err3, err4},
 		},
 	}
 
