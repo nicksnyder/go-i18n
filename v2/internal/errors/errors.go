@@ -1,21 +1,6 @@
 package errors
 
-import (
-	"strings"
-)
-
 type multierr []error
-
-func (e multierr) Error() string {
-	var b strings.Builder
-	for i, err := range e {
-		if i != 0 {
-			b.WriteString("; ")
-		}
-		b.WriteString(err.Error())
-	}
-	return b.String()
-}
 
 func Append(err1, err2 error) error {
 	if err1 == nil {
