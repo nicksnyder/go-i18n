@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -649,6 +650,14 @@ func TestPluralizeError(t *testing.T) {
 func TestMessageIDMismatchError(t *testing.T) {
 	actual := (&messageIDMismatchErr{messageID: "hello", defaultMessageID: "world"}).Error()
 	expected := `message id "hello" does not match default message id "world"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestInvalidPluralCountError(t *testing.T) {
+	actual := (&invalidPluralCountErr{messageID: "hello", pluralCount: "blah", err: fmt.Errorf("error")}).Error()
+	expected := `invalid plural count "blah" for message id "hello": error`
 	if actual != expected {
 		t.Fatalf("expected %q; got %q", expected, actual)
 	}
