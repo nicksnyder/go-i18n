@@ -153,10 +153,6 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	if pluralForm == plural.Invalid {
-		return "", language.Und, errors.Append(err1, &pluralizeErr{messageID: messageID, tag: tag})
-	}
-
 	msg, err := template.Execute(pluralForm, templateData, lc.Funcs)
 	if err != nil {
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
@@ -203,11 +199,7 @@ func (l *Localizer) pluralForm(tag language.Tag, operands *plural.Operands) plur
 	if operands == nil {
 		return plural.Other
 	}
-	pluralRule := l.bundle.pluralRules.Rule(tag)
-	if pluralRule == nil {
-		return plural.Invalid
-	}
-	return pluralRule.PluralFormFunc(operands)
+	return l.bundle.pluralRules.Rule(tag).PluralFormFunc(operands)
 }
 
 // MustLocalize is similar to Localize, except it panics if an error happens.
