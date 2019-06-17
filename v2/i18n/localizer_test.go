@@ -8,16 +8,18 @@ import (
 	"golang.org/x/text/language"
 )
 
-func TestLocalizer_Localize(t *testing.T) {
-	tests := []struct {
-		name              string
-		defaultLanguage   language.Tag
-		messages          map[language.Tag][]*Message
-		acceptLangs       []string
-		conf              *LocalizeConfig
-		expectedErr       error
-		expectedLocalized string
-	}{
+type localizerTest struct {
+	name              string
+	defaultLanguage   language.Tag
+	messages          map[language.Tag][]*Message
+	acceptLangs       []string
+	conf              *LocalizeConfig
+	expectedErr       error
+	expectedLocalized string
+}
+
+func localizerTests() []localizerTest {
+	return []localizerTest{
 		{
 			name:            "message id mismatch",
 			defaultLanguage: language.English,
@@ -571,8 +573,10 @@ func TestLocalizer_Localize(t *testing.T) {
 			expectedErr: &MessageNotFoundErr{messageID: "Hello"},
 		},
 	}
+}
 
-	for _, test := range tests {
+func TestLocalizer_Localize(t *testing.T) {
+	for _, test := range localizerTests() {
 		t.Run(test.name, func(t *testing.T) {
 			bundle := NewBundle(test.defaultLanguage)
 			for tag, messages := range test.messages {
@@ -599,6 +603,25 @@ func TestLocalizer_Localize(t *testing.T) {
 			// if test.conf.MessageID != "" && reflect.DeepEqual(test.conf, &LocalizeConfig{MessageID: test.conf.MessageID}) {
 			// 	check(localizer.LocalizeMessageID(test.conf.MessageID))
 			// }
+		})
+	}
+}
+
+func BenchmarkLocalizer_Localize(b *testing.B) {
+	for _, test := range localizerTests() {
+		b.Run(test.name, func(b *testing.B) {
+			bundle := NewBundle(test.defaultLanguage)
+			for tag, messages := range test.messages {
+				if err := bundle.AddMessages(tag, messages...); err != nil {
+					b.Fatal(err)
+				}
+			}
+
+			localizer := NewLocalizer(bundle, test.acceptLangs...)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_, _ = localizer.Localize(test.conf)
+			}
 		})
 	}
 }
