@@ -653,3 +653,16 @@ func TestMessageIDMismatchError(t *testing.T) {
 		t.Fatalf("expected %q; got %q", expected, actual)
 	}
 }
+
+func TestMustLocalize(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatalf("MustLocalize did not panic")
+		}
+	}()
+	bundle := NewBundle(language.English)
+	localizer := NewLocalizer(bundle)
+	localizer.MustLocalize(&LocalizeConfig{
+		MessageID: "hello",
+	})
+}
