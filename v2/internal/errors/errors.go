@@ -14,12 +14,10 @@ func Append(err1, err2 error) error {
 	switch {
 	case ok1 && !ok2:
 		return append(me1, err2)
-	case ok1 && ok2:
-		return append(me1, me2...)
 	case !ok1 && ok2:
 		return append(multierr{err1}, me2...)
 	case !ok1 && !ok2:
 		return multierr{err1, err2}
 	}
-	panic("unreachable")
+	return append(me1, me2...)
 }
