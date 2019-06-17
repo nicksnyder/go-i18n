@@ -629,3 +629,27 @@ func BenchmarkLocalizer_Localize(b *testing.B) {
 		})
 	}
 }
+
+func TestMessageNotFoundError(t *testing.T) {
+	actual := (&MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "hello"}).Error()
+	expected := `message "hello" not found in language "en-US"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestPluralizeError(t *testing.T) {
+	actual := (&pluralizeErr{tag: language.AmericanEnglish, messageID: "hello"}).Error()
+	expected := `unable to pluralize "hello" because there no plural rule for "en-US"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestMessageIDMismatchError(t *testing.T) {
+	actual := (&messageIDMismatchErr{messageID: "hello", defaultMessageID: "world"}).Error()
+	expected := `message id "hello" does not match default message id "world"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
