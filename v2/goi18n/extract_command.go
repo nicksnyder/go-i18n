@@ -51,19 +51,16 @@ func (ec *extractCommand) name() string {
 	return "extract"
 }
 
-func (ec *extractCommand) parse(args []string) error {
+func (ec *extractCommand) parse(args []string) {
 	flags := flag.NewFlagSet("extract", flag.ExitOnError)
 	flags.Usage = usageExtract
 
 	flags.Var(&ec.sourceLanguage, "sourceLanguage", "en")
 	flags.StringVar(&ec.outdir, "outdir", ".", "")
 	flags.StringVar(&ec.format, "format", "toml", "")
-	if err := flags.Parse(args); err != nil {
-		return err
-	}
+	flags.Parse(args)
 
 	ec.paths = flags.Args()
-	return nil
 }
 
 func (ec *extractCommand) execute() error {
@@ -258,6 +255,16 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 			return "", false
 		}
 		return x + y, true
+	case *ast.Ident:
+		switch z := v.Obj.Decl.(type) {
+		case *ast.ValueSpec:
+			s, ok := extractStringLiteral(z.Values[0])
+			if !ok {
+				return "", false
+			}
+			return s, true
+		}
+		return "", false
 	default:
 		return "", false
 	}

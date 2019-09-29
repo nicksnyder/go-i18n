@@ -185,6 +185,28 @@ zero = "Zero translation"
 			}
 			`,
 		},
+		{
+			name:     "id constant",
+			fileName: "file.go",
+			file:     `package main`,
+		},
+		{
+			name:     "global declaration",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			const constID = "ConstantID"
+			
+			var m = &i18n.Message{
+				ID: constID,
+				Other: "ID is a constant",
+			}
+			`,
+			activeFile: []byte(`ConstantID = "ID is a constant"
+`),
+		},
 	}
 
 	for _, test := range tests {
