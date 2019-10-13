@@ -186,11 +186,6 @@ zero = "Zero translation"
 			`,
 		},
 		{
-			name:     "id constant",
-			fileName: "file.go",
-			file:     `package main`,
-		},
-		{
 			name:     "global declaration",
 			fileName: "file.go",
 			file: `package main
