@@ -258,6 +258,16 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 			return "", false
 		}
 		return x + y, true
+	case *ast.Ident:
+		switch z := v.Obj.Decl.(type) {
+		case *ast.ValueSpec:
+			s, ok := extractStringLiteral(z.Values[0])
+			if !ok {
+				return "", false
+			}
+			return s, true
+		}
+		return "", false
 	default:
 		return "", false
 	}
