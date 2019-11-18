@@ -9,3 +9,5 @@ require (
 	golang.org/x/tools v0.0.0-20190506145303-2d16b83fe98c // indirect
 	gopkg.in/yaml.v2 v2.2.1
 )
+
+go 1.9
