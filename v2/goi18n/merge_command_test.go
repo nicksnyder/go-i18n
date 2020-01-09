@@ -36,6 +36,50 @@ func TestMerge(t *testing.T) {
 			},
 		},
 		{
+			name:           "single identity, one localization text after missing one",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.toml": []byte(`
+1HelloMessage = ""
+Body = "Finally some text!"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`Body = "Finally some text!"
+`),
+			},
+		},
+		{
+			name:           "single identity, one localization text before missing one",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.toml": []byte(`
+Body = "Some text!"
+1HelloMessage = ""
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`Body = "Some text!"
+`),
+			},
+		},
+		{
+			name:           "single identity, missing localization text between two localizations",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.toml": []byte(`
+Body = "Some text!"
+1HelloMessage = ""
+Footer = "Some more text!"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`Body = "Some text!"
+Footer = "Some more text!"
+`),
+			},
+		},
+		{
 			name:           "plural identity",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -52,6 +96,24 @@ other = "{{.Count}} unread emails"
 description = "Message that tells the user how many unread emails they have"
 one = "{{.Count}} unread email"
 other = "{{.Count}} unread emails"
+`),
+			},
+		},
+		{
+			name:           "plural identity, missing localization text",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`
+Body = "Some text!"
+
+[MissingTranslation]
+description = "I wonder what it was?!"
+one = ""
+other = ""
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`Body = "Some text!"
 `),
 			},
 		},
