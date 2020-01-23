@@ -36,7 +36,7 @@ func TestMerge(t *testing.T) {
 			},
 		},
 		{
-			name:           "single identity, one localization text after missing one",
+			name:           "single identity, one localization text missing",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
 				"one.en-US.toml": []byte(`
@@ -46,36 +46,6 @@ Body = "Finally some text!"
 			},
 			outFiles: map[string][]byte{
 				"active.en-US.toml": []byte(`Body = "Finally some text!"
-`),
-			},
-		},
-		{
-			name:           "single identity, one localization text before missing one",
-			sourceLanguage: language.AmericanEnglish,
-			inFiles: map[string][]byte{
-				"one.en-US.toml": []byte(`
-Body = "Some text!"
-1HelloMessage = ""
-`),
-			},
-			outFiles: map[string][]byte{
-				"active.en-US.toml": []byte(`Body = "Some text!"
-`),
-			},
-		},
-		{
-			name:           "single identity, missing localization text between two localizations",
-			sourceLanguage: language.AmericanEnglish,
-			inFiles: map[string][]byte{
-				"one.en-US.toml": []byte(`
-Body = "Some text!"
-1HelloMessage = ""
-Footer = "Some more text!"
-`),
-			},
-			outFiles: map[string][]byte{
-				"active.en-US.toml": []byte(`Body = "Some text!"
-Footer = "Some more text!"
 `),
 			},
 		},
