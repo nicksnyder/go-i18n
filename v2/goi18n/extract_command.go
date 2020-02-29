@@ -259,6 +259,9 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 		}
 		return x + y, true
 	case *ast.Ident:
+		if v.Obj == nil {
+			return "", false
+		}
 		switch z := v.Obj.Decl.(type) {
 		case *ast.ValueSpec:
 			s, ok := extractStringLiteral(z.Values[0])
