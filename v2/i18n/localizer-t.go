@@ -12,6 +12,17 @@ func (l *Localizer) Tags() []language.Tag {
 	return l.tags
 }
 
+func (l *Localizer) Language() string {
+	if len(l.tags) > 0 {
+		return l.tags[0].String()
+	}
+	return l.bundle.defaultLanguage.String()
+}
+
+func (l *Localizer) DefaultLanguageTag() language.Tag {
+	return l.bundle.defaultLanguage
+}
+
 func (l *Localizer) Translate(messageID string, templateData map[string]interface{}) (string, error) {
 	return l.Localize(&LocalizeConfig{MessageID: messageID, TemplateData: templateData})
 }
