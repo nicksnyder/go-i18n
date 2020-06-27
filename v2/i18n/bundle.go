@@ -134,3 +134,7 @@ func (b *Bundle) addTag(tag language.Tag) {
 func (b *Bundle) LanguageTags() []language.Tag {
 	return b.tags
 }
+
+func (b *Bundle) DefaultLanguage() language.Tag {
+	return b.defaultLanguage
+}
