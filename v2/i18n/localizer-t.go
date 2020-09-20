@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"html/template"
+	"log"
 	"regexp"
 
 	"github.com/zengabor/go-i18n/v2/internal/plural"
@@ -28,7 +29,7 @@ func (l *Localizer) Translate(messageID string, templateData map[string]interfac
 }
 
 // To be used in template FuncMap, like tmpl.Funcs(template.FuncMap{"T": localizer.T()})
-func (l *Localizer) T() func(messageID string, args ...interface{}) (template.HTML, error) {
+func (l *Localizer) T(swallowErrors bool) func(messageID string, args ...interface{}) (template.HTML, error) {
 	return func(messageID string, args ...interface{}) (template.HTML, error) {
 		lc := LocalizeConfig{MessageID: messageID}
 		td := make(map[string]interface{})
@@ -44,6 +45,13 @@ func (l *Localizer) T() func(messageID string, args ...interface{}) (template.HT
 		}
 		lc.TemplateData = td
 		s, err := l.Localize(&lc)
+		if err != nil && swallowErrors {
+			log.Print(err)
+			err = nil
+			if len(s) == 0 {
+				s = ":" + messageID + ":"
+			}
+		}
 		return template.HTML(s), err
 	}
 }
