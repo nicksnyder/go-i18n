@@ -3,7 +3,7 @@ coverage:
   status:
     patch:
       default:
-        threshold: 50%
+        only_pulls: true
     project:
       default:
-        threshold: 0.1%
+        informational: true
