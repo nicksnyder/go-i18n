@@ -26,7 +26,7 @@ type Bundle struct {
 	matcher          language.Matcher
 }
 
-// artTag is the language tag used for artifical languages
+// artTag is the language tag used for artificial languages
 // https://en.wikipedia.org/wiki/Codes_for_constructed_languages
 var artTag = language.MustParse("art")
 
