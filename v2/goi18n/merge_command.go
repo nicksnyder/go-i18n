@@ -125,12 +125,16 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 		}
 		templates := map[string]*i18n.MessageTemplate{}
 		for _, m := range mf.Messages {
-			templates[m.ID] = i18n.NewMessageTemplate(m)
+			template := i18n.NewMessageTemplate(m)
+			if template == nil {
+				continue
+			}
+			templates[m.ID] = template
 		}
 		if mf.Tag == sourceLanguageTag {
 			for _, template := range templates {
 				if sourceMessageTemplates[template.ID] != nil {
-					return nil, fmt.Errorf("multiple source translations for id %s", template.ID)
+					return nil, fmt.Errorf("multiple source translations for id %q", template.ID)
 				}
 				template.Hash = hash(template)
 				sourceMessageTemplates[template.ID] = template

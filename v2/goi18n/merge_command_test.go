@@ -36,6 +36,20 @@ func TestMerge(t *testing.T) {
 			},
 		},
 		{
+			name:           "single identity, one localization text missing",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"one.en-US.toml": []byte(`
+1HelloMessage = ""
+Body = "Finally some text!"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`Body = "Finally some text!"
+`),
+			},
+		},
+		{
 			name:           "plural identity",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
@@ -52,6 +66,24 @@ other = "{{.Count}} unread emails"
 description = "Message that tells the user how many unread emails they have"
 one = "{{.Count}} unread email"
 other = "{{.Count}} unread emails"
+`),
+			},
+		},
+		{
+			name:           "plural identity, missing localization text",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`
+Body = "Some text!"
+
+[MissingTranslation]
+description = "I wonder what it was?!"
+one = ""
+other = ""
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`Body = "Some text!"
 `),
 			},
 		},
