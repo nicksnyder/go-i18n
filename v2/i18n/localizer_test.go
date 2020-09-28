@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -52,21 +53,11 @@ func localizerTests() []localizerTest {
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.English, messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
 			name:            "empty translation without fallback",
-			defaultLanguage: language.English,
-			messages: map[language.Tag][]*Message{
-				language.Spanish: {{ID: "HelloWorld"}},
-			},
-			acceptLangs: []string{"es"},
-			conf:        &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr: &MessageNotFoundErr{messageID: "HelloWorld"},
-		},
-		{
-			name:            "empty translation with fallback",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
 				language.English: {{ID: "HelloWorld", Other: "Hello World!"}},
@@ -74,6 +65,7 @@ func localizerTests() []localizerTest {
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.Spanish, messageID: "HelloWorld"},
 			expectedLocalized: "Hello World!",
 		},
 		{
@@ -84,26 +76,38 @@ func localizerTests() []localizerTest {
 			},
 			acceptLangs:       []string{"en"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.English, messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
-			name:              "missing translation from not default language",
+			name:              "missing translations from not default language",
 			defaultLanguage:   language.English,
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.English, messageID: "HelloWorld"},
+			expectedLocalized: "",
+		},
+		{
+			name:            "missing translation from not default language",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.Spanish: {{ID: "SomethingElse", Other: "other"}},
+			},
+			acceptLangs:       []string{"es"},
+			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.Spanish, messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
 			name:            "missing translation not default language with other translation",
 			defaultLanguage: language.English,
 			messages: map[language.Tag][]*Message{
-				language.French: {{ID: "HelloWorld", Other: "other"}},
+				language.French:  {{ID: "HelloWorld", Other: "other"}},
+				language.Spanish: {{ID: "SomethingElse", Other: "other"}},
 			},
 			acceptLangs:       []string{"es"},
 			conf:              &LocalizeConfig{MessageID: "HelloWorld"},
-			expectedErr:       &MessageNotFoundErr{messageID: "HelloWorld"},
+			expectedErr:       &MessageNotFoundErr{tag: language.Spanish, messageID: "HelloWorld"},
 			expectedLocalized: "",
 		},
 		{
@@ -513,7 +517,7 @@ func localizerTests() []localizerTest {
 			expectedLocalized: "Nick has 2.5 cats",
 		},
 		{
-			name:            "test slow path",
+			name:            "no fallback",
 			defaultLanguage: language.Spanish,
 			messages: map[language.Tag][]*Message{
 				language.English: {{
@@ -529,10 +533,10 @@ func localizerTests() []localizerTest {
 			conf: &LocalizeConfig{
 				MessageID: "Hello",
 			},
-			expectedLocalized: "Hello!",
+			expectedErr: &MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "Hello"},
 		},
 		{
-			name:            "test slow path default message",
+			name:            "fallback default message",
 			defaultLanguage: language.Spanish,
 			messages: map[language.Tag][]*Message{
 				language.English: {{
@@ -552,9 +556,10 @@ func localizerTests() []localizerTest {
 				},
 			},
 			expectedLocalized: "Hola!",
+			expectedErr:       &MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "Hello"},
 		},
 		{
-			name:            "test slow path no message",
+			name:            "no fallback default message",
 			defaultLanguage: language.Spanish,
 			messages: map[language.Tag][]*Message{
 				language.English: {{
@@ -570,7 +575,7 @@ func localizerTests() []localizerTest {
 			conf: &LocalizeConfig{
 				MessageID: "Hello",
 			},
-			expectedErr: &MessageNotFoundErr{messageID: "Hello"},
+			expectedErr: &MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "Hello"},
 		},
 	}
 }
@@ -624,4 +629,41 @@ func BenchmarkLocalizer_Localize(b *testing.B) {
 			}
 		})
 	}
+}
+
+func TestMessageNotFoundError(t *testing.T) {
+	actual := (&MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "hello"}).Error()
+	expected := `message "hello" not found in language "en-US"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestMessageIDMismatchError(t *testing.T) {
+	actual := (&messageIDMismatchErr{messageID: "hello", defaultMessageID: "world"}).Error()
+	expected := `message id "hello" does not match default message id "world"`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestInvalidPluralCountError(t *testing.T) {
+	actual := (&invalidPluralCountErr{messageID: "hello", pluralCount: "blah", err: fmt.Errorf("error")}).Error()
+	expected := `invalid plural count "blah" for message id "hello": error`
+	if actual != expected {
+		t.Fatalf("expected %q; got %q", expected, actual)
+	}
+}
+
+func TestMustLocalize(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatalf("MustLocalize did not panic")
+		}
+	}()
+	bundle := NewBundle(language.English)
+	localizer := NewLocalizer(bundle)
+	localizer.MustLocalize(&LocalizeConfig{
+		MessageID: "hello",
+	})
 }
