@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/internal/errors"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
@@ -147,24 +146,27 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 		}
 	}
 
-	tag, template, err1 := l.getMessageTemplate(messageID, lc.DefaultMessage)
+	tag, template, err := l.getMessageTemplate(messageID, lc.DefaultMessage)
 	if template == nil {
-		return "", language.Und, err1
+		return "", language.Und, err
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	msg, err := template.Execute(pluralForm, templateData, lc.Funcs)
-	if err != nil {
+	msg, err2 := template.Execute(pluralForm, templateData, lc.Funcs)
+	if err2 != nil {
+		if err == nil {
+			err = err2
+		}
+
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
-			msg2, err2 := template.Execute(plural.Other, templateData, lc.Funcs)
-			if err2 == nil {
-				return msg2, tag, errors.Append(err1, err)
+			msg2, err3 := template.Execute(plural.Other, templateData, lc.Funcs)
+			if err3 == nil {
+				msg = msg2
 			}
 		}
-		return "", language.Und, errors.Append(err1, err)
 	}
-	return msg, tag, err1
+	return msg, tag, err
 }
 
 func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate, error) {
@@ -179,7 +181,7 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 		if defaultMessage == nil {
 			return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
 		}
-		return l.bundle.defaultLanguage, NewMessageTemplate(defaultMessage), nil
+		return tag, NewMessageTemplate(defaultMessage), nil
 	}
 
 	// Fallback to default language in bundle.
