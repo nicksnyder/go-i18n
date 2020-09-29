@@ -17,7 +17,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: build --rm-dist --snapshot
+          args: release --rm-dist --snapshot
           workdir: v2
       - name: Test
         working-directory: v2
@@ -41,6 +41,5 @@ jobs:
         env:
             GOPATH: ${{ github.workspace }}/gopath
         run: |
-          go build ./...
           go get -t ./...
           go test -race ./...
