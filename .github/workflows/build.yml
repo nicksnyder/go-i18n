@@ -4,8 +4,9 @@ on:
   - pull_request
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Build
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
@@ -25,8 +26,9 @@ jobs:
       - name: Upload coverage
         uses: codecov/codecov-action@v1
   build_1_9_7:
-    runs-on: ubuntu-latest
     name: Build with Go 1.9.7
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
