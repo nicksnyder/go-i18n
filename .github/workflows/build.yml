@@ -17,13 +17,11 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: build --rm-dist
+          args: build --rm-dist --snapshot
           workdir: v2
-      - name: Build and test
+      - name: Test
         working-directory: v2
-        run: |
-          go get -t ./...
-          go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Upload coverage
         uses: codecov/codecov-action@v1
   build_1_9_7:
