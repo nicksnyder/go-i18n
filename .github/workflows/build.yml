@@ -13,6 +13,12 @@ jobs:
           go-version: 1.15.2
       - name: Git checkout
         uses: actions/checkout@v2
+      - name: Build
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: build --rm-dist
+          workdir: v2
       - name: Build and test
         working-directory: v2
         run: |
