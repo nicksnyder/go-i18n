@@ -116,7 +116,7 @@ If you have added new messages to your program:
 ## For more information and examples:
 
 - Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2).
-- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/i18n/v2/localizer_test.go).
+- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/localizer_test.go).
 - Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/v2/example).
 
 ## License
