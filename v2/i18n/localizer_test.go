@@ -556,7 +556,6 @@ func localizerTests() []localizerTest {
 				},
 			},
 			expectedLocalized: "Hola!",
-			expectedErr:       &MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "Hello"},
 		},
 		{
 			name:            "no fallback default message",

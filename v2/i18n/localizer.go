@@ -194,7 +194,7 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 	if defaultMessage == nil {
 		return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
 	}
-	return l.bundle.defaultLanguage, NewMessageTemplate(defaultMessage), &MessageNotFoundErr{tag: tag, messageID: id}
+	return l.bundle.defaultLanguage, NewMessageTemplate(defaultMessage), nil
 }
 
 func (l *Localizer) pluralForm(tag language.Tag, operands *plural.Operands) plural.Form {
