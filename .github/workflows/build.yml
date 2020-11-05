@@ -1,0 +1,47 @@
+name: Build
+on:
+  - push
+  - pull_request
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15.2
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Build
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: release --rm-dist --snapshot
+          workdir: v2
+      - name: Test
+        working-directory: v2
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+  build_1_9_7:
+    name: Build with Go 1.9.7
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.9.7
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          path: gopath/src/github.com/nicksnyder/go-i18n
+      - name: Build and test
+        working-directory: gopath/src/github.com/nicksnyder/go-i18n/v2
+        env:
+            GOPATH: ${{ github.workspace }}/gopath
+        run: |
+          go get -t ./...
+          go test -race ./...

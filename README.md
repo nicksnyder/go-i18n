@@ -1,4 +1,4 @@
-# go-i18n [![Build Status](https://travis-ci.org/nicksnyder/go-i18n.svg?branch=master)](http://travis-ci.org/nicksnyder/go-i18n) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/branch/master/graph/badge.svg)](https://codecov.io/gh/nicksnyder/go-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/nicksnyder/go-i18n/-/badge.svg)](https://sourcegraph.com/github.com/nicksnyder/go-i18n?badge)
+# go-i18n ![Build status](https://github.com/nicksnyder/go-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/branch/master/graph/badge.svg)](https://codecov.io/gh/nicksnyder/go-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/nicksnyder/go-i18n/-/badge.svg)](https://sourcegraph.com/github.com/nicksnyder/go-i18n?badge)
 
 go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that helps you translate Go programs into multiple languages.
 
@@ -116,7 +116,7 @@ If you have added new messages to your program:
 ## For more information and examples:
 
 - Read the [documentation](http://godoc.org/github.com/nicksnyder/go-i18n/v2).
-- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/i18n/v2/localizer_test.go).
+- Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/master/v2/i18n/localizer_test.go).
 - Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/master/v2/example).
 
 ## License

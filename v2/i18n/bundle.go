@@ -26,7 +26,7 @@ type Bundle struct {
 	matcher          language.Matcher
 }
 
-// artTag is the language tag used for artifical languages
+// artTag is the language tag used for artificial languages
 // https://en.wikipedia.org/wiki/Codes_for_constructed_languages
 var artTag = language.MustParse("art")
 
@@ -133,6 +133,14 @@ func (b *Bundle) addTag(tag language.Tag) {
 // of all the translations loaded into the bundle
 func (b *Bundle) LanguageTags() []language.Tag {
 	return b.tags
+}
+
+func (b *Bundle) getMessageTemplate(tag language.Tag, id string) *MessageTemplate {
+	templates := b.messageTemplates[tag]
+	if templates == nil {
+		return nil
+	}
+	return templates[id]
 }
 
 func (b *Bundle) DefaultLanguage() language.Tag {

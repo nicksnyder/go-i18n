@@ -49,7 +49,12 @@ func marshalValue(messageTemplates map[string]*i18n.MessageTemplate, sourceLangu
 func marshal(v interface{}, format string) ([]byte, error) {
 	switch format {
 	case "json":
-		return json.MarshalIndent(v, "", "  ")
+		var buf bytes.Buffer
+		enc := json.NewEncoder(&buf)
+		enc.SetEscapeHTML(false)
+		enc.SetIndent("", "  ")
+		err := enc.Encode(v)
+		return buf.Bytes(), err
 	case "toml":
 		var buf bytes.Buffer
 		enc := toml.NewEncoder(&buf)

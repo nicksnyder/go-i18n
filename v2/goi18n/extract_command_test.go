@@ -202,6 +202,18 @@ zero = "Zero translation"
 			activeFile: []byte(`ConstantID = "ID is a constant"
 `),
 		},
+		{
+			name:     "undefined identifier in composite lit",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var m = &i18n.LocalizeConfig{
+				Funcs: Funcs,
+			}
+			`,
+		},
 	}
 
 	for _, test := range tests {
