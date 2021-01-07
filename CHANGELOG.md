@@ -10,7 +10,7 @@ To see the documentation for minor or patch version, [view the release notes](ht
 
 The first commit to this project was January 2012 (go1 had not yet been released) and v1.0.0 was tagged June 2015 (go1.4).
 This project has evolved with the Go ecosystem since then in a backwards compatible way,
-but there is a growing list of issues and warts that cannot be addressed without breaking compatiblity.
+but there is a growing list of issues and warts that cannot be addressed without breaking compatibility.
 
 v2 is rewrite of the API from first principals to make it more idiomatic Go, and to resolve a backlog of issues: https://github.com/nicksnyder/go-i18n/milestone/1
 
