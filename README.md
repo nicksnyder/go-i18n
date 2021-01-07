@@ -79,7 +79,7 @@ other = "{{.Name}} has {{.Count}} cats."
 ### Translating a new language
 
 1. Create an empty message file for the language that you want to add (e.g. `translate.es.toml`).
-2. Run `goi18n merge active.en.toml translate.es.toml` to populate `translate.es.toml` with the mesages to be translated.
+2. Run `goi18n merge active.en.toml translate.es.toml` to populate `translate.es.toml` with the messages to be translated.
 
    ```toml
    # translate.es.toml
