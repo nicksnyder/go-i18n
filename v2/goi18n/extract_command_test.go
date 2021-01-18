@@ -34,6 +34,21 @@ func TestExtract(t *testing.T) {
 			`,
 		},
 		{
+			name:     "escape newline",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var hasnewline = &i18n.Message{
+				ID:    "hasnewline",
+				Other: "\nfoo\nbar\\",
+			}
+			`,
+			activeFile: []byte(`hasnewline = "\nfoo\nbar\\"
+`),
+		},
+		{
 			name:     "escape",
 			fileName: "file.go",
 			file: `package main
