@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -240,9 +241,9 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 		if v.Kind != token.STRING {
 			return "", false
 		}
-		s := v.Value[1 : len(v.Value)-1]
-		if v.Value[0] == '"' {
-			s = strings.Replace(s, `\"`, `"`, -1)
+		s, err := strconv.Unquote(v.Value)
+		if err != nil {
+			return "", false
 		}
 		return s, true
 	case *ast.BinaryExpr:
