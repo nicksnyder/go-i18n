@@ -1,0 +1,11 @@
+হ্যালোনাম = "Hello {{.Name}}"
+
+[MyUnreadEmails]
+description = "আমার কাছে উনরেড ইমেইলের সংখ্যা"
+one = "আমার আছে {{.PluralCount}} উনরেড ইমেইল।"
+other = "আমার আছে {{.PluralCount}} উনরেড ইমেইলের।"
+
+[PersonUnreadEmails]
+description = "একজন ব্যক্তির কাছে উনরেড ইমেলের সংখ্যা"
+one = "{{.Name}} আছে {{.UnreadEmailCount}} উনরেড ইমেইল।"
+other = "{{.Name}} আছে {{.UnreadEmailCount}} উনরেড ইমেইলের।"
