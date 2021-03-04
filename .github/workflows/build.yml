@@ -6,7 +6,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
@@ -28,7 +28,7 @@ jobs:
   build_1_9_7:
     name: Build with Go 1.9.7
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.repository_owner == 'nicksnyder') || (github.event_name == 'pull_request' && github.repository_owner != 'nicksnyder')
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
     steps:
       - name: Install Go
         uses: actions/setup-go@v2
