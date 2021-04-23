@@ -26,9 +26,58 @@ type Bundle struct {
 	matcher          language.Matcher
 }
 
+// The matcher in x/text/language does not handle artificial languages,
+// see https://github.com/golang/go/issues/45749
+// This is a simplified matcher that delegates to the x/text/language matcher for
+// the harder cases.
+type matcher struct {
+	tags           []language.Tag
+	defaultMatcher language.Matcher
+}
+
+func newMatcher(tags []language.Tag) language.Matcher {
+	var hasArt bool
+	for _, tag := range tags {
+		base, _ := tag.Base()
+		hasArt = base == artTagBase
+		if hasArt {
+			break
+		}
+	}
+
+	if !hasArt {
+		return language.NewMatcher(tags)
+	}
+
+	return matcher{
+		tags:           tags,
+		defaultMatcher: language.NewMatcher(tags),
+	}
+}
+
+func (m matcher) Match(t ...language.Tag) (language.Tag, int, language.Confidence) {
+	for _, candidate := range t {
+		base, _ := candidate.Base()
+		if base != artTagBase {
+			continue
+		}
+
+		for i, tag := range m.tags {
+			if tag == candidate {
+				return candidate, i, language.Exact
+			}
+		}
+	}
+
+	return m.defaultMatcher.Match(t...)
+}
+
 // artTag is the language tag used for artificial languages
 // https://en.wikipedia.org/wiki/Codes_for_constructed_languages
-var artTag = language.MustParse("art")
+var (
+	artTag        = language.MustParse("art")
+	artTagBase, _ = artTag.Base()
+)
 
 // NewBundle returns a bundle with a default language and a default set of plural rules.
 func NewBundle(defaultLanguage language.Tag) *Bundle {
@@ -126,7 +175,7 @@ func (b *Bundle) addTag(tag language.Tag) {
 		}
 	}
 	b.tags = append(b.tags, tag)
-	b.matcher = language.NewMatcher(b.tags)
+	b.matcher = newMatcher(b.tags)
 }
 
 // LanguageTags returns the list of language tags
