@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"strings"
 	"testing"
 	"text/template"
 )
@@ -45,7 +46,7 @@ func TestExecute(t *testing.T) {
 			template: &Template{
 				Src: "hello {{",
 			},
-			err:      "template: :1: unexpected unclosed action in command",
+			err:      "unclosed action",
 			noallocs: true,
 		},
 	}
@@ -53,8 +54,8 @@ func TestExecute(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.template.Src, func(t *testing.T) {
 			result, err := test.template.Execute(test.funcs, test.data)
-			if actual := str(err); actual != test.err {
-				t.Errorf("expected err %q; got %q", test.err, actual)
+			if actual := str(err); !strings.Contains(str(err), test.err) {
+				t.Errorf("expected err %q to contain %q", actual, test.err)
 			}
 			if result != test.result {
 				t.Errorf("expected result %q; got %q", test.result, result)
