@@ -45,7 +45,7 @@ func TestExecute(t *testing.T) {
 			template: &Template{
 				Src: "hello {{",
 			},
-			err:      "template: :1: unexpected unclosed action in command",
+			err:      "template: :1: unclosed action",
 			noallocs: true,
 		},
 	}
