@@ -98,6 +98,31 @@ hello = "`+expected+`"
 	}
 }
 
+func TestPseudoLanguages(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	expected := "a2"
+	bundle.MustParseMessageFileBytes([]byte(`
+hello = "a1"
+`), "art-x-a1.toml")
+	bundle.MustParseMessageFileBytes([]byte(`
+hello = "a2"
+`), "art-x-a2.toml")
+	bundle.MustParseMessageFileBytes([]byte(`
+hello = "a3"
+`), "art-x-a3.toml")
+
+	{
+		localized, err := NewLocalizer(bundle, "art-x-a2").Localize(&LocalizeConfig{MessageID: "hello"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if localized != expected {
+			t.Fatalf("expected %q\ngot %q", expected, localized)
+		}
+	}
+}
+
 func TestJSON(t *testing.T) {
 	bundle := NewBundle(language.English)
 	bundle.MustParseMessageFileBytes([]byte(`{
