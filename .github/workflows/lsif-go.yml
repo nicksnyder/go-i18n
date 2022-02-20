@@ -10,5 +10,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Generate LSIF data
         run: lsif-go
+        working-directory: v2
       - name: Upload LSIF data to Sourcegraph.com
         run: src lsif upload -github-token=${{ secrets.GITHUB_TOKEN }} -ignore-upload-failure
+        working-directory: v2
