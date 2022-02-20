@@ -124,3 +124,4 @@ If you have added new messages to your program:
 ## License
 
 go-i18n is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
+
