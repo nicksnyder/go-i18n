@@ -9,6 +9,15 @@ import (
 )
 
 // Localizer provides Localize and MustLocalize methods that return localized messages.
+// Localize and MustLocalize methods use a language.Tag matching algorithm based
+// on the best possible value. This algorithm may cause an unexpected language.Tag returned
+// value depending on the order of the tags stored in memory. For example, if the bundle
+// used to create a Localizer instance ingested locales following this order
+// ["en-US", "en-GB", "en-IE", "en"] and the locale "en" is asked, the underlying matching
+// algorithm will return "en-US" thinking it is the best match possible. More information
+// about the algorithm in this Github issue: https://github.com/golang/go/issues/49176.
+// There is additionnal informations inside the Go code base:
+// https://github.com/golang/text/blob/master/language/match.go#L142
 type Localizer struct {
 	// bundle contains the messages that can be returned by the Localizer.
 	bundle *Bundle
