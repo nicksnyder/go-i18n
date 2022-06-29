@@ -38,6 +38,15 @@ bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 bundle.LoadMessageFile("es.toml")
 ```
 
+```go
+// 如果使用 go:embed
+//go:embed locale.*.toml
+var LocaleFS embed.FS
+
+bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+bundle.LoadMessageFileFS(LocaleFS, "locale.es.toml")
+```
+
 创建一个 Localizer 以用于一组语言首选项。
 
 ```go

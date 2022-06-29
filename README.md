@@ -37,6 +37,15 @@ bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 bundle.LoadMessageFile("es.toml")
 ```
 
+```go
+// If use go:embed
+//go:embed locale.*.toml
+var LocaleFS embed.FS
+
+bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+bundle.LoadMessageFileFS(LocaleFS, "locale.es.toml")
+```
+
 Create a Localizer to use for a set of language preferences.
 
 ```go
