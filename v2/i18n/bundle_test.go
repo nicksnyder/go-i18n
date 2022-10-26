@@ -3,6 +3,7 @@ package i18n
 import (
 	"fmt"
 	"reflect"
+	"sync"
 	"testing"
 
 	"github.com/BurntSushi/toml"
@@ -230,7 +231,15 @@ func TestV1FlatFormat(t *testing.T) {
 
 func expectMessage(t *testing.T, bundle *Bundle, tag language.Tag, messageID string, message *Message) {
 	expected := NewMessageTemplate(message)
-	actual := bundle.messageTemplates[tag][messageID]
+	templates, ok := bundle.messageTemplates.Load(tag)
+	if templates == nil || !ok {
+		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, "", expected)
+	}
+	temps := templates.(*sync.Map)
+	actual, ok := temps.Load(messageID)
+	if actual == nil || !ok {
+		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, "", expected)
+	}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, actual, expected)
 	}

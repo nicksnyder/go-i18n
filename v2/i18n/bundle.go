@@ -3,6 +3,7 @@ package i18n
 import (
 	"fmt"
 	"io/ioutil"
+	"sync"
 
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 
@@ -20,7 +21,7 @@ type UnmarshalFunc func(data []byte, v interface{}) error
 type Bundle struct {
 	defaultLanguage  language.Tag
 	unmarshalFuncs   map[string]UnmarshalFunc
-	messageTemplates map[language.Tag]map[string]*MessageTemplate
+	messageTemplates *sync.Map
 	pluralRules      plural.Rules
 	tags             []language.Tag
 	matcher          language.Matcher
@@ -99,16 +100,50 @@ func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 		return fmt.Errorf("no plural rule registered for %s", tag)
 	}
 	if b.messageTemplates == nil {
-		b.messageTemplates = map[language.Tag]map[string]*MessageTemplate{}
+		b.messageTemplates = &sync.Map{}
 	}
-	if b.messageTemplates[tag] == nil {
-		b.messageTemplates[tag] = map[string]*MessageTemplate{}
+	if templates, ok := b.messageTemplates.Load(tag); templates == nil || !ok {
+		b.messageTemplates.Store(tag, &sync.Map{})
 		b.addTag(tag)
 	}
 	for _, m := range messages {
-		b.messageTemplates[tag][m.ID] = NewMessageTemplate(m)
+		b.storeMsgTemplate(tag, m.ID, NewMessageTemplate(m))
 	}
 	return nil
+}
+
+//map[language.Tag]*sync.Map
+
+func (b *Bundle) readTagMsgTemplate(tag language.Tag) *sync.Map {
+	msgTemplateMaps, ok := b.messageTemplates.Load(tag)
+	if msgTemplateMaps == nil || !ok {
+		return nil
+	}
+
+	return msgTemplateMaps.(*sync.Map)
+}
+
+func (b *Bundle) readMsgTemplate(tag language.Tag, key string) *MessageTemplate {
+	templates, ok := b.messageTemplates.Load(tag)
+	if templates == nil || !ok {
+		return nil
+	}
+	temps := templates.(*sync.Map)
+	val, ok := temps.Load(key)
+	if !ok {
+		return nil
+	}
+	return val.(*MessageTemplate)
+}
+func (b *Bundle) storeMsgTemplate(tag language.Tag, key string, template *MessageTemplate) {
+	templates, ok := b.messageTemplates.Load(tag)
+	if templates == nil || !ok {
+		b.messageTemplates.Store(tag, &sync.Map{})
+	}
+	templates, _ = b.messageTemplates.Load(tag)
+	temps := templates.(*sync.Map)
+	temps.Store(key, template)
+	b.messageTemplates.Store(tag, temps)
 }
 
 // MustAddMessages is similar to AddMessages except it panics if an error happens.
@@ -136,9 +171,5 @@ func (b *Bundle) LanguageTags() []language.Tag {
 }
 
 func (b *Bundle) getMessageTemplate(tag language.Tag, id string) *MessageTemplate {
-	templates := b.messageTemplates[tag]
-	if templates == nil {
-		return nil
-	}
-	return templates[id]
+	return b.readMsgTemplate(tag, id)
 }
