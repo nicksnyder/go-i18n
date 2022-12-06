@@ -79,7 +79,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 The goi18n command manages message files used by the i18n package.
 
 ```
-go get -u github.com/nicksnyder/go-i18n/v2/goi18n
+go install -v github.com/nicksnyder/go-i18n/v2/goi18n@latest
 goi18n -help
 ```
 
