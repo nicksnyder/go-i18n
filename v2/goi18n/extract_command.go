@@ -38,14 +38,25 @@ Flags:
 		Output message files in this format.
 		Supported formats: json, toml, yaml
 		Default: toml
+
+	-packagepath name
+        Import path of package which contains Message and LocalizeConfig types
+		Default: github.com/nicksnyder/go-i18n/v2/i18n
+
+	-messagetype name
+        Message type name for extracting messages
+		Default: github.com/nicksnyder/go-i18n/v2/i18n
+
 `)
 }
 
 type extractCommand struct {
-	paths          []string
-	sourceLanguage languageTag
-	outdir         string
-	format         string
+	paths           []string
+	sourceLanguage  languageTag
+	outdir          string
+	format          string
+	packagePath     string
+	messageTypeName string
 }
 
 func (ec *extractCommand) name() string {
@@ -59,10 +70,17 @@ func (ec *extractCommand) parse(args []string) error {
 	flags.Var(&ec.sourceLanguage, "sourceLanguage", "en")
 	flags.StringVar(&ec.outdir, "outdir", ".", "")
 	flags.StringVar(&ec.format, "format", "toml", "")
+	flags.StringVar(&ec.packagePath, "packagepath", "github.com/nicksnyder/go-i18n/v2/i18n", "")
+	flags.StringVar(&ec.messageTypeName, "messagetype", "Message", "")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
-
+	if !strings.HasPrefix(ec.packagePath, "\"") {
+		ec.packagePath = "\"" + ec.packagePath
+	}
+	if !strings.HasSuffix(ec.packagePath, "\"") {
+		ec.packagePath += "\""
+	}
 	ec.paths = flags.Args()
 	return nil
 }
@@ -93,7 +111,7 @@ func (ec *extractCommand) execute() error {
 			if err != nil {
 				return err
 			}
-			msgs, err := extractMessages(buf)
+			msgs, err := extractMessages(buf, ec.packagePath, ec.messageTypeName)
 			if err != nil {
 				return err
 			}
@@ -117,23 +135,24 @@ func (ec *extractCommand) execute() error {
 }
 
 // extractMessages extracts messages from the bytes of a Go source file.
-func extractMessages(buf []byte) ([]*i18n.Message, error) {
+func extractMessages(buf []byte, packagePath, messageTypeName string) ([]*i18n.Message, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", buf, parser.AllErrors)
 	if err != nil {
 		return nil, err
 	}
-	extractor := newExtractor(file)
+	extractor := newExtractor(file, packagePath, messageTypeName)
 	ast.Walk(extractor, file)
 	return extractor.messages, nil
 }
 
-func newExtractor(file *ast.File) *extractor {
-	return &extractor{i18nPackageName: i18nPackageName(file)}
+func newExtractor(file *ast.File, packagePath, messageTypeName string) *extractor {
+	return &extractor{i18nPackageName: i18nPackageName(file, packagePath), messageTypeName: messageTypeName}
 }
 
 type extractor struct {
 	i18nPackageName string
+	messageTypeName string
 	messages        []*i18n.Message
 }
 
@@ -187,7 +206,7 @@ func (e *extractor) isMessageType(expr ast.Expr) bool {
 	if se == nil {
 		return false
 	}
-	if se.Sel.Name != "Message" && se.Sel.Name != "LocalizeConfig" {
+	if se.Sel.Name != e.messageTypeName && se.Sel.Name != "LocalizeConfig" {
 		return false
 	}
 	x, ok := se.X.(*ast.Ident)
@@ -280,9 +299,9 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 	}
 }
 
-func i18nPackageName(file *ast.File) string {
+func i18nPackageName(file *ast.File, packagePath string) string {
 	for _, i := range file.Imports {
-		if i.Path.Kind == token.STRING && i.Path.Value == `"github.com/nicksnyder/go-i18n/v2/i18n"` {
+		if i.Path.Kind == token.STRING && i.Path.Value == packagePath {
 			if i.Name == nil {
 				return "i18n"
 			}
