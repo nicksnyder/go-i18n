@@ -81,7 +81,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 goi18n 命令管理 i18n 包使用的消息文件。
 
 ```
-go get -u github.com/nicksnyder/go-i18n/v2/goi18n
+go install -v github.com/nicksnyder/go-i18n/v2/goi18n@latest
 goi18n -help
 ```
 
