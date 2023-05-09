@@ -59,7 +59,7 @@ func (b *Bundle) LoadMessageFile(path string) (*MessageFile, error) {
 	return b.ParseMessageFileBytes(buf, path)
 }
 
-// MustLoadMessageFile is similar to LoadTranslationFile
+// MustLoadMessageFile is similar to LoadMessageFile
 // except it panics if an error happens.
 func (b *Bundle) MustLoadMessageFile(path string) {
 	if _, err := b.LoadMessageFile(path); err != nil {
