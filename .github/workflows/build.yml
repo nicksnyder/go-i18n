@@ -33,7 +33,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.12.17
+          go-version: '1.12.17'
       - name: Git checkout
         uses: actions/checkout@v2
         with:
@@ -42,6 +42,7 @@ jobs:
         working-directory: gopath/src/github.com/nicksnyder/go-i18n/v2
         env:
             GOPATH: ${{ github.workspace }}/gopath
+            GO111MODULE: on
         run: |
-          go get -t ./...
+          go get ./...
           go test -race ./...
