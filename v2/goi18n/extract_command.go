@@ -274,10 +274,12 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 			}
 			return s, true
 		}
-		return "", false
-	default:
-		return "", false
+	case *ast.CallExpr:
+		if fun, ok := v.Fun.(*ast.Ident); ok && fun.Name == "string" {
+			return extractStringLiteral(v.Args[0])
+		}
 	}
+	return "", false
 }
 
 func i18nPackageName(file *ast.File) string {

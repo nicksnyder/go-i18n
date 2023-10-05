@@ -229,6 +229,25 @@ zero = "Zero translation"
 			}
 			`,
 		},
+		{
+			name:     "casted const",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			type ConstType string
+
+			const Const ConstType = "my const"
+
+			var m = &i18n.LocalizeConfig{
+				ID: "id",
+				Other: string(Const),
+			}
+			`,
+			activeFile: []byte(`id = "my const"
+`),
+		},
 	}
 
 	for _, test := range tests {
