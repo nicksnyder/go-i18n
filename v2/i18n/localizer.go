@@ -190,7 +190,11 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 		if defaultMessage == nil {
 			return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
 		}
-		return tag, NewMessageTemplate(defaultMessage), nil
+		mt := NewMessageTemplate(defaultMessage)
+		if mt == nil {
+			return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
+		}
+		return tag, mt, nil
 	}
 
 	// Fallback to default language in bundle.
