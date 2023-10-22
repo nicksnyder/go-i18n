@@ -582,9 +582,11 @@ func localizerTests() []localizerTest {
 			defaultLanguage: language.English,
 			acceptLangs:     []string{"en"},
 			conf: &LocalizeConfig{
-				DefaultMessage: &Message{},
+				DefaultMessage: &Message{
+					ID: "Hello",
+				},
 			},
-			expectedErr: &MessageNotFoundErr{tag: language.English, messageID: ""},
+			expectedErr: &MessageNotFoundErr{tag: language.English, messageID: "Hello"},
 		},
 	}
 }
