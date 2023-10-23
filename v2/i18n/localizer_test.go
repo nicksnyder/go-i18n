@@ -577,6 +577,26 @@ func localizerTests() []localizerTest {
 			},
 			expectedErr: &MessageNotFoundErr{tag: language.AmericanEnglish, messageID: "Hello"},
 		},
+		{
+			name:            "empty default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{},
+			},
+			expectedErr: &MessageNotFoundErr{tag: language.English, messageID: ""},
+		},
+		{
+			name:            "empty default message with id",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID: "Hello",
+				},
+			},
+			expectedErr: &MessageNotFoundErr{tag: language.English, messageID: "Hello"},
+		},
 	}
 }
 
