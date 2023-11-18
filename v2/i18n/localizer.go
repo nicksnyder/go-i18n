@@ -82,12 +82,12 @@ func (e *invalidPluralCountErr) Error() string {
 
 // MessageNotFoundErr is returned from Localize when a message could not be found.
 type MessageNotFoundErr struct {
-	tag       language.Tag
-	messageID string
+	Tag       language.Tag
+	MessageID string
 }
 
 func (e *MessageNotFoundErr) Error() string {
-	return fmt.Sprintf("message %q not found in language %q", e.messageID, e.tag)
+	return fmt.Sprintf("message %q not found in language %q", e.MessageID, e.Tag)
 }
 
 type pluralizeErr struct {
@@ -188,11 +188,11 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 
 	if tag == l.bundle.defaultLanguage {
 		if defaultMessage == nil {
-			return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
+			return language.Und, nil, &MessageNotFoundErr{Tag: tag, MessageID: id}
 		}
 		mt := NewMessageTemplate(defaultMessage)
 		if mt == nil {
-			return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
+			return language.Und, nil, &MessageNotFoundErr{Tag: tag, MessageID: id}
 		}
 		return tag, mt, nil
 	}
@@ -200,14 +200,14 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 	// Fallback to default language in bundle.
 	mt = l.bundle.getMessageTemplate(l.bundle.defaultLanguage, id)
 	if mt != nil {
-		return l.bundle.defaultLanguage, mt, &MessageNotFoundErr{tag: tag, messageID: id}
+		return l.bundle.defaultLanguage, mt, &MessageNotFoundErr{Tag: tag, MessageID: id}
 	}
 
 	// Fallback to default message.
 	if defaultMessage == nil {
-		return language.Und, nil, &MessageNotFoundErr{tag: tag, messageID: id}
+		return language.Und, nil, &MessageNotFoundErr{Tag: tag, MessageID: id}
 	}
-	return l.bundle.defaultLanguage, NewMessageTemplate(defaultMessage), &MessageNotFoundErr{tag: tag, messageID: id}
+	return l.bundle.defaultLanguage, NewMessageTemplate(defaultMessage), &MessageNotFoundErr{Tag: tag, MessageID: id}
 }
 
 func (l *Localizer) pluralForm(tag language.Tag, operands *plural.Operands) plural.Form {
