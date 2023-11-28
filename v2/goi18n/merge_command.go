@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -83,7 +82,7 @@ func (mc *mergeCommand) execute() error {
 	}
 	inFiles := make(map[string][]byte)
 	for _, path := range mc.messageFiles {
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -94,7 +93,7 @@ func (mc *mergeCommand) execute() error {
 		return err
 	}
 	for path, content := range ops.writeFiles {
-		if err := ioutil.WriteFile(path, content, 0666); err != nil {
+		if err := os.WriteFile(path, content, 0666); err != nil {
 			return err
 		}
 	}

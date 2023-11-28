@@ -1,9 +1,9 @@
 package main
 
-import "io/ioutil"
+import "os"
 
 func mustTempDir(prefix string) string {
-	outdir, err := ioutil.TempDir("", prefix)
+	outdir, err := os.MkdirTemp("", prefix)
 	if err != nil {
 		panic(err)
 	}
