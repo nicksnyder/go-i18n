@@ -297,7 +297,7 @@ other = "{{.Count}} unread emails"
 [UnreadEmails]
 description = "Message that tells the user how many unread emails they have"
 hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
-one = "{{.Count}} unread emails"
+one = "{{.Count}} unread email"
 other = "{{.Count}} unread emails"
 `),
 				"translate.ar-AR.toml": expectFile(`
@@ -306,7 +306,7 @@ description = "Message that tells the user how many unread emails they have"
 few = "{{.Count}} unread emails"
 hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
 many = "{{.Count}} unread emails"
-one = "{{.Count}} unread emails"
+one = "{{.Count}} unread email"
 other = "{{.Count}} unread emails"
 two = "{{.Count}} unread emails"
 zero = "{{.Count}} unread emails"
