@@ -273,7 +273,7 @@ func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active 
 					PluralTemplates: make(map[plural.Form]*internal.Template),
 				}
 			}
-			translateMessageTemplate.PluralTemplates[pluralForm] = src.PluralTemplates[plural.Other]
+			translateMessageTemplate.PluralTemplates[pluralForm] = src.PluralTemplates[pluralForm]
 			continue
 		}
 		if active == nil {
