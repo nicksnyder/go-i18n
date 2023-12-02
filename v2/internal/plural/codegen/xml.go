@@ -80,9 +80,8 @@ var relationRegexp = regexp.MustCompile(`([niftvwce])(?:\s*%\s*([0-9]+))?\s*(!=|
 
 // GoCondition converts the XML condition to valid Go code.
 func (pr *PluralRule) GoCondition() string {
-	condition, _ := strings.CutSuffix(pr.Condition(), "@")
 	var ors []string
-	for _, and := range strings.Split(condition, "or") {
+	for _, and := range strings.Split(pr.Condition(), "or") {
 		var ands []string
 		for _, relation := range strings.Split(and, "and") {
 			parts := relationRegexp.FindStringSubmatch(relation)
