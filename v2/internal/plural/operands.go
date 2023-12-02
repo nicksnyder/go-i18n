@@ -7,6 +7,9 @@ import (
 )
 
 // Operands is a representation of http://unicode.org/reports/tr35/tr35-numbers.html#Operands
+// If there is a compact decimal exponent value C, then the N, I, V, W, F, and T values are computed after shifting the decimal point in the original by the ‘c’ value.
+// So for 1.2c3, the values are the same as those of 1200: i=1200 and f=0.
+// Similarly, 1.2005c3 has i=1200 and f=5 (corresponding to 1200.5).
 type Operands struct {
 	N float64 // absolute value of the source number (integer and decimals)
 	I int64   // integer digits of n
@@ -14,6 +17,7 @@ type Operands struct {
 	W int64   // number of visible fraction digits in n, without trailing zeros
 	F int64   // visible fractional digits in n, with trailing zeros
 	T int64   // visible fractional digits in n, without trailing zeros
+	C int64   // compact decimal exponent value: exponent of the power of 10 used in compact decimal formatting.
 }
 
 // NEqualsAny returns true if o represents an integer equal to any of the arguments.
@@ -74,13 +78,14 @@ func newOperandsInt64(i int64) *Operands {
 	if i < 0 {
 		i = -i
 	}
-	return &Operands{float64(i), i, 0, 0, 0, 0}
+	return &Operands{float64(i), i, 0, 0, 0, 0, 0}
 }
 
 func newOperandsString(s string) (*Operands, error) {
 	if s[0] == '-' {
 		s = s[1:]
 	}
+	// TODO: actually parse scientific notation and populate C
 	n, err := strconv.ParseFloat(s, 64)
 	if err != nil {
 		return nil, err

@@ -64,24 +64,25 @@ func (pr *PluralRule) Examples() (integer []string, decimal []string) {
 	return integer, decimal
 }
 
-// IntegerExamples returns the integer exmaples for the PLuralRule.
+// IntegerExamples returns the integer exmaples for the PluralRule.
 func (pr *PluralRule) IntegerExamples() []string {
 	integer, _ := pr.Examples()
 	return integer
 }
 
-// DecimalExamples returns the decimal exmaples for the PLuralRule.
+// DecimalExamples returns the decimal exmaples for the PluralRule.
 func (pr *PluralRule) DecimalExamples() []string {
 	_, decimal := pr.Examples()
 	return decimal
 }
 
-var relationRegexp = regexp.MustCompile(`([niftvw])(?:\s*%\s*([0-9]+))?\s*(!=|=)(.*)`)
+var relationRegexp = regexp.MustCompile(`([niftvwce])(?:\s*%\s*([0-9]+))?\s*(!=|=)(.*)`)
 
 // GoCondition converts the XML condition to valid Go code.
 func (pr *PluralRule) GoCondition() string {
+	condition, _ := strings.CutSuffix(pr.Condition(), "@")
 	var ors []string
-	for _, and := range strings.Split(pr.Condition(), "or") {
+	for _, and := range strings.Split(condition, "or") {
 		var ands []string
 		for _, relation := range strings.Split(and, "and") {
 			parts := relationRegexp.FindStringSubmatch(relation)
@@ -91,6 +92,11 @@ func (pr *PluralRule) GoCondition() string {
 			lvar, lmod, op, rhs := strings.Title(parts[1]), parts[2], parts[3], strings.TrimSpace(parts[4])
 			if op == "=" {
 				op = "=="
+			}
+			if lvar == "E" {
+				// E is a deprecated symbol for C
+				// https://unicode.org/reports/tr35/tr35-numbers.html#Plural_Operand_Meanings
+				lvar = "C"
 			}
 			lvar = "ops." + lvar
 			var rhor []string
