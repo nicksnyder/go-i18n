@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -48,22 +49,31 @@ func (pr *PluralRule) Condition() string {
 }
 
 // Examples returns the integer and decimal examples for the PluralRule.
-func (pr *PluralRule) Examples() (integer []string, decimal []string) {
+func (pr *PluralRule) Examples() (integers []string, decimals []string) {
 	ex := strings.ReplaceAll(pr.Rule, ", …", "")
 	ddelim := "@decimal"
 	if i := strings.Index(ex, ddelim); i > 0 {
 		dex := strings.TrimSpace(ex[i+len(ddelim):])
 		dex = strings.ReplaceAll(dex, "c", "e")
-		decimal = strings.Split(dex, ", ")
+		decimals = strings.Split(dex, ", ")
 		ex = ex[:i]
 	}
 	idelim := "@integer"
 	if i := strings.Index(ex, idelim); i > 0 {
 		iex := strings.TrimSpace(ex[i+len(idelim):])
-		iex = strings.ReplaceAll(iex, "c", "e")
-		integer = strings.Split(iex, ", ")
+		integers = strings.Split(iex, ", ")
+		for j, integer := range integers {
+			ii := strings.IndexAny(integer, "eEcC")
+			if ii > 0 {
+				zeros, err := strconv.ParseInt(integer[ii+1:], 10, 0)
+				if err != nil {
+					panic(err)
+				}
+				integers[j] = integer[:ii] + strings.Repeat("0", int(zeros))
+			}
+		}
 	}
-	return integer, decimal
+	return integers, decimals
 }
 
 // IntegerExamples returns the integer examples for the PluralRule.
