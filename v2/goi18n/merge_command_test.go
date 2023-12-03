@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -539,14 +538,14 @@ zero = "{{.Count}} unread emails"
 			for name, content := range testCase.inFiles {
 				path := filepath.Join(indir, name)
 				infiles = append(infiles, path)
-				if err := ioutil.WriteFile(path, content, 0666); err != nil {
+				if err := os.WriteFile(path, content, 0666); err != nil {
 					t.Fatal(err)
 				}
 			}
 
 			for _, name := range testCase.deleteFiles {
 				path := filepath.Join(outdir, name)
-				if err := ioutil.WriteFile(path, []byte(`this file should get deleted`), 0666); err != nil {
+				if err := os.WriteFile(path, []byte(`this file should get deleted`), 0666); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -556,7 +555,7 @@ zero = "{{.Count}} unread emails"
 				t.Fatalf("expected exit code 0; got %d\n", code)
 			}
 
-			files, err := ioutil.ReadDir(outdir)
+			files, err := os.ReadDir(outdir)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -570,7 +569,7 @@ zero = "{{.Count}} unread emails"
 					continue
 				}
 				path := filepath.Join(outdir, f.Name())
-				actual, err := ioutil.ReadFile(path)
+				actual, err := os.ReadFile(path)
 				if err != nil {
 					t.Error(err)
 					continue

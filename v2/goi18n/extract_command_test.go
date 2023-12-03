@@ -2,14 +2,12 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
 func TestExtract(t *testing.T) {
-
 	tests := []struct {
 		name       string
 		fileName   string
@@ -258,7 +256,7 @@ zero = "Zero translation"
 			defer os.RemoveAll(outdir)
 
 			inpath := filepath.Join(indir, test.fileName)
-			if err := ioutil.WriteFile(inpath, []byte(test.file), 0666); err != nil {
+			if err := os.WriteFile(inpath, []byte(test.file), 0666); err != nil {
 				t.Fatal(err)
 			}
 
@@ -266,7 +264,7 @@ zero = "Zero translation"
 				t.Fatalf("expected exit code 0; got %d\n", code)
 			}
 
-			files, err := ioutil.ReadDir(outdir)
+			files, err := os.ReadDir(outdir)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -280,7 +278,7 @@ zero = "Zero translation"
 			}
 
 			outpath := filepath.Join(outdir, actualFile.Name())
-			actual, err := ioutil.ReadFile(outpath)
+			actual, err := os.ReadFile(outpath)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -292,7 +290,7 @@ zero = "Zero translation"
 }
 
 func TestExtractCommand(t *testing.T) {
-	outdir, err := ioutil.TempDir("", "TestExtractCommand")
+	outdir, err := os.MkdirTemp("", "TestExtractCommand")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -300,7 +298,7 @@ func TestExtractCommand(t *testing.T) {
 	if code := testableMain([]string{"extract", "-outdir", outdir, "../example/"}); code != 0 {
 		t.Fatalf("expected exit code 0; got %d", code)
 	}
-	actual, err := ioutil.ReadFile(filepath.Join(outdir, "active.en.toml"))
+	actual, err := os.ReadFile(filepath.Join(outdir, "active.en.toml"))
 	if err != nil {
 		t.Fatal(err)
 	}
