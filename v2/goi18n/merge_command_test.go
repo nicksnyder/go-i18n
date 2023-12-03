@@ -297,6 +297,7 @@ other = "{{.Count}} unread emails"
 [UnreadEmails]
 description = "Message that tells the user how many unread emails they have"
 hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
+many = "{{.Count}} unread emails"
 one = "{{.Count}} unread email"
 other = "{{.Count}} unread emails"
 `),
@@ -435,6 +436,7 @@ other = "{{.Count}} unread emails!"
 [UnreadEmails]
 description = "Message that tells the user how many unread emails they have"
 hash = "sha1-92a24983c5bbc0c42462cdc252dca68ebdb46501"
+many = "{{.Count}} unread emails!"
 one = "{{.Count}} unread emails!"
 other = "{{.Count}} unread emails!"
 `),

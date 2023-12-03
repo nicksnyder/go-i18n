@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -47,36 +48,47 @@ func (pr *PluralRule) Condition() string {
 	return pr.Rule[:i]
 }
 
-// Examples returns the integer and decimal exmaples for the PLuralRule.
-func (pr *PluralRule) Examples() (integer []string, decimal []string) {
-	ex := strings.Replace(pr.Rule, ", …", "", -1)
+// Examples returns the integer and decimal examples for the PluralRule.
+func (pr *PluralRule) Examples() (integers []string, decimals []string) {
+	ex := strings.ReplaceAll(pr.Rule, ", …", "")
 	ddelim := "@decimal"
 	if i := strings.Index(ex, ddelim); i > 0 {
 		dex := strings.TrimSpace(ex[i+len(ddelim):])
-		decimal = strings.Split(dex, ", ")
+		dex = strings.ReplaceAll(dex, "c", "e")
+		decimals = strings.Split(dex, ", ")
 		ex = ex[:i]
 	}
 	idelim := "@integer"
 	if i := strings.Index(ex, idelim); i > 0 {
 		iex := strings.TrimSpace(ex[i+len(idelim):])
-		integer = strings.Split(iex, ", ")
+		integers = strings.Split(iex, ", ")
+		for j, integer := range integers {
+			ii := strings.IndexAny(integer, "eEcC")
+			if ii > 0 {
+				zeros, err := strconv.ParseInt(integer[ii+1:], 10, 0)
+				if err != nil {
+					panic(err)
+				}
+				integers[j] = integer[:ii] + strings.Repeat("0", int(zeros))
+			}
+		}
 	}
-	return integer, decimal
+	return integers, decimals
 }
 
-// IntegerExamples returns the integer exmaples for the PLuralRule.
+// IntegerExamples returns the integer examples for the PluralRule.
 func (pr *PluralRule) IntegerExamples() []string {
 	integer, _ := pr.Examples()
 	return integer
 }
 
-// DecimalExamples returns the decimal exmaples for the PLuralRule.
+// DecimalExamples returns the decimal examples for the PluralRule.
 func (pr *PluralRule) DecimalExamples() []string {
 	_, decimal := pr.Examples()
 	return decimal
 }
 
-var relationRegexp = regexp.MustCompile(`([niftvw])(?:\s*%\s*([0-9]+))?\s*(!=|=)(.*)`)
+var relationRegexp = regexp.MustCompile(`([niftvwce])(?:\s*%\s*([0-9]+))?\s*(!=|=)(.*)`)
 
 // GoCondition converts the XML condition to valid Go code.
 func (pr *PluralRule) GoCondition() string {
@@ -91,6 +103,11 @@ func (pr *PluralRule) GoCondition() string {
 			lvar, lmod, op, rhs := strings.Title(parts[1]), parts[2], parts[3], strings.TrimSpace(parts[4])
 			if op == "=" {
 				op = "=="
+			}
+			if lvar == "E" {
+				// E is a deprecated symbol for C
+				// https://unicode.org/reports/tr35/tr35-numbers.html#Plural_Operand_Meanings
+				lvar = "C"
 			}
 			lvar = "ops." + lvar
 			var rhor []string

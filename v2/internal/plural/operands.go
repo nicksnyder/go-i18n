@@ -7,6 +7,9 @@ import (
 )
 
 // Operands is a representation of http://unicode.org/reports/tr35/tr35-numbers.html#Operands
+// If there is a compact decimal exponent value C, then the N, I, V, W, F, and T values are computed after shifting the decimal point in the original by the ‘c’ value.
+// So for 1.2c3, the values are the same as those of 1200: i=1200 and f=0.
+// Similarly, 1.2005c3 has i=1200 and f=5 (corresponding to 1200.5).
 type Operands struct {
 	N float64 // absolute value of the source number (integer and decimals)
 	I int64   // integer digits of n
@@ -14,6 +17,7 @@ type Operands struct {
 	W int64   // number of visible fraction digits in n, without trailing zeros
 	F int64   // visible fractional digits in n, with trailing zeros
 	T int64   // visible fractional digits in n, without trailing zeros
+	C int64   // compact decimal exponent value: exponent of the power of 10 used in compact decimal formatting.
 }
 
 // NEqualsAny returns true if o represents an integer equal to any of the arguments.
@@ -74,19 +78,87 @@ func newOperandsInt64(i int64) *Operands {
 	if i < 0 {
 		i = -i
 	}
-	return &Operands{float64(i), i, 0, 0, 0, 0}
+	return &Operands{float64(i), i, 0, 0, 0, 0, 0}
+}
+
+func splitSignificandExponent(s string) (significand, exponent string) {
+	i := strings.IndexAny(s, "eE")
+	if i < 0 {
+		return s, ""
+	}
+	return s[:i], s[i+1:]
+}
+
+func shiftDecimalLeft(s string, n int) string {
+	if n <= 0 {
+		return s
+	}
+	i := strings.IndexRune(s, '.')
+	tilt := 0
+	if i < 0 {
+		i = len(s)
+		tilt = -1
+	}
+	switch {
+	case n == i:
+		return "0." + s[:i] + s[i+1+tilt:]
+	case n > i:
+		return "0." + strings.Repeat("0", n-i) + s[:i] + s[i+1+tilt:]
+	default:
+		return s[:i-n] + "." + s[i-n:i] + s[i+1+tilt:]
+	}
+}
+
+func shiftDecimalRight(s string, n int) string {
+	if n <= 0 {
+		return s
+	}
+	i := strings.IndexRune(s, '.')
+	if i < 0 {
+		return s + strings.Repeat("0", n)
+	}
+	switch rest := len(s) - i - 1; {
+	case n == rest:
+		return s[:i] + s[i+1:]
+	case n > rest:
+		return s[:i] + s[i+1:] + strings.Repeat("0", n-rest)
+	default:
+		return s[:i] + s[i+1:i+1+n] + "." + s[i+1+n:]
+	}
+}
+
+func applyExponent(s string, exponent int) string {
+	switch {
+	case exponent > 0:
+		return shiftDecimalRight(s, exponent)
+	case exponent < 0:
+		return shiftDecimalLeft(s, -exponent)
+	}
+	return s
 }
 
 func newOperandsString(s string) (*Operands, error) {
 	if s[0] == '-' {
 		s = s[1:]
 	}
-	n, err := strconv.ParseFloat(s, 64)
+	ops := &Operands{}
+	var err error
+	ops.N, err = strconv.ParseFloat(s, 64)
 	if err != nil {
 		return nil, err
 	}
-	ops := &Operands{N: n}
-	parts := strings.SplitN(s, ".", 2)
+	significand, exponent := splitSignificandExponent(s)
+	if exponent != "" {
+		// We are storing C as an int64 but only allowing
+		// numbers that fit into the bitsize of an int
+		// so C is safe to cast as a int later.
+		ops.C, err = strconv.ParseInt(exponent, 10, 0)
+		if err != nil {
+			return nil, err
+		}
+	}
+	value := applyExponent(significand, int(ops.C))
+	parts := strings.SplitN(value, ".", 2)
 	ops.I, err = strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
 		return nil, err
