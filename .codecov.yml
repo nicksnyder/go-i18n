@@ -1,5 +1,4 @@
 coverage:
-  branch: main
   range: 50..100
   status:
     patch:
