@@ -60,6 +60,7 @@ func (pr *PluralRule) Examples() (integer []string, decimal []string) {
 	idelim := "@integer"
 	if i := strings.Index(ex, idelim); i > 0 {
 		iex := strings.TrimSpace(ex[i+len(idelim):])
+		iex = strings.ReplaceAll(iex, "c", "e")
 		integer = strings.Split(iex, ", ")
 	}
 	return integer, decimal
