@@ -47,12 +47,13 @@ func (pr *PluralRule) Condition() string {
 	return pr.Rule[:i]
 }
 
-// Examples returns the integer and decimal exmaples for the PLuralRule.
+// Examples returns the integer and decimal examples for the PluralRule.
 func (pr *PluralRule) Examples() (integer []string, decimal []string) {
-	ex := strings.Replace(pr.Rule, ", …", "", -1)
+	ex := strings.ReplaceAll(pr.Rule, ", …", "")
 	ddelim := "@decimal"
 	if i := strings.Index(ex, ddelim); i > 0 {
 		dex := strings.TrimSpace(ex[i+len(ddelim):])
+		dex = strings.ReplaceAll(dex, "c", "e")
 		decimal = strings.Split(dex, ", ")
 		ex = ex[:i]
 	}
@@ -64,13 +65,13 @@ func (pr *PluralRule) Examples() (integer []string, decimal []string) {
 	return integer, decimal
 }
 
-// IntegerExamples returns the integer exmaples for the PluralRule.
+// IntegerExamples returns the integer examples for the PluralRule.
 func (pr *PluralRule) IntegerExamples() []string {
 	integer, _ := pr.Examples()
 	return integer
 }
 
-// DecimalExamples returns the decimal exmaples for the PluralRule.
+// DecimalExamples returns the decimal examples for the PluralRule.
 func (pr *PluralRule) DecimalExamples() []string {
 	_, decimal := pr.Examples()
 	return decimal
