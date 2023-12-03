@@ -6,7 +6,6 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -89,7 +88,7 @@ func (ec *extractCommand) execute() error {
 				return nil
 			}
 
-			buf, err := ioutil.ReadFile(path)
+			buf, err := os.ReadFile(path)
 			if err != nil {
 				return err
 			}
@@ -113,7 +112,7 @@ func (ec *extractCommand) execute() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, content, 0666)
+	return os.WriteFile(path, content, 0666)
 }
 
 // extractMessages extracts messages from the bytes of a Go source file.
