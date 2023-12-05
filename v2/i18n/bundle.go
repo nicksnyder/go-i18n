@@ -2,7 +2,7 @@ package i18n
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 
@@ -52,7 +52,7 @@ func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFun
 // LoadMessageFile loads the bytes from path
 // and then calls ParseMessageFileBytes.
 func (b *Bundle) LoadMessageFile(path string) (*MessageFile, error) {
-	buf, err := ioutil.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
