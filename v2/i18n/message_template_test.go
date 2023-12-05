@@ -10,13 +10,13 @@ import (
 func TestMessageTemplate(t *testing.T) {
 	mt := NewMessageTemplate(&Message{ID: "HelloWorld", Other: "Hello World"})
 	if mt.PluralTemplates[plural.Other].Src != "Hello World" {
-		panic(mt.PluralTemplates)
+		t.Fatal(mt.PluralTemplates)
 	}
 }
 
 func TestNilMessageTemplate(t *testing.T) {
 	if mt := NewMessageTemplate(&Message{ID: "HelloWorld"}); mt != nil {
-		panic(mt)
+		t.Fatal(mt)
 	}
 }
 
