@@ -375,7 +375,7 @@ func TestPt(t *testing.T) {
 	}
 }
 
-func TestCaItPt_PTVec(t *testing.T) {
+func TestCaItPt_ptVec(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, One, []string{"1"})
