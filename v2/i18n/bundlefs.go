@@ -1,5 +1,3 @@
-// +build go1.16
-
 package i18n
 
 import (
