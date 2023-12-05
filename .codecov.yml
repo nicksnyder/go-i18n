@@ -1,5 +1,5 @@
 coverage:
-  range: 50..100
+  range: 50..75
   status:
     patch:
       default:
