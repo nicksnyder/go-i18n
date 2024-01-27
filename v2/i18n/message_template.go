@@ -63,3 +63,15 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 	}
 	return t.Execute(funcs, data)
 }
+
+// Get returns unprocessed template string for the plural form.
+func (mt *MessageTemplate) Get(pluralForm plural.Form) (string, error) {
+	t := mt.PluralTemplates[pluralForm]
+	if t == nil {
+		return "", pluralFormNotFoundError{
+			pluralForm: pluralForm,
+			messageID:  mt.Message.ID,
+		}
+	}
+	return t.Src, nil
+}

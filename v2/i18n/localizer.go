@@ -68,6 +68,10 @@ type LocalizeConfig struct {
 
 	// Funcs is used to extend the Go template engine's built in functions
 	Funcs template.FuncMap
+
+	// NoTemplateExec is used to disable template execution.
+	// The localized string will be returned as is.
+	NoTemplateExec bool
 }
 
 type invalidPluralCountErr struct {
@@ -152,7 +156,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	msg, err2 := template.Execute(pluralForm, templateData, lc.Funcs)
+	msg, err2 := getOrExecute(template, pluralForm, templateData, lc)
 	if err2 != nil {
 		if err == nil {
 			err = err2
@@ -160,13 +164,20 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
-			msg2, err3 := template.Execute(plural.Other, templateData, lc.Funcs)
+			msg2, err3 := getOrExecute(template, plural.Other, templateData, lc)
 			if err3 == nil {
 				msg = msg2
 			}
 		}
 	}
 	return msg, tag, err
+}
+
+func getOrExecute(template *MessageTemplate, pluralForm plural.Form, data interface{}, lc *LocalizeConfig) (string, error) {
+	if lc.NoTemplateExec {
+		return template.Get(pluralForm)
+	}
+	return template.Execute(pluralForm, data, lc.Funcs)
 }
 
 func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (language.Tag, *MessageTemplate, error) {
