@@ -31,3 +31,15 @@ func TestMessageTemplatePluralFormMissing(t *testing.T) {
 		t.Errorf("expected error %#v; got %#v", expectedErr, err)
 	}
 }
+
+func TestMessageIgnoreTemplatePluralFormMissing(t *testing.T) {
+	mt := NewMessageTemplate(&Message{ID: "HelloWorld", Other: "Hello World"})
+	s, err := mt.Get(plural.Few)
+	if s != "" {
+		t.Errorf("expected %q; got %q", "", s)
+	}
+	expectedErr := pluralFormNotFoundError{pluralForm: plural.Few, messageID: "HelloWorld"}
+	if !reflect.DeepEqual(err, expectedErr) {
+		t.Errorf("expected error %#v; got %#v", expectedErr, err)
+	}
+}

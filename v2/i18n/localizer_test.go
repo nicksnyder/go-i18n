@@ -348,6 +348,22 @@ func localizerTests() []localizerTest {
 			expectedLocalized: "Hello Nick",
 		},
 		{
+			name:            "ignore template, bundle message",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:    "HelloPerson",
+					Other: "Hello {{.Person}}",
+				}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID:      "HelloPerson",
+				NoTemplateExec: true,
+			},
+			expectedLocalized: "Hello {{.Person}}",
+		},
+		{
 			name:            "template data, default message",
 			defaultLanguage: language.English,
 			acceptLangs:     []string{"en"},
