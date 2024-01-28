@@ -60,9 +60,7 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 		}
 	}
 	engine := &TextTemplateEngine{
-		LeftDelim:  t.LeftDelim,
-		RightDelim: t.RightDelim,
-		Funcs:      funcs,
+		Funcs: funcs,
 	}
 	return t.execute(engine, data)
 }
