@@ -66,8 +66,26 @@ type LocalizeConfig struct {
 	// DefaultMessage is used if the message is not found in any message files.
 	DefaultMessage *Message
 
-	// Funcs is used to extend the Go template engine's built in functions
+	// Funcs is used to extend the Go template engine's built in functions if TemplateEngine is not set.
 	Funcs template.FuncMap
+
+	// The TemplateEngine to use for parsing templates.
+	// If one is not set, a TextTemplateEngine is used.
+	TemplateEngine TemplateEngine
+}
+
+var defaultTextTemplateEngine = &TextTemplateEngine{}
+
+func (lc *LocalizeConfig) getTemplateEngine() TemplateEngine {
+	if lc.TemplateEngine != nil {
+		return lc.TemplateEngine
+	}
+	if lc.Funcs != nil {
+		return &TextTemplateEngine{
+			Funcs: lc.Funcs,
+		}
+	}
+	return defaultTextTemplateEngine
 }
 
 type invalidPluralCountErr struct {
@@ -152,7 +170,8 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	msg, err2 := template.Execute(pluralForm, templateData, lc.Funcs)
+	templateEngine := lc.getTemplateEngine()
+	msg, err2 := template.executeEngine(pluralForm, templateData, templateEngine)
 	if err2 != nil {
 		if err == nil {
 			err = err2
@@ -160,7 +179,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
-			msg2, err3 := template.Execute(plural.Other, templateData, lc.Funcs)
+			msg2, err3 := template.executeEngine(plural.Other, templateData, templateEngine)
 			if err3 == nil {
 				msg = msg2
 			}

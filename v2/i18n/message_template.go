@@ -2,22 +2,20 @@ package i18n
 
 import (
 	"fmt"
-
 	"text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 )
 
 // MessageTemplate is an executable template for a message.
 type MessageTemplate struct {
 	*Message
-	PluralTemplates map[plural.Form]*internal.Template
+	PluralTemplates map[plural.Form]*Template
 }
 
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
-	pluralTemplates := map[plural.Form]*internal.Template{}
+	pluralTemplates := map[plural.Form]*Template{}
 	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero, m.LeftDelim, m.RightDelim)
 	setPluralTemplate(pluralTemplates, plural.One, m.One, m.LeftDelim, m.RightDelim)
 	setPluralTemplate(pluralTemplates, plural.Two, m.Two, m.LeftDelim, m.RightDelim)
@@ -33,9 +31,9 @@ func NewMessageTemplate(m *Message) *MessageTemplate {
 	}
 }
 
-func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src, leftDelim, rightDelim string) {
+func setPluralTemplate(pluralTemplates map[plural.Form]*Template, pluralForm plural.Form, src, leftDelim, rightDelim string) {
 	if src != "" {
-		pluralTemplates[pluralForm] = &internal.Template{
+		pluralTemplates[pluralForm] = &Template{
 			Src:        src,
 			LeftDelim:  leftDelim,
 			RightDelim: rightDelim,
@@ -61,5 +59,21 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 			messageID:  mt.Message.ID,
 		}
 	}
-	return t.Execute(funcs, data)
+	engine := &TextTemplateEngine{
+		LeftDelim:  t.LeftDelim,
+		RightDelim: t.RightDelim,
+		Funcs:      funcs,
+	}
+	return t.execute(engine, data)
+}
+
+func (mt *MessageTemplate) executeEngine(pluralForm plural.Form, data interface{}, engine TemplateEngine) (string, error) {
+	t := mt.PluralTemplates[pluralForm]
+	if t == nil {
+		return "", pluralFormNotFoundError{
+			pluralForm: pluralForm,
+			messageID:  mt.Message.ID,
+		}
+	}
+	return t.execute(engine, data)
 }

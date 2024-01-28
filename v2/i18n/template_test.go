@@ -1,4 +1,4 @@
-package internal
+package i18n
 
 import (
 	"strings"
@@ -9,7 +9,7 @@ import (
 func TestExecute(t *testing.T) {
 	tests := []struct {
 		template *Template
-		funcs    template.FuncMap
+		engine   TemplateEngine
 		data     interface{}
 		result   string
 		err      string
@@ -35,9 +35,11 @@ func TestExecute(t *testing.T) {
 			template: &Template{
 				Src: "hello {{world}}",
 			},
-			funcs: template.FuncMap{
-				"world": func() string {
-					return "world"
+			engine: &TextTemplateEngine{
+				Funcs: template.FuncMap{
+					"world": func() string {
+						return "world"
+					},
 				},
 			},
 			result: "hello world",
@@ -53,7 +55,10 @@ func TestExecute(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.template.Src, func(t *testing.T) {
-			result, err := test.template.Execute(test.funcs, test.data)
+			if test.engine == nil {
+				test.engine = &TextTemplateEngine{}
+			}
+			result, err := test.template.execute(test.engine, test.data)
 			if actual := str(err); !strings.Contains(str(err), test.err) {
 				t.Errorf("expected err %q to contain %q", actual, test.err)
 			}
@@ -61,7 +66,7 @@ func TestExecute(t *testing.T) {
 				t.Errorf("expected result %q; got %q", test.result, result)
 			}
 			allocs := testing.AllocsPerRun(10, func() {
-				_, _ = test.template.Execute(test.funcs, test.data)
+				_, _ = test.template.execute(test.engine, test.data)
 			})
 			if test.noallocs && allocs > 0 {
 				t.Errorf("expected no allocations; got %f", allocs)
