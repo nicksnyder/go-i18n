@@ -67,26 +67,26 @@ type LocalizeConfig struct {
 	// DefaultMessage is used if the message is not found in any message files.
 	DefaultMessage *Message
 
-	// Funcs is used to extend the Go template engine's built in functions if TemplateEngine is not set.
+	// Funcs is used to configure a template.TextParser if TemplateParser is not set.
 	Funcs texttemplate.FuncMap
 
-	// The TemplateEngine to use for parsing templates.
-	// If one is not set, a template.TextEngine is used.
-	TemplateEngine template.Engine
+	// The TemplateParser to use for parsing templates.
+	// If one is not set, a template.TextParser is used (configured with Funcs if it is set).
+	TemplateParser template.Parser
 }
 
-var defaultTextEngine = &template.TextEngine{}
+var defaultTextParser = &template.TextParser{}
 
-func (lc *LocalizeConfig) getTemplateEngine() template.Engine {
-	if lc.TemplateEngine != nil {
-		return lc.TemplateEngine
+func (lc *LocalizeConfig) getTemplateParser() template.Parser {
+	if lc.TemplateParser != nil {
+		return lc.TemplateParser
 	}
 	if lc.Funcs != nil {
-		return &template.TextEngine{
+		return &template.TextParser{
 			Funcs: lc.Funcs,
 		}
 	}
-	return defaultTextEngine
+	return defaultTextParser
 }
 
 type invalidPluralCountErr struct {
@@ -171,8 +171,8 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	templateEngine := lc.getTemplateEngine()
-	msg, err2 := template.executeEngine(pluralForm, templateData, templateEngine)
+	templateParser := lc.getTemplateParser()
+	msg, err2 := template.execute(pluralForm, templateData, templateParser)
 	if err2 != nil {
 		if err == nil {
 			err = err2
@@ -180,7 +180,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
-			msg2, err3 := template.executeEngine(plural.Other, templateData, templateEngine)
+			msg2, err3 := template.execute(plural.Other, templateData, templateParser)
 			if err3 == nil {
 				msg = msg2
 			}

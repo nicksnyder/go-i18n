@@ -10,22 +10,22 @@ type ParsedTemplate interface {
 	Execute(data any) (string, error)
 }
 
-type Engine interface {
+type Parser interface {
 	ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error)
 
 	// Cacheable returns true if the ParsedTemplate returned by ParseTemplate is safe to cache.
 	Cacheable() bool
 }
 
-// IdentityEngine is an Engine that does no parsing and returns template strings unchanged.
-type IdentityEngine struct{}
+// IdentityParser is an Parser that does no parsing and returns template string unchanged.
+type IdentityParser struct{}
 
-func (IdentityEngine) Cacheable() bool {
+func (IdentityParser) Cacheable() bool {
 	// Caching is not necessary because ParseTemplate is cheap.
 	return false
 }
 
-func (IdentityEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (IdentityParser) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	return &identityParsedTemplate{src: src}, nil
 }
 
@@ -37,19 +37,19 @@ func (t *identityParsedTemplate) Execute(data any) (string, error) {
 	return t.src, nil
 }
 
-// TextEngine is an Engine for text/template.
-type TextEngine struct {
+// TextParser is a Parser that uses text/template.
+type TextParser struct {
 	LeftDelim  string
 	RightDelim string
 	Funcs      texttemplate.FuncMap
 	Option     string
 }
 
-func (te *TextEngine) Cacheable() bool {
+func (te *TextParser) Cacheable() bool {
 	return te.Funcs == nil
 }
 
-func (te *TextEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (te *TextParser) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	if leftDelim == "" {
 		leftDelim = te.LeftDelim
 	}

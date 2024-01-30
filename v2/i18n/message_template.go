@@ -54,8 +54,8 @@ func (e pluralFormNotFoundError) Error() string {
 
 // Execute executes the template for the plural form and template data.
 // Deprecated: This message is no longer used internally by go-i18n and it probably should not have been exported to
-// begin with. Its replacement, executeEngine is not exported. If you depend on this method for some reason and/or have
-// a use case for exporting executeEngine, please file an issue.
+// begin with. Its replacement is not exported. If you depend on this method for some reason and/or have
+// a use case for exporting execute, please file an issue.
 func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs texttemplate.FuncMap) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
 	if t == nil {
@@ -64,13 +64,13 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 			messageID:  mt.Message.ID,
 		}
 	}
-	engine := &template.TextEngine{
+	parser := &template.TextParser{
 		Funcs: funcs,
 	}
-	return t.Execute(engine, data)
+	return t.Execute(parser, data)
 }
 
-func (mt *MessageTemplate) executeEngine(pluralForm plural.Form, data interface{}, engine template.Engine) (string, error) {
+func (mt *MessageTemplate) execute(pluralForm plural.Form, data interface{}, parser template.Parser) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
 	if t == nil {
 		return "", pluralFormNotFoundError{
@@ -78,5 +78,5 @@ func (mt *MessageTemplate) executeEngine(pluralForm plural.Form, data interface{
 			messageID:  mt.Message.ID,
 		}
 	}
-	return t.Execute(engine, data)
+	return t.Execute(parser, data)
 }

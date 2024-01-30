@@ -17,16 +17,16 @@ type Template struct {
 	parseError     error
 }
 
-func (t *Template) Execute(engine template.Engine, data interface{}) (string, error) {
+func (t *Template) Execute(parser template.Parser, data interface{}) (string, error) {
 	var pt template.ParsedTemplate
 	var err error
-	if engine.Cacheable() {
+	if parser.Cacheable() {
 		t.parseOnce.Do(func() {
-			t.parsedTemplate, t.parseError = engine.ParseTemplate(t.Src, t.LeftDelim, t.RightDelim)
+			t.parsedTemplate, t.parseError = parser.ParseTemplate(t.Src, t.LeftDelim, t.RightDelim)
 		})
 		pt, err = t.parsedTemplate, t.parseError
 	} else {
-		pt, err = engine.ParseTemplate(t.Src, t.LeftDelim, t.RightDelim)
+		pt, err = parser.ParseTemplate(t.Src, t.LeftDelim, t.RightDelim)
 	}
 
 	if err != nil {

@@ -11,7 +11,7 @@ import (
 func TestExecute(t *testing.T) {
 	tests := []struct {
 		template *Template
-		engine   template.Engine
+		parser   template.Parser
 		data     interface{}
 		result   string
 		err      string
@@ -37,7 +37,7 @@ func TestExecute(t *testing.T) {
 			template: &Template{
 				Src: "hello {{world}}",
 			},
-			engine: &template.TextEngine{
+			parser: &template.TextParser{
 				Funcs: texttemplate.FuncMap{
 					"world": func() string {
 						return "world"
@@ -57,10 +57,10 @@ func TestExecute(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.template.Src, func(t *testing.T) {
-			if test.engine == nil {
-				test.engine = &template.TextEngine{}
+			if test.parser == nil {
+				test.parser = &template.TextParser{}
 			}
-			result, err := test.template.Execute(test.engine, test.data)
+			result, err := test.template.Execute(test.parser, test.data)
 			if actual := str(err); !strings.Contains(str(err), test.err) {
 				t.Errorf("expected err %q to contain %q", actual, test.err)
 			}
@@ -68,7 +68,7 @@ func TestExecute(t *testing.T) {
 				t.Errorf("expected result %q; got %q", test.result, result)
 			}
 			allocs := testing.AllocsPerRun(10, func() {
-				_, _ = test.template.Execute(test.engine, test.data)
+				_, _ = test.template.Execute(test.parser, test.data)
 			})
 			if test.noallocs && allocs > 0 {
 				t.Errorf("expected no allocations; got %f", allocs)
