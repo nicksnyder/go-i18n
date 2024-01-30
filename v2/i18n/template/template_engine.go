@@ -1,4 +1,4 @@
-package i18n
+package template
 
 import (
 	"bytes"
@@ -10,36 +10,46 @@ type ParsedTemplate interface {
 	Execute(data any) (string, error)
 }
 
-type TemplateEngine interface {
+type Engine interface {
+	ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error)
+
 	// Cacheable returns true if the ParsedTemplate returned by ParseTemplate is safe to cache.
 	Cacheable() bool
-
-	ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error)
 }
 
-type NoTemplateEngine struct{}
+// IdentityEngine is an Engine that does no parsing and returns template strings unchanged.
+type IdentityEngine struct{}
 
-func (NoTemplateEngine) Cacheable() bool {
+func (IdentityEngine) Cacheable() bool {
 	// Caching is not necessary because ParseTemplate is cheap.
 	return false
 }
 
-func (NoTemplateEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (IdentityEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	return &identityParsedTemplate{src: src}, nil
 }
 
-type TextTemplateEngine struct {
+type identityParsedTemplate struct {
+	src string
+}
+
+func (t *identityParsedTemplate) Execute(data any) (string, error) {
+	return t.src, nil
+}
+
+// TextEngine is an Engine for text/template.
+type TextEngine struct {
 	LeftDelim  string
 	RightDelim string
 	Funcs      texttemplate.FuncMap
 	Option     string
 }
 
-func (te *TextTemplateEngine) Cacheable() bool {
+func (te *TextEngine) Cacheable() bool {
 	return te.Funcs == nil
 }
 
-func (te *TextTemplateEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (te *TextEngine) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	if leftDelim == "" {
 		leftDelim = te.LeftDelim
 	}
@@ -63,14 +73,6 @@ func (te *TextTemplateEngine) ParseTemplate(src, leftDelim, rightDelim string) (
 		return nil, err
 	}
 	return &parsedTextTemplate{tmpl: tmpl}, nil
-}
-
-type identityParsedTemplate struct {
-	src string
-}
-
-func (t *identityParsedTemplate) Execute(data any) (string, error) {
-	return t.src, nil
 }
 
 type parsedTextTemplate struct {

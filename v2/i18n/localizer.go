@@ -2,8 +2,9 @@ package i18n
 
 import (
 	"fmt"
-	"text/template"
+	texttemplate "text/template"
 
+	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
@@ -67,25 +68,25 @@ type LocalizeConfig struct {
 	DefaultMessage *Message
 
 	// Funcs is used to extend the Go template engine's built in functions if TemplateEngine is not set.
-	Funcs template.FuncMap
+	Funcs texttemplate.FuncMap
 
 	// The TemplateEngine to use for parsing templates.
-	// If one is not set, a TextTemplateEngine is used.
-	TemplateEngine TemplateEngine
+	// If one is not set, a template.TextEngine is used.
+	TemplateEngine template.Engine
 }
 
-var defaultTextTemplateEngine = &TextTemplateEngine{}
+var defaultTextEngine = &template.TextEngine{}
 
-func (lc *LocalizeConfig) getTemplateEngine() TemplateEngine {
+func (lc *LocalizeConfig) getTemplateEngine() template.Engine {
 	if lc.TemplateEngine != nil {
 		return lc.TemplateEngine
 	}
 	if lc.Funcs != nil {
-		return &TextTemplateEngine{
+		return &template.TextEngine{
 			Funcs: lc.Funcs,
 		}
 	}
-	return defaultTextTemplateEngine
+	return defaultTextEngine
 }
 
 type invalidPluralCountErr struct {
