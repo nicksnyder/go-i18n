@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
@@ -361,6 +362,56 @@ func localizerTests() []localizerTest {
 				},
 			},
 			expectedLocalized: "Hello Nick",
+		},
+		{
+			name:            "identity parser, bundle message",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:    "HelloPerson",
+					Other: "Hello {{.Person}}",
+				}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloPerson",
+				TemplateData: map[string]string{
+					"Person": "Nick",
+				},
+				TemplateParser: template.IdentityParser{},
+			},
+			expectedLocalized: "Hello {{.Person}}",
+		},
+		{
+			name:            "identity parser, default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "HelloPerson",
+					Other: "Hello {{.Person}}",
+				},
+				TemplateData: map[string]string{
+					"Person": "Nick",
+				},
+				TemplateParser: template.IdentityParser{},
+			},
+			expectedLocalized: "Hello {{.Person}}",
+		},
+		{
+			name:            "custom funcs, default message",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "HelloWorld",
+					Other: "{{HelloWorldFunc}}",
+				},
+				Funcs: map[string]any{
+					"HelloWorldFunc": func() string { return "Hello World" },
+				},
+			},
+			expectedLocalized: "Hello World",
 		},
 		{
 			name:            "template data, custom delims, bundle message",
