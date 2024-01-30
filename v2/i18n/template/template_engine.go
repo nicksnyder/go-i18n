@@ -10,10 +10,12 @@ type ParsedTemplate interface {
 	Execute(data any) (string, error)
 }
 
+// Parser parses strings into executable templates.
 type Parser interface {
-	ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error)
+	// Parse parses src and returns a ParsedTemplate.
+	Parse(src, leftDelim, rightDelim string) (ParsedTemplate, error)
 
-	// Cacheable returns true if the ParsedTemplate returned by ParseTemplate is safe to cache.
+	// Cacheable returns true if ParsedTemplates returned by ParseTemplate are always safe to cache.
 	Cacheable() bool
 }
 
@@ -25,7 +27,7 @@ func (IdentityParser) Cacheable() bool {
 	return false
 }
 
-func (IdentityParser) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (IdentityParser) Parse(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	return &identityParsedTemplate{src: src}, nil
 }
 
@@ -49,7 +51,7 @@ func (te *TextParser) Cacheable() bool {
 	return te.Funcs == nil
 }
 
-func (te *TextParser) ParseTemplate(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
+func (te *TextParser) Parse(src, leftDelim, rightDelim string) (ParsedTemplate, error) {
 	if leftDelim == "" {
 		leftDelim = te.LeftDelim
 	}
