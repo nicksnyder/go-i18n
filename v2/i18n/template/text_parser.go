@@ -2,8 +2,8 @@ package template
 
 import (
 	"bytes"
-	"html/template"
 	"strings"
+	"text/template"
 )
 
 // TextParser is a Parser that uses text/template.
