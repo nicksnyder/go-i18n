@@ -139,8 +139,8 @@ other = "{{.Name}} has {{.Count}} cats."
 ## 进一步的信息和示例：
 
 - 阅读[文档](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2)。
-- 查看[代码示例](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/example_test.go)和
-  [测试](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/localizer_test.go)。
+- 查看[代码示例](https://github.com/nicksnyder/go-i18n/blob/main/i18n/example_test.go)和
+  [测试](https://github.com/nicksnyder/go-i18n/blob/main/i18n/localizer_test.go)。
 - 查看示例[程序](https://github.com/nicksnyder/go-i18n/tree/main/example)。
 
 ## 许可证
