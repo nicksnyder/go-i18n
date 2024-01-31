@@ -18,7 +18,7 @@ go-i18n 是一个帮助您将 Go 程序翻译成多种语言的 Go [包](#packag
 
 ## i18n 包
 
-[![GoDoc](https://pkg.go.dev/github.com/nicksnyder/go-i18n?status.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/i18n)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nicksnyder/go-i18n/v2/i18n.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/i18n)
 
 i18n 包支持根据一组语言环境首选项来查找消息。
 
@@ -77,7 +77,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 
 ## goi18n 命令
 
-[![GoDoc](https://pkg.go.dev/github.com/nicksnyder/go-i18n?status.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/goi18n)
+[![Go Reference](https://pkg.go.dev/badge/github.com/nicksnyder/go-i18n/v2/goi18n.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/goi18n)
 
 goi18n 命令管理 i18n 包所使用的消息文件。
 
