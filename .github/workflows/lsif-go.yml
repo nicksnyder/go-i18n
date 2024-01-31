@@ -12,3 +12,4 @@ jobs:
         run: lsif-go
       - name: Upload LSIF data to Sourcegraph.com
         run: src lsif upload -github-token=${{ secrets.GITHUB_TOKEN }} -ignore-upload-failure
+
