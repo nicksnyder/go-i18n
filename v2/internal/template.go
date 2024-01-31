@@ -1,51 +1,36 @@
 package internal
 
 import (
-	"bytes"
-	"strings"
 	"sync"
-	gotemplate "text/template"
+
+	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 )
 
-// Template stores the template for a string.
+// Template stores the template for a string and a cached version of the parsed template if they are cacheable.
 type Template struct {
 	Src        string
 	LeftDelim  string
 	RightDelim string
 
 	parseOnce      sync.Once
-	parsedTemplate *gotemplate.Template
+	parsedTemplate template.ParsedTemplate
 	parseError     error
 }
 
-func (t *Template) Execute(funcs gotemplate.FuncMap, data interface{}) (string, error) {
-	leftDelim := t.LeftDelim
-	if leftDelim == "" {
-		leftDelim = "{{"
-	}
-	if !strings.Contains(t.Src, leftDelim) {
-		// Fast path to avoid parsing a template that has no actions.
-		return t.Src, nil
-	}
-
-	var gt *gotemplate.Template
+func (t *Template) Execute(parser template.Parser, data interface{}) (string, error) {
+	var pt template.ParsedTemplate
 	var err error
-	if funcs == nil {
+	if parser.Cacheable() {
 		t.parseOnce.Do(func() {
-			// If funcs is nil, then we only need to parse this template once.
-			t.parsedTemplate, t.parseError = gotemplate.New("").Delims(t.LeftDelim, t.RightDelim).Parse(t.Src)
+			t.parsedTemplate, t.parseError = parser.Parse(t.Src, t.LeftDelim, t.RightDelim)
 		})
-		gt, err = t.parsedTemplate, t.parseError
+		pt, err = t.parsedTemplate, t.parseError
 	} else {
-		gt, err = gotemplate.New("").Delims(t.LeftDelim, t.RightDelim).Funcs(funcs).Parse(t.Src)
+		pt, err = parser.Parse(t.Src, t.LeftDelim, t.RightDelim)
 	}
 
 	if err != nil {
 		return "", err
 	}
-	var buf bytes.Buffer
-	if err := gt.Execute(&buf, data); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
+	return pt.Execute(data)
 }

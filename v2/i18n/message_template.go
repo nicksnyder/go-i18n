@@ -2,9 +2,9 @@ package i18n
 
 import (
 	"fmt"
+	texttemplate "text/template"
 
-	"text/template"
-
+	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 )
@@ -53,7 +53,10 @@ func (e pluralFormNotFoundError) Error() string {
 }
 
 // Execute executes the template for the plural form and template data.
-func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs template.FuncMap) (string, error) {
+// Deprecated: This message is no longer used internally by go-i18n and it probably should not have been exported to
+// begin with. Its replacement is not exported. If you depend on this method for some reason and/or have
+// a use case for exporting execute, please file an issue.
+func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs texttemplate.FuncMap) (string, error) {
 	t := mt.PluralTemplates[pluralForm]
 	if t == nil {
 		return "", pluralFormNotFoundError{
@@ -61,5 +64,19 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 			messageID:  mt.Message.ID,
 		}
 	}
-	return t.Execute(funcs, data)
+	parser := &template.TextParser{
+		Funcs: funcs,
+	}
+	return t.Execute(parser, data)
+}
+
+func (mt *MessageTemplate) execute(pluralForm plural.Form, data interface{}, parser template.Parser) (string, error) {
+	t := mt.PluralTemplates[pluralForm]
+	if t == nil {
+		return "", pluralFormNotFoundError{
+			pluralForm: pluralForm,
+			messageID:  mt.Message.ID,
+		}
+	}
+	return t.Execute(parser, data)
 }

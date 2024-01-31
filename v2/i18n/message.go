@@ -21,7 +21,7 @@ type Message struct {
 	// LeftDelim is the left Go template delimiter.
 	LeftDelim string
 
-	// RightDelim is the right Go template delimiter.``
+	// RightDelim is the right Go template delimiter.
 	RightDelim string
 
 	// Zero is the content of the message for the CLDR plural form "zero".

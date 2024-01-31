@@ -2,8 +2,9 @@ package i18n
 
 import (
 	"fmt"
-	"text/template"
+	texttemplate "text/template"
 
+	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
 )
@@ -66,8 +67,26 @@ type LocalizeConfig struct {
 	// DefaultMessage is used if the message is not found in any message files.
 	DefaultMessage *Message
 
-	// Funcs is used to extend the Go template engine's built in functions
-	Funcs template.FuncMap
+	// Funcs is used to configure a template.TextParser if TemplateParser is not set.
+	Funcs texttemplate.FuncMap
+
+	// The TemplateParser to use for parsing templates.
+	// If one is not set, a template.TextParser is used (configured with Funcs if it is set).
+	TemplateParser template.Parser
+}
+
+var defaultTextParser = &template.TextParser{}
+
+func (lc *LocalizeConfig) getTemplateParser() template.Parser {
+	if lc.TemplateParser != nil {
+		return lc.TemplateParser
+	}
+	if lc.Funcs != nil {
+		return &template.TextParser{
+			Funcs: lc.Funcs,
+		}
+	}
+	return defaultTextParser
 }
 
 type invalidPluralCountErr struct {
@@ -152,7 +171,8 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 	}
 
 	pluralForm := l.pluralForm(tag, operands)
-	msg, err2 := template.Execute(pluralForm, templateData, lc.Funcs)
+	templateParser := lc.getTemplateParser()
+	msg, err2 := template.execute(pluralForm, templateData, templateParser)
 	if err2 != nil {
 		if err == nil {
 			err = err2
@@ -160,7 +180,7 @@ func (l *Localizer) LocalizeWithTag(lc *LocalizeConfig) (string, language.Tag, e
 
 		// Attempt to fallback to "Other" pluralization in case translations are incomplete.
 		if pluralForm != plural.Other {
-			msg2, err3 := template.Execute(plural.Other, templateData, lc.Funcs)
+			msg2, err3 := template.execute(plural.Other, templateData, templateParser)
 			if err3 == nil {
 				msg = msg2
 			}
