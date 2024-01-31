@@ -3,7 +3,7 @@
 go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that helps you translate Go programs into multiple languages.
 
 - Supports [pluralized strings](http://cldr.unicode.org/index/cldr-spec/plural-rules) for all 200+ languages in the [Unicode Common Locale Data Repository (CLDR)](https://www.unicode.org/cldr/charts/28/supplemental/language_plural_rules.html).
-  - Code and tests are [automatically generated](https://github.com/nicksnyder/go-i18n/tree/main/v2/internal/plural/codegen) from [CLDR data](http://cldr.unicode.org/index/downloads).
+  - Code and tests are [automatically generated](https://github.com/nicksnyder/go-i18n/tree/main/internal/plural/codegen) from [CLDR data](http://cldr.unicode.org/index/downloads).
 - Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
 - Supports message files of any format (e.g. JSON, TOML, YAML).
 
@@ -136,7 +136,7 @@ If you have added new messages to your program:
 
 - Read the [documentation](https://godoc.org/github.com/nicksnyder/go-i18n/v2).
 - Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/localizer_test.go).
-- Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/main/v2/example).
+- Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/main/example).
 
 ## License
 

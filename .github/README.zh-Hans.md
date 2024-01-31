@@ -4,7 +4,7 @@ go-i18n 是一个帮助您将 Go 程序翻译成多种语言的 Go [包](#packag
 
 - 支持 [Unicode Common Locale Data Repository (CLDR)](https://www.unicode.org/cldr/charts/28/supplemental/language_plural_rules.html)
   中所有 200 多种语言的[复数字符串](http://cldr.unicode.org/index/cldr-spec/plural-rules)。
-  - 代码和测试是基于 [CLDR 数据](http://cldr.unicode.org/index/downloads)[自动生成](https://github.com/nicksnyder/go-i18n/tree/main/v2/internal/plural/codegen)的。
+  - 代码和测试是基于 [CLDR 数据](http://cldr.unicode.org/index/downloads)[自动生成](https://github.com/nicksnyder/go-i18n/tree/main/internal/plural/codegen)的。
 - 使用 [text/template](http://golang.org/pkg/text/template/) 语法支持带有命名变量的字符串。
 - 支持所有格式的消息文件（例如：JSON、TOML、YAML）。
 
@@ -141,7 +141,7 @@ other = "{{.Name}} has {{.Count}} cats."
 - 阅读[文档](https://godoc.org/github.com/nicksnyder/go-i18n/v2)。
 - 查看[代码示例](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/example_test.go)和
   [测试](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/localizer_test.go)。
-- 查看示例[程序](https://github.com/nicksnyder/go-i18n/tree/main/v2/example)。
+- 查看示例[程序](https://github.com/nicksnyder/go-i18n/tree/main/example)。
 
 ## 许可证
 
