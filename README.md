@@ -16,7 +16,7 @@ go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that h
 </strong>
 
 ## Package i18n
-[![GoDoc](https://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](https://godoc.org/github.com/nicksnyder/go-i18n/v2/i18n)
+[![GoDoc](https://pkg.go.dev/github.com/nicksnyder/go-i18n?status.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/i18n)
 
 The i18n package provides support for looking up messages according to a set of locale preferences.
 
@@ -74,7 +74,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 ```
 
 ## Command goi18n
-[![GoDoc](https://godoc.org/github.com/nicksnyder/go-i18n?status.svg)](https://godoc.org/github.com/nicksnyder/go-i18n/v2/goi18n)
+[![GoDoc](https://pkg.go.dev/github.com/nicksnyder/go-i18n?status.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/goi18n)
 
 The goi18n command manages message files used by the i18n package.
 
@@ -134,7 +134,7 @@ If you have added new messages to your program:
 
 ## For more information and examples:
 
-- Read the [documentation](https://godoc.org/github.com/nicksnyder/go-i18n/v2).
+- Read the [documentation](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2).
 - Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/main/v2/i18n/localizer_test.go).
 - Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/main/example).
 
