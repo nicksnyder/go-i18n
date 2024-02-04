@@ -43,7 +43,12 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 		return nil, err
 	}
 
-	if messageFile.Messages, err = recGetMessages(raw, isMessage(raw), true); err != nil {
+	m, err := isMessage(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	if messageFile.Messages, err = recGetMessages(raw, m, true); err != nil {
 		return nil, err
 	}
 
@@ -105,7 +110,11 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 		messages = make([]*Message, 0, len(data))
 		for _, data := range data {
 			// recursively scan slice items
-			childMessages, err := recGetMessages(data, isMessage(data), false)
+			m, err := isMessage(data)
+			if err != nil {
+				return nil, err
+			}
+			childMessages, err := recGetMessages(data, m, false)
 			if err != nil {
 				return nil, err
 			}
@@ -120,7 +129,10 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 }
 
 func addChildMessages(id string, data interface{}, messages []*Message) ([]*Message, error) {
-	isChildMessage := isMessage(data)
+	isChildMessage, err := isMessage(data)
+	if err != nil {
+		return nil, err
+	}
 	childMessages, err := recGetMessages(data, isChildMessage, false)
 	if err != nil {
 		return nil, err

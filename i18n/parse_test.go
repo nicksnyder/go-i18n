@@ -46,6 +46,35 @@ func TestParseMessageFileBytes(t *testing.T) {
 				}},
 			},
 		},
+		// {
+		// 	name: "basic test",
+		// 	file: `{"id": "hello", "other": "world", "foo": "bar"}`,
+		// 	path: "en.json",
+		// 	messageFile: &MessageFile{
+		// 		Path:   "en.json",
+		// 		Tag:    language.English,
+		// 		Format: "json",
+		// 		Messages: []*Message{{
+		// 			ID:    "hello",
+		// 			Other: "world",
+		// 		}},
+		// 	},
+		// },
+		// {
+		// 	name: "basic test reserved key top level",
+		// 	file: `{"other": "world"}`,
+		// 	path: "en.json",
+		// 	messageFile: &MessageFile{
+		// 		Path:   "en.json",
+		// 		Tag:    language.English,
+		// 		Format: "json",
+		// 		Messages: []*Message{{
+		// 			ID:    "other",
+		// 			Other: "world",
+		// 		}},
+		// 	},
+		// },
+
 		{
 			name: "basic test with dot separator in key",
 			file: `{"prepended.hello": "world"}`,
@@ -111,14 +140,9 @@ func TestParseMessageFileBytes(t *testing.T) {
 			name: "basic test with description and dummy",
 			file: `{"notnested": {"description": "world", "dummy": "nothing"}}`,
 			path: "en.json",
-			messageFile: &MessageFile{
-				Path:   "en.json",
-				Tag:    language.English,
-				Format: "json",
-				Messages: []*Message{{
-					ID:          "notnested",
-					Description: "world",
-				}},
+			err: &mixedKeysError{
+				reservedKeys:   []string{"description"},
+				unreservedKeys: []string{"dummy"},
 			},
 		},
 		{
