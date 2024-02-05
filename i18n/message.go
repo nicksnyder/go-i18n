@@ -2,7 +2,7 @@ package i18n
 
 import (
 	"fmt"
-	"slices"
+	"sort"
 	"strings"
 )
 
@@ -280,7 +280,7 @@ type mixedKeysError struct {
 }
 
 func (e *mixedKeysError) Error() string {
-	slices.Sort(e.reservedKeys)
-	slices.Sort(e.unreservedKeys)
+	sort.Strings(e.reservedKeys)
+	sort.Strings(e.unreservedKeys)
 	return fmt.Sprintf("reserved keys %v mixed with unreserved keys %v", e.reservedKeys, e.unreservedKeys)
 }
