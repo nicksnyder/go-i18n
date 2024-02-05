@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -233,7 +234,6 @@ func isMessage(v interface{}) (bool, error) {
 					unreservedKeys = append(unreservedKeys, k)
 				}
 			}
-			// return false, fmt.Errorf("reserved keys %v mixed with unreserved keys %v", reservedKeys, unreservedKeys)
 			return false, &mixedKeysError{
 				reservedKeys:   reservedKeys,
 				unreservedKeys: unreservedKeys,
@@ -264,7 +264,6 @@ func isMessage(v interface{}) (bool, error) {
 					unreservedKeys = append(unreservedKeys, k)
 				}
 			}
-			// return false, fmt.Errorf("reserved keys %v mixed with unreserved keys %v", reservedKeys, unreservedKeys)
 			return false, &mixedKeysError{
 				reservedKeys:   reservedKeys,
 				unreservedKeys: unreservedKeys,
@@ -281,5 +280,7 @@ type mixedKeysError struct {
 }
 
 func (e *mixedKeysError) Error() string {
+	slices.Sort(e.reservedKeys)
+	slices.Sort(e.unreservedKeys)
 	return fmt.Sprintf("reserved keys %v mixed with unreserved keys %v", e.reservedKeys, e.unreservedKeys)
 }
