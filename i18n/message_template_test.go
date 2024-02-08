@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/nicksnyder/go-i18n/v2/internal/plural"
+	"github.com/KosyanMedia/go-i18n/internal/plural"
 )
 
 func TestMessageTemplate(t *testing.T) {
