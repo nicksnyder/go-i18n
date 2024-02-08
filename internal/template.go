@@ -3,7 +3,7 @@ package internal
 import (
 	"sync"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/template"
+	"github.com/KosyanMedia/go-i18n/i18n/template"
 )
 
 // Template stores the template for a string and a cached version of the parsed template if they are cacheable.

@@ -5,7 +5,7 @@ import (
 	"testing"
 	texttemplate "text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/template"
+	"github.com/KosyanMedia/go-i18n/i18n/template"
 )
 
 func TestExecute(t *testing.T) {
