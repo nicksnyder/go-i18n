@@ -6,11 +6,11 @@ type contextKeyType struct{}
 
 var contextKey = contextKeyType{}
 
-// LocalizerFromContext raises request-scoped localizer.
-// Warning: localizer will be <nil> if it was not set
-// using [ContextWithLocalizer].
-func LocalizerFromContext(ctx context.Context) *Localizer {
-	return ctx.Value(contextKey).(*Localizer)
+// LocalizerFromContext raises request-scoped localizer from context.
+// Returns `<nil>, false` if there is no localizer in context.
+func LocalizerFromContext(ctx context.Context) (l *Localizer, ok bool) {
+	l, ok = ctx.Value(contextKey).(*Localizer)
+	return
 }
 
 // ContextWithLocalizer adds localizer into context as a value.
