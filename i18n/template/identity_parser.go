@@ -1,6 +1,6 @@
 package template
 
-// IdentityParser is an Parser that does no parsing and returns tempalte string unchanged.
+// IdentityParser is an Parser that does no parsing and returns template string unchanged.
 type IdentityParser struct{}
 
 func (IdentityParser) Cacheable() bool {
