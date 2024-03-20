@@ -131,7 +131,7 @@ simple: simple translation
 
 # Comment
 detail:
-  description: detail description 
+  description: detail description
   other: detail translation
 
 # Comment
@@ -148,6 +148,47 @@ everything:
 	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
 	expectMessage(t, bundle, language.AmericanEnglish, "detail", detailMessage)
 	expectMessage(t, bundle, language.AmericanEnglish, "everything", everythingMessage)
+}
+
+func TestInvalidYAML(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
+	_, err := bundle.ParseMessageFileBytes([]byte(`
+# Comment
+simple: simple translation
+
+# Comment
+detail:
+  description: detail description
+  other: detail translation
+
+# Comment
+everything:
+  description: everything description
+  zero: zero translation
+  one: one translation
+  two: two translation
+  few: few translation
+  many: many translation
+  other: other translation
+  garbage: something
+
+description: translation
+`), "en-US.yaml")
+
+	expectedErr := &mixedKeysError{
+		reservedKeys:   []string{"description"},
+		unreservedKeys: []string{"detail", "everything", "simple"},
+	}
+	if err == nil {
+		t.Fatalf("expected error %#v; got nil", expectedErr)
+	}
+	if err.Error() != expectedErr.Error() {
+		t.Fatalf("expected error %q; got %q", expectedErr, err)
+	}
+	if c := len(bundle.messageTemplates); c > 0 {
+		t.Fatalf("expected no message templates in bundle; got %d", c)
+	}
 }
 
 func TestTOML(t *testing.T) {
