@@ -137,8 +137,31 @@ type extractor struct {
 }
 
 func (e *extractor) Visit(node ast.Node) ast.Visitor {
-	e.extractMessages(node)
+	switch t := node.(type) {
+	case *ast.CompositeLit:
+		e.extractMessages(t)
+	case *ast.CallExpr:
+		e.extractTMessages(t)
+	default:
+		e.extractMessages(t)
+	}
 	return e
+}
+
+// Finds any functions of T("message") format and pulls out the message part
+func (e *extractor) extractTMessages(node *ast.CallExpr) {
+
+	function, ok := node.Fun.(*ast.Ident)
+	if !ok {
+		return
+	}
+	if function.Name == "T" {
+		if len(node.Args) == 0 {
+			return
+		}
+		args := node.Args[0].(*ast.BasicLit)
+		e.extractBasicMessage(args)
+	}
 }
 
 func (e *extractor) extractMessages(node ast.Node) {
@@ -179,6 +202,7 @@ func (e *extractor) extractMessages(node ast.Node) {
 			e.extractMessage(vcl)
 		}
 	}
+
 }
 
 func (e *extractor) isMessageType(expr ast.Expr) bool {
@@ -230,6 +254,22 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	}
 	if messageID := data["MessageID"]; messageID != "" {
 		data["ID"] = messageID
+	}
+	e.messages = append(e.messages, i18n.MustNewMessage(data))
+}
+
+func (e *extractor) extractBasicMessage(cl *ast.BasicLit) {
+	data := make(map[string]string)
+
+	v, ok := extractStringLiteral(cl)
+	if !ok {
+		return
+	}
+	data["ID"] = v
+	data["Other"] = v
+
+	if len(data) == 0 {
+		return
 	}
 	e.messages = append(e.messages, i18n.MustNewMessage(data))
 }

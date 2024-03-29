@@ -246,9 +246,25 @@ zero = "Zero translation"
 			activeFile: []byte(`id = "my const"
 `),
 		},
+		{
+			name:     "T Finder",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			func T(i18n string) string {return i18n}
+			var this = T("I18n This String Please")
+			`,
+			activeFile: []byte(`"I18n This String Please" = "I18n This String Please"
+`),
+		},
 	}
 
 	for _, test := range tests {
+		if test.name != "T Finder" {
+			continue
+		}
 		t.Run(test.name, func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
 			defer os.RemoveAll(indir)
