@@ -112,6 +112,13 @@ func recGetMessages(raw interface{}, isMapMessage, isInitialCall bool) ([]*Messa
 			messages = append(messages, childMessages...)
 		}
 
+	case nil:
+		if isInitialCall {
+			return nil, errInvalidTranslationFile
+		}
+		m, err := NewMessage("")
+		return []*Message{m}, err
+
 	default:
 		return nil, fmt.Errorf("unsupported file format %T", raw)
 	}
