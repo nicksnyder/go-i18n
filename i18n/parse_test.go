@@ -156,6 +156,37 @@ outer:
 				}},
 			},
 		},
+		{
+			name: "YAML empty key test",
+			file: `
+some-keys:
+    non-empty-key: not empty
+    empty-key-but-type-specified: ""
+    empty-key:
+    null-key: null`,
+			path:           "en.yaml",
+			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
+			messageFile: &MessageFile{
+				Path:   "en.yaml",
+				Tag:    language.English,
+				Format: "yaml",
+				Messages: []*Message{
+					{
+						ID:    "some-keys.non-empty-key",
+						Other: "not empty",
+					},
+					{
+						ID: "some-keys.empty-key-but-type-specified",
+					},
+					{
+						ID: "some-keys.empty-key",
+					},
+					{
+						ID: "some-keys.null-key",
+					},
+				},
+			},
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
