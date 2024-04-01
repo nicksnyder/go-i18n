@@ -262,9 +262,6 @@ zero = "Zero translation"
 	}
 
 	for _, test := range tests {
-		if test.name != "T Finder" {
-			continue
-		}
 		t.Run(test.name, func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
 			defer os.RemoveAll(indir)

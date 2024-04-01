@@ -88,11 +88,7 @@ func (ec *extractCommand) execute() error {
 				return nil
 			}
 
-			buf, err := os.ReadFile(path)
-			if err != nil {
-				return err
-			}
-			msgs, err := extractMessages(buf)
+			msgs, err := extractMessages(path)
 			if err != nil {
 				return err
 			}
@@ -116,24 +112,47 @@ func (ec *extractCommand) execute() error {
 }
 
 // extractMessages extracts messages from the bytes of a Go source file.
-func extractMessages(buf []byte) ([]*i18n.Message, error) {
+func extractMessages(path string) ([]*i18n.Message, error) {
+
+	extractor, err := newExtractor(path)
+	if err != nil {
+		return nil, err
+	}
+	file := extractor.GetAstFile()
+	ast.Walk(extractor, file)
+	return extractor.messages, nil
+}
+
+func newExtractor(path string) (*extractor, error) {
+	buf, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", buf, parser.AllErrors)
 	if err != nil {
 		return nil, err
 	}
-	extractor := newExtractor(file)
-	ast.Walk(extractor, file)
-	return extractor.messages, nil
-}
-
-func newExtractor(file *ast.File) *extractor {
-	return &extractor{i18nPackageName: i18nPackageName(file)}
+	return &extractor{
+		i18nPackageName: i18nPackageName(file),
+		astFile: file,
+		fset: fset,
+		buf: buf,
+		path: path,
+	}, nil
 }
 
 type extractor struct {
 	i18nPackageName string
 	messages        []*i18n.Message
+	fset 			*token.FileSet
+	astFile			*ast.File
+	buf				[]byte
+	path			string
+}
+
+func (e *extractor) GetAstFile() *ast.File {
+	return e.astFile
 }
 
 func (e *extractor) Visit(node ast.Node) ast.Visitor {
@@ -150,20 +169,28 @@ func (e *extractor) Visit(node ast.Node) ast.Visitor {
 
 // Finds any functions of T("message") format and pulls out the message part
 func (e *extractor) extractTMessages(node *ast.CallExpr) {
-
 	function, ok := node.Fun.(*ast.Ident)
 	if !ok {
 		return
 	}
 	if function.Name == "T" {
+		// Would just be T()
 		if len(node.Args) == 0 {
 			return
 		}
-		args := node.Args[0].(*ast.BasicLit)
+		args, ok := node.Args[0].(*ast.BasicLit)
+		// Things like T("TEST: " + variable) or just T(variable) will hit this code
+		if !ok {
+			source := string(e.buf[node.Lparen:node.Rparen - 1])
+			pos := e.fset.Position(node.Lparen)
+			fmt.Printf("T(%v) is not extractable. %v line %v\n", source, e.path, pos)
+			return
+		}
 		e.extractBasicMessage(args)
 	}
 }
 
+// Finds any i18n.Message declarations and extracts the strings from them
 func (e *extractor) extractMessages(node ast.Node) {
 	cl, ok := node.(*ast.CompositeLit)
 	if !ok {
@@ -232,6 +259,7 @@ func unwrapSelectorExpr(e ast.Expr) *ast.SelectorExpr {
 	}
 }
 
+// Converts a Composite Literal Expression into an i18n message
 func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	data := make(map[string]string)
 	for _, elt := range cl.Elts {
@@ -258,6 +286,7 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	e.messages = append(e.messages, i18n.MustNewMessage(data))
 }
 
+// Converts a Basic Literal Expression into an i18n message
 func (e *extractor) extractBasicMessage(cl *ast.BasicLit) {
 	data := make(map[string]string)
 
