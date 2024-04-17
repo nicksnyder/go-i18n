@@ -194,10 +194,10 @@ func (l *Localizer) getMessageTemplate(id string, defaultMessage *Message) (lang
 
 	tag := l.bundle.tags[i]
 	mt := l.bundle.getMessageTemplate(tag, id)
-	if conf == language.Exact && mt != nil {
+	if conf != language.No && mt != nil {
 		return tag, mt, nil
 	}
-	
+
 	if tag == l.bundle.defaultLanguage {
 		if defaultMessage == nil {
 			return language.Und, nil, &MessageNotFoundErr{Tag: tag, MessageID: id}
