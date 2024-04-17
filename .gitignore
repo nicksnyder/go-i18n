@@ -9,3 +9,5 @@ example/example
 goi18n/goi18n
 dist/
 coverage.txt
+
+.idea/
