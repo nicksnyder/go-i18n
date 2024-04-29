@@ -126,7 +126,7 @@ func (b *Bundle) addTag(tag language.Tag) {
 		}
 	}
 	b.tags = append(b.tags, tag)
-	b.matcher = language.NewMatcher(b.tags)
+	b.matcher = language.NewMatcher(b.tags, language.PreferSameScript(false))
 }
 
 // LanguageTags returns the list of language tags
