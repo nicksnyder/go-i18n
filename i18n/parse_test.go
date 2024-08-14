@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"golang.org/x/text/language"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 func TestParseMessageFileBytes(t *testing.T) {
