@@ -7,7 +7,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"golang.org/x/text/language"
-	yaml "gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v3"
 )
 
 var simpleMessage = MustNewMessage(map[string]string{
