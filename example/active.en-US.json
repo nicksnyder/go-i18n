@@ -1,0 +1,20 @@
+{
+  "Detected Locale is {{.User_locale}}": {
+    "other": "Detected Locale is {{.User_locale}}"
+  },
+  "ERROR: {{.Error}}": {
+    "other": "ERROR: {{.Error}}"
+  },
+  "Hello World!": {
+    "other": "Hello World!"
+  },
+  "T_Error_Message": {
+    "other": "Translation Error: {{.Error}}"
+  },
+  "This is a longer description.": {
+    "other": "This is a longer description."
+  },
+  "This is an example of how to translate a CLI application": {
+    "other": "This is an example of how to translate a CLI application"
+  }
+}
