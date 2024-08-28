@@ -74,6 +74,46 @@ localizer.Localize(&i18n.LocalizeConfig{
 }) // Nick has 2 cats.
 ```
 
+
+Use the singleton to ease usage.
+
+```go
+bundle := i18n.NewBundle(language.English)
+bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+bundle.MustParseMessageFileBytes([]byte(`
+HelloCookie = "Hello Cookie!"
+
+[Cookies]
+one = "I have {{.PluralCount}} cookie!"
+other = "I have {{.PluralCount}} cookies!"
+
+[CookiesX]
+other = "I have {{.X}} cookies!"
+
+[CookiesX2]
+one = "I have {{.PluralCount}} {{.X}} cookie!"
+other = "I have {{.PluralCount}} {{.X}} cookies!"
+
+[CookiesABC]
+other = "I have {{.A}} cookies in my {{.B}} back at {{.C}}!"
+
+[CookiesABC2]
+other = "I have {{.PluralCount}} {{.A}} cookies in my {{.B}} back at {{.C}}!"
+`), "en.toml")
+
+localizer := i18n.NewLocalizer(bundle, "en-US")
+i18n.SetLocalizerInstance(localizer)
+i18n.SetABCParams([]string{"A", "B", "C"})
+
+i18n.Localize("HelloCookie") // "Hello Cookie!"
+i18n.LocalizePlural("Cookies", 4) // "I have 4 cookies!"
+i18n.LocalizeTemplateSingle("CookiesX", "X", "chocolate") // "I have chocolate cookies!"
+i18n.LocalizeTemplateSingleWithPlural("CookiesX2", 4, "X", "chocolate") // "I have 4 chocolate cookies!"
+i18n.LocalizeTemplateX("CookiesABC", "chocolate", "basket", "home") // "I have chocolate cookies in my basket back at home!"
+i18n.LocalizeTemplateXPlural("CookiesABC2", 400, "chocolate", "basket", "home") // "I have 400 chocolate cookies in my basket back at home!"
+```
+
+
 ## Command goi18n
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/nicksnyder/go-i18n/v2/goi18n.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/goi18n)
