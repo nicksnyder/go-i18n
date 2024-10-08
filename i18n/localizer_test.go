@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+	gotmpl "text/template"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/language"
 )
 
@@ -18,6 +20,7 @@ type localizerTest struct {
 	conf              *LocalizeConfig
 	expectedErr       error
 	expectedLocalized string
+	checkErr          func(*testing.T, error)
 }
 
 func localizerTests() []localizerTest {
@@ -648,6 +651,37 @@ func localizerTests() []localizerTest {
 			},
 			expectedErr: &MessageNotFoundErr{Tag: language.English, MessageID: "Hello"},
 		},
+		{
+			name:            "use option missingkey=error with missing key",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "Foo", Other: "Foo {{.bar}}"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID:      "Foo",
+				TemplateData:   map[string]string{},
+				TemplateParser: &template.TextParser{Option: "missingkey=error"},
+			},
+			checkErr: func(t *testing.T, err error) {
+				var expectedErr gotmpl.ExecError
+				assert.ErrorAs(t, err, &expectedErr)
+			},
+		},
+		{
+			name:            "use option missingkey=default with missing key",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "Foo", Other: "Foo {{.bar}}"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID:      "Foo",
+				TemplateData:   map[string]string{},
+				TemplateParser: &template.TextParser{Option: "missingkey=default"},
+			},
+			expectedLocalized: "Foo <no value>",
+		},
 	}
 }
 
@@ -662,7 +696,10 @@ func TestLocalizer_Localize(t *testing.T) {
 			}
 			check := func(localized string, err error) {
 				t.Helper()
-				if !reflect.DeepEqual(err, test.expectedErr) {
+				if test.checkErr != nil {
+					test.checkErr(t, err)
+				}
+				if test.checkErr == nil && !reflect.DeepEqual(err, test.expectedErr) {
 					t.Errorf("expected error %#v; got %#v", test.expectedErr, err)
 				}
 				if localized != test.expectedLocalized {

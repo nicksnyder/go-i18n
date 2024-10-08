@@ -37,7 +37,12 @@ func (te *TextParser) Parse(src, leftDelim, rightDelim string) (ParsedTemplate, 
 		rightDelim = "}}"
 	}
 
-	tmpl, err := template.New("").Delims(leftDelim, rightDelim).Funcs(te.Funcs).Parse(src)
+	option := "missingkey=default"
+	if te.Option != "" {
+		option = te.Option
+	}
+
+	tmpl, err := template.New("").Delims(leftDelim, rightDelim).Option(option).Funcs(te.Funcs).Parse(src)
 	if err != nil {
 		return nil, err
 	}
