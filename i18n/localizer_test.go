@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
-	"github.com/stretchr/testify/assert"
 	"golang.org/x/text/language"
 )
 
@@ -20,7 +20,6 @@ type localizerTest struct {
 	conf              *LocalizeConfig
 	expectedErr       error
 	expectedLocalized string
-	checkErr          func(*testing.T, error)
 }
 
 func localizerTests() []localizerTest {
@@ -663,10 +662,7 @@ func localizerTests() []localizerTest {
 				TemplateData:   map[string]string{},
 				TemplateParser: &template.TextParser{Option: "missingkey=error"},
 			},
-			checkErr: func(t *testing.T, err error) {
-				var expectedErr gotmpl.ExecError
-				assert.ErrorAs(t, err, &expectedErr)
-			},
+			expectedErr: gotmpl.ExecError{Name: "", Err: errors.New(`template: :1:6: executing "" at <.bar>: map has no entry for key "bar"`)},
 		},
 		{
 			name:            "use option missingkey=default with missing key",
@@ -696,11 +692,8 @@ func TestLocalizer_Localize(t *testing.T) {
 			}
 			check := func(localized string, err error) {
 				t.Helper()
-				if test.checkErr != nil {
-					test.checkErr(t, err)
-				}
-				if test.checkErr == nil && !reflect.DeepEqual(err, test.expectedErr) {
-					t.Errorf("expected error %#v; got %#v", test.expectedErr, err)
+				if !reflect.DeepEqual(err, test.expectedErr) {
+					t.Errorf("\nexpected error: %#v\n     got error: %#v", test.expectedErr, err)
 				}
 				if localized != test.expectedLocalized {
 					t.Errorf("expected localized string %q; got %q", test.expectedLocalized, localized)
