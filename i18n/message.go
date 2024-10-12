@@ -211,7 +211,7 @@ func isReserved(key string, val any) bool {
 // - {"notmessage": {"foo": "bar"}} is not a message
 func isMessage(v interface{}) (bool, error) {
 	switch data := v.(type) {
-	case string:
+	case nil, string:
 		return true, nil
 	case map[string]interface{}:
 		reservedKeyCount := 0
