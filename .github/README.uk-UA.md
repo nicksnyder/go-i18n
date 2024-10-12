@@ -1,4 +1,5 @@
-# go-i18n ![Build status](https://github.com/nicksnyder/go-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/graph/badge.svg?token=A9aMfR9vxG)](https://codecov.io/gh/nicksnyder/go-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/nicksnyder/go-i18n/-/badge.svg)](https://sourcegraph.com/github.com/nicksnyder/go-i18n?badge)
+# go-i18n
+![Build status](https://github.com/nicksnyder/go-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/graph/badge.svg?token=A9aMfR9vxG)](https://codecov.io/gh/nicksnyder/go-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/nicksnyder/go-i18n/-/badge.svg)](https://sourcegraph.com/github.com/nicksnyder/go-i18n?badge)
 
 go-i18n — це Go [пакет](#package-i18n) та [інструмент](#command-goi18n), які допомагають перекладати Go програми на різні мови.
 
@@ -6,14 +7,6 @@ go-i18n — це Go [пакет](#package-i18n) та [інструмент](#com
   - Код і тести [автоматично генеруються](https://github.com/nicksnyder/go-i18n/tree/main/internal/plural/codegen) з даних [CLDR](http://cldr.unicode.org/index/downloads).
 - Підтримує рядки з іменованими змінними, використовуючи синтаксис [text/template](http://golang.org/pkg/text/template/).
 - Підтримує файли повідомлень у будь-якому форматі (наприклад, JSON, TOML, YAML).
-
-<strong align="center">
-<samp>
-
-[**English**](README.md) · [**Українська**](.github/README.uk.md) · [**简体中文**](.github/README.zh-Hans.md)
-
-</samp>
-</strong>
 
 ## Пакет i18n
 
