@@ -8,14 +8,6 @@ go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that h
 - Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax.
 - Supports message files of any format (e.g. JSON, TOML, YAML).
 
-<strong align="center">
-<samp>
-
-[**English**](README.md) · [**简体中文**](.github/README.zh-Hans.md)
-
-</samp>
-</strong>
-
 ## Package i18n
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/nicksnyder/go-i18n/v2/i18n.svg)](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/i18n)
@@ -140,6 +132,13 @@ If you have added new messages to your program:
 - Read the [documentation](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2).
 - Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/main/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/main/i18n/localizer_test.go).
 - Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/main/example).
+
+## Translations of this document
+
+Community translations of this document may be found in the [.github](.github) folder.
+
+These translations are maintained by the community, and are not maintained by the author of this project.
+They are not guaranteed to be accurate or up-to-date.
 
 ## License
 
