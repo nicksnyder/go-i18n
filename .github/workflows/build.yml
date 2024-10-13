@@ -9,11 +9,11 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: stable
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build
         uses: goreleaser/goreleaser-action@v2
         with:
@@ -32,11 +32,11 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
     steps:
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '1.18'
       - name: Git checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build and test
         run: |
           go get ./...
