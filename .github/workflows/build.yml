@@ -1,12 +1,13 @@
 name: Build
 on:
-  - push
-  - pull_request
+  push:
+    - main
+  pull_request:
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'pull_request'
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
