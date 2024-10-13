@@ -34,6 +34,29 @@ func TestParseMessageFileBytes(t *testing.T) {
 			},
 		},
 		{
+			name: "nested with reserved key",
+			file: `{"nested": {"description": {"other": "world"}}}`,
+			path: "en.json",
+			messageFile: &MessageFile{
+				Path:   "en.json",
+				Tag:    language.English,
+				Format: "json",
+				Messages: []*Message{{
+					ID:    "nested.description",
+					Other: "world",
+				}},
+			},
+		},
+		{
+			name: "basic test reserved key top level",
+			file: `{"other": "world", "foo": "bar"}`,
+			path: "en.json",
+			err: &mixedKeysError{
+				reservedKeys:   []string{"other"},
+				unreservedKeys: []string{"foo"},
+			},
+		},
+		{
 			name: "basic test with dot separator in key",
 			file: `{"prepended.hello": "world"}`,
 			path: "en.json",
@@ -98,14 +121,9 @@ func TestParseMessageFileBytes(t *testing.T) {
 			name: "basic test with description and dummy",
 			file: `{"notnested": {"description": "world", "dummy": "nothing"}}`,
 			path: "en.json",
-			messageFile: &MessageFile{
-				Path:   "en.json",
-				Tag:    language.English,
-				Format: "json",
-				Messages: []*Message{{
-					ID:          "notnested",
-					Description: "world",
-				}},
+			err: &mixedKeysError{
+				reservedKeys:   []string{"description"},
+				unreservedKeys: []string{"dummy"},
 			},
 		},
 		{
@@ -198,6 +216,19 @@ some-keys:
 			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
 			err:            errors.New("expected key to be string but got 2"),
 		},
+		{
+			name: "YAML extra number key test",
+			file: `
+some-keys:
+    other: world
+    2: legit`,
+			path:           "en.yaml",
+			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
+			err: &mixedKeysError{
+				reservedKeys:   []string{"other"},
+				unreservedKeys: []string{"2"},
+			},
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
@@ -221,11 +252,19 @@ some-keys:
 					t.Errorf("expected format %q; got %q", testCase.messageFile.Format, actual.Format)
 				}
 				if !equalMessages(actual.Messages, testCase.messageFile.Messages) {
-					t.Errorf("expected %#v; got %#v", testCase.messageFile.Messages, actual.Messages)
+					t.Errorf("expected %#v; got %#v", deref(testCase.messageFile.Messages), deref(actual.Messages))
 				}
 			}
 		})
 	}
+}
+
+func deref(mptrs []*Message) []Message {
+	messages := make([]Message, len(mptrs))
+	for i, m := range mptrs {
+		messages[i] = *m
+	}
+	return messages
 }
 
 // equalMessages compares two slices of messages, ignoring private fields and order.
