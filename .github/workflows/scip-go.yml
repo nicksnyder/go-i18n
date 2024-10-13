@@ -3,7 +3,7 @@ on:
   - push
 
 jobs:
-  lsif-go:
+  scip-go:
     runs-on: ubuntu-latest
     container: sourcegraph/scip-go:latest
     steps:
