@@ -1,0 +1,15 @@
+name: Sourcegraph code intelligence
+on:
+  - push
+
+jobs:
+  lsif-go:
+    runs-on: ubuntu-latest
+    container: sourcegraph/scip-go:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate SCIP data
+        run: scip-go
+      - name: Upload SCIP data to Sourcegraph.com
+        run: src code-intel upload -github-token=${{ secrets.GITHUB_TOKEN }} -no-progress
+
