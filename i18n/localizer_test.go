@@ -1,9 +1,11 @@
 package i18n
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
+	gotmpl "text/template"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n/template"
 	"github.com/nicksnyder/go-i18n/v2/internal/plural"
@@ -648,6 +650,34 @@ func localizerTests() []localizerTest {
 			},
 			expectedErr: &MessageNotFoundErr{Tag: language.English, MessageID: "Hello"},
 		},
+		{
+			name:            "use option missingkey=error with missing key",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "Foo", Other: "Foo {{.bar}}"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID:      "Foo",
+				TemplateData:   map[string]string{},
+				TemplateParser: &template.TextParser{Option: "missingkey=error"},
+			},
+			expectedErr: gotmpl.ExecError{Name: "", Err: errors.New(`template: :1:6: executing "" at <.bar>: map has no entry for key "bar"`)},
+		},
+		{
+			name:            "use option missingkey=default with missing key",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{ID: "Foo", Other: "Foo {{.bar}}"}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID:      "Foo",
+				TemplateData:   map[string]string{},
+				TemplateParser: &template.TextParser{Option: "missingkey=default"},
+			},
+			expectedLocalized: "Foo <no value>",
+		},
 	}
 }
 
@@ -663,7 +693,7 @@ func TestLocalizer_Localize(t *testing.T) {
 			check := func(localized string, err error) {
 				t.Helper()
 				if !reflect.DeepEqual(err, test.expectedErr) {
-					t.Errorf("expected error %#v; got %#v", test.expectedErr, err)
+					t.Errorf("\nexpected error: %#v\n     got error: %#v", test.expectedErr, err)
 				}
 				if localized != test.expectedLocalized {
 					t.Errorf("expected localized string %q; got %q", test.expectedLocalized, localized)
