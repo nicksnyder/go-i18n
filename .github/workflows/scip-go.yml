@@ -8,13 +8,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install scip-go
-        run: go install github.com/sourcegraph/scip-go/cmd/scip-go@latest
+        run: |
+          curl -L https://github.com/sourcegraph/scip-go/releases/download/v0.1.21/scip-go_0.1.21_linux_amd64.tar.gz -o scip-go.tar.gz --no-progress-meter
+          tar -xf scip-go.tar.gz
+          chmod +x ./scip-go
       - name: Install src
         run: |
-          curl -L https://sourcegraph.com/.api/src-cli/src_linux_amd64 -o /usr/local/bin/src
-          chmod +x /usr/local/bin/src
+          curl -L https://sourcegraph.com/.api/src-cli/src_linux_amd64 -o src
+          chmod +x ./src
       - name: Generate SCIP data
-        run: scip-go
+        run: ./scip-go
       - name: Upload SCIP data to Sourcegraph.com
-        run: src code-intel upload -github-token=${{ secrets.GITHUB_TOKEN }} -no-progress
+        run: ./src code-intel upload -github-token=${{ secrets.GITHUB_TOKEN }} -no-progress
 
