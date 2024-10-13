@@ -133,6 +133,13 @@ other = "{{.Name}} has {{.Count}} cats."
 - Подивіться [приклади коду](https://github.com/nicksnyder/go-i18n/blob/main/i18n/example_test.go) та [тести](https://github.com/nicksnyder/go-i18n/blob/main/i18n/localizer_test.go).
 - Перегляньте приклад [додатку](https://github.com/nicksnyder/go-i18n/tree/main/example).
 
+## Переклади цього документа
+
+Переклади цього документа, зроблені спільнотою, можна знайти в папці [.github](.github).
+
+Ці переклади підтримуються спільнотою і не підтримуються автором цього проєкту.  
+Немає гарантії, що вони є точними або актуальними.
+
 ## Ліцензія
 
 go-i18n доступний під ліцензією MIT. Див. файл [LICENSE](LICENSE) для отримання додаткової інформації.
