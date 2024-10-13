@@ -19,5 +19,5 @@ jobs:
       - name: Generate SCIP data
         run: ./scip-go
       - name: Upload SCIP data to Sourcegraph.com
-        run: ./src code-intel upload -github-token=${{ secrets.GITHUB_TOKEN }} -no-progress
+        run: SRC_ACCESS_TOKEN=${{ secrets.SRC_ACCESS_TOKEN }} ./src code-intel upload -github-token=${{ secrets.GITHUB_TOKEN }} -no-progress
 
