@@ -1,6 +1,7 @@
 package i18n
 
 import (
+	"errors"
 	"reflect"
 	"sort"
 	"testing"
@@ -186,6 +187,16 @@ some-keys:
 					},
 				},
 			},
+		},
+		{
+			name: "YAML number key test",
+			file: `
+some-keys:
+    hello: world
+    2: legit`,
+			path:           "en.yaml",
+			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
+			err:            errors.New("expected key to be string but got 2"),
 		},
 	}
 	for _, testCase := range testCases {
