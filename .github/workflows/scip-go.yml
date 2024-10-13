@@ -5,9 +5,14 @@ on:
 jobs:
   scip-go:
     runs-on: ubuntu-latest
-    container: sourcegraph/scip-go:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install scip-go
+        run: go install github.com/sourcegraph/scip-go/cmd/scip-go@latest
+      - name: Install src
+        run: |
+          curl -L https://sourcegraph.com/.api/src-cli/src_linux_amd64 -o /usr/local/bin/src
+          chmod +x /usr/local/bin/src
       - name: Generate SCIP data
         run: scip-go
       - name: Upload SCIP data to Sourcegraph.com
