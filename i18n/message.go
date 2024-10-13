@@ -257,7 +257,7 @@ func isMessage(v interface{}) (bool, error) {
 			for key, v := range data {
 				k, ok := key.(string)
 				if !ok {
-					unreservedKeys = append(unreservedKeys, fmt.Sprintf("%+v", k))
+					unreservedKeys = append(unreservedKeys, fmt.Sprintf("%+v", key))
 				} else if isReserved(k, v) {
 					reservedKeys = append(reservedKeys, k)
 				} else {

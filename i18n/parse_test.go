@@ -216,6 +216,19 @@ some-keys:
 			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
 			err:            errors.New("expected key to be string but got 2"),
 		},
+		{
+			name: "YAML extra number key test",
+			file: `
+some-keys:
+    other: world
+    2: legit`,
+			path:           "en.yaml",
+			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
+			err: &mixedKeysError{
+				reservedKeys:   []string{"other"},
+				unreservedKeys: []string{"2"},
+			},
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
