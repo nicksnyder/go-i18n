@@ -1,3 +1,4 @@
+version: 2
 builds:
   - binary: goi18n
     main: ./goi18n/
