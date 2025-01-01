@@ -24,7 +24,7 @@ jobs:
       - name: Test
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Upload coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
