@@ -768,3 +768,14 @@ func TestMustLocalize(t *testing.T) {
 		MessageID: "hello",
 	})
 }
+
+func TestMustLocalizeMessage(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatalf("MustLocalizeMessage did not panic")
+		}
+	}()
+	bundle := NewBundle(language.English)
+	localizer := NewLocalizer(bundle)
+	localizer.MustLocalizeMessage(&Message{})
+}

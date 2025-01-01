@@ -124,7 +124,7 @@ func (l *Localizer) Localize(lc *LocalizeConfig) (string, error) {
 	return msg, err
 }
 
-// Localize returns a localized message.
+// LocalizeMessage returns a localized message.
 func (l *Localizer) LocalizeMessage(msg *Message) (string, error) {
 	return l.Localize(&LocalizeConfig{
 		DefaultMessage: msg,
@@ -231,6 +231,15 @@ func (l *Localizer) pluralForm(tag language.Tag, operands *plural.Operands) plur
 // MustLocalize is similar to Localize, except it panics if an error happens.
 func (l *Localizer) MustLocalize(lc *LocalizeConfig) string {
 	localized, err := l.Localize(lc)
+	if err != nil {
+		panic(err)
+	}
+	return localized
+}
+
+// MustLocalizeMessage is similar to LocalizeMessage, except it panics if an error happens.
+func (l *Localizer) MustLocalizeMessage(msg *Message) string {
+	localized, err := l.LocalizeMessage(msg)
 	if err != nil {
 		panic(err)
 	}
