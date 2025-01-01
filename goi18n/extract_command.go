@@ -67,10 +67,41 @@ func (ec *extractCommand) parse(args []string) error {
 	return nil
 }
 
+func resolveMessageFieldWithConsts(f *string, consts []*constObj) {
+	s := strings.Split(*f, unresolvedConstIdentifier)
+	if len(s) != 2 {
+		return
+	}
+
+	name, pkg := s[0], s[1]
+	for _, c := range consts {
+		if c.name == name && c.packageName == pkg {
+			*f = c.value
+			return
+		}
+	}
+	*f = name
+}
+
+func resolveMessageWithConsts(m *i18n.Message, consts []*constObj) {
+	resolveMessageFieldWithConsts(&m.ID, consts)
+	resolveMessageFieldWithConsts(&m.Hash, consts)
+	resolveMessageFieldWithConsts(&m.Description, consts)
+	resolveMessageFieldWithConsts(&m.LeftDelim, consts)
+	resolveMessageFieldWithConsts(&m.RightDelim, consts)
+	resolveMessageFieldWithConsts(&m.Zero, consts)
+	resolveMessageFieldWithConsts(&m.One, consts)
+	resolveMessageFieldWithConsts(&m.Two, consts)
+	resolveMessageFieldWithConsts(&m.Few, consts)
+	resolveMessageFieldWithConsts(&m.Many, consts)
+	resolveMessageFieldWithConsts(&m.Other, consts)
+}
+
 func (ec *extractCommand) execute() error {
 	if len(ec.paths) == 0 {
 		ec.paths = []string{"."}
 	}
+	consts := []*constObj{}
 	messages := []*i18n.Message{}
 	for _, path := range ec.paths {
 		if err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
@@ -93,18 +124,24 @@ func (ec *extractCommand) execute() error {
 			if err != nil {
 				return err
 			}
-			msgs, err := extractMessages(buf)
+			msgs, cnsts, err := extractMessages(buf)
 			if err != nil {
 				return err
 			}
 			messages = append(messages, msgs...)
+			consts = append(consts, cnsts...)
 			return nil
 		}); err != nil {
 			return err
 		}
 	}
+
 	messageTemplates := map[string]*i18n.MessageTemplate{}
 	for _, m := range messages {
+		// resolve message consts
+		resolveMessageWithConsts(m, consts)
+
+		// create template
 		if mt := i18n.NewMessageTemplate(m); mt != nil {
 			if duplicateMessage, ok := messageTemplates[m.ID]; ok && !reflect.DeepEqual(mt, duplicateMessage) {
 				return &duplicateMessageIDErr{messageID: m.ID}
@@ -128,24 +165,37 @@ func (e *duplicateMessageIDErr) Error() string {
 }
 
 // extractMessages extracts messages from the bytes of a Go source file.
-func extractMessages(buf []byte) ([]*i18n.Message, error) {
+func extractMessages(buf []byte) ([]*i18n.Message, []*constObj, error) {
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "", buf, parser.AllErrors)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	extractor := newExtractor(file)
 	ast.Walk(extractor, file)
-	return extractor.messages, nil
+	return extractor.messages, extractor.consts, nil
 }
 
 func newExtractor(file *ast.File) *extractor {
-	return &extractor{i18nPackageName: i18nPackageName(file)}
+	return &extractor{
+		i18nPackageName: i18nPackageName(file),
+		packageName:     file.Name.Name,
+	}
+}
+
+const unresolvedConstIdentifier = ":::unresolved:::"
+
+type constObj struct {
+	name        string
+	value       string
+	packageName string
 }
 
 type extractor struct {
 	i18nPackageName string
+	packageName     string
 	messages        []*i18n.Message
+	consts          []*constObj
 }
 
 func (e *extractor) Visit(node ast.Node) ast.Visitor {
@@ -153,7 +203,37 @@ func (e *extractor) Visit(node ast.Node) ast.Visitor {
 	return e
 }
 
+func (e *extractor) extractConsts(node ast.GenDecl) {
+	if node.Tok != token.CONST {
+		return
+	}
+
+	for _, s := range node.Specs {
+		if vs, ok := s.(*ast.ValueSpec); ok {
+			for i, n := range vs.Names {
+
+				if bl, ok := vs.Values[i].(*ast.BasicLit); ok {
+					v, err := strconv.Unquote(bl.Value)
+					if err != nil {
+						continue
+					}
+					e.consts = append(e.consts, &constObj{
+						name:        n.Name,
+						value:       v,
+						packageName: e.packageName,
+					})
+				}
+			}
+		}
+	}
+}
+
 func (e *extractor) extractMessages(node ast.Node) {
+	// Collect consts from all files to resolve nil objects recived after extract message
+	if gd, ok := node.(*ast.GenDecl); ok {
+		e.extractConsts(*gd)
+	}
+
 	cl, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return
@@ -233,6 +313,11 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 		}
 		v, ok := extractStringLiteral(kve.Value)
 		if !ok {
+			if len(v) > 0 {
+				// v might be not empty if const cannot be r (placed other file) so we should try to resolve it later
+				data[key.Name] = v + unresolvedConstIdentifier + e.packageName
+			}
+
 			continue
 		}
 		data[key.Name] = v
@@ -272,7 +357,7 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 		return x + y, true
 	case *ast.Ident:
 		if v.Obj == nil {
-			return "", false
+			return v.Name, false
 		}
 		switch z := v.Obj.Decl.(type) {
 		case *ast.ValueSpec:
