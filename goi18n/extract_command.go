@@ -211,18 +211,27 @@ func (e *extractor) extractConsts(node ast.GenDecl) {
 	for _, s := range node.Specs {
 		if vs, ok := s.(*ast.ValueSpec); ok {
 			for i, n := range vs.Names {
-
-				if bl, ok := vs.Values[i].(*ast.BasicLit); ok {
-					v, err := strconv.Unquote(bl.Value)
-					if err != nil {
-						continue
-					}
-					e.consts = append(e.consts, &constObj{
-						name:        n.Name,
-						value:       v,
-						packageName: e.packageName,
-					})
+				if len(vs.Values) <= i {
+					break
 				}
+				bl, ok := vs.Values[i].(*ast.BasicLit)
+				if !ok {
+					break
+				}
+
+				v, err := strconv.Unquote(bl.Value)
+				if err != nil {
+					continue
+				}
+				if v == "iota" {
+					break
+				}
+				e.consts = append(e.consts, &constObj{
+					name:        n.Name,
+					value:       v,
+					packageName: e.packageName,
+				})
+
 			}
 		}
 	}
