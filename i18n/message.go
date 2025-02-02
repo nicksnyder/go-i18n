@@ -192,7 +192,8 @@ var reservedKeys = map[string]struct{}{
 }
 
 func isReserved(key string, val any) bool {
-	if _, ok := reservedKeys[key]; ok {
+	lk := strings.ToLower(key)
+	if _, ok := reservedKeys[lk]; ok {
 		if key == "translation" {
 			return true
 		}
@@ -214,62 +215,44 @@ func isMessage(v interface{}) (bool, error) {
 	case nil, string:
 		return true, nil
 	case map[string]interface{}:
-		reservedKeyCount := 0
-		for key := range reservedKeys {
-			val, ok := data[key]
-			if ok && isReserved(key, val) {
-				reservedKeyCount++
+		reservedKeys := make([]string, 0, len(reservedKeys))
+		unreservedKeys := make([]string, 0, len(data))
+		for k, v := range data {
+			if isReserved(k, v) {
+				reservedKeys = append(reservedKeys, k)
+			} else {
+				unreservedKeys = append(unreservedKeys, k)
 			}
 		}
-		if reservedKeyCount == 0 {
-			return false, nil
-		}
-		if len(data) > reservedKeyCount {
-			reservedKeys := make([]string, 0, reservedKeyCount)
-			unreservedKeys := make([]string, 0, len(data)-reservedKeyCount)
-			for k, v := range data {
-				if isReserved(k, v) {
-					reservedKeys = append(reservedKeys, k)
-				} else {
-					unreservedKeys = append(unreservedKeys, k)
-				}
-			}
+		hasReservedKeys := len(reservedKeys) > 0
+		if hasReservedKeys && len(unreservedKeys) > 0 {
 			return false, &mixedKeysError{
 				reservedKeys:   reservedKeys,
 				unreservedKeys: unreservedKeys,
 			}
 		}
-		return true, nil
+		return hasReservedKeys, nil
 	case map[interface{}]interface{}:
-		reservedKeyCount := 0
-		for key := range reservedKeys {
-			val, ok := data[key]
-			if ok && isReserved(key, val) {
-				reservedKeyCount++
+		reservedKeys := make([]string, 0, len(reservedKeys))
+		unreservedKeys := make([]string, 0, len(data))
+		for key, v := range data {
+			k, ok := key.(string)
+			if !ok {
+				unreservedKeys = append(unreservedKeys, fmt.Sprintf("%+v", key))
+			} else if isReserved(k, v) {
+				reservedKeys = append(reservedKeys, k)
+			} else {
+				unreservedKeys = append(unreservedKeys, k)
 			}
 		}
-		if reservedKeyCount == 0 {
-			return false, nil
-		}
-		if len(data) > reservedKeyCount {
-			reservedKeys := make([]string, 0, reservedKeyCount)
-			unreservedKeys := make([]string, 0, len(data)-reservedKeyCount)
-			for key, v := range data {
-				k, ok := key.(string)
-				if !ok {
-					unreservedKeys = append(unreservedKeys, fmt.Sprintf("%+v", key))
-				} else if isReserved(k, v) {
-					reservedKeys = append(reservedKeys, k)
-				} else {
-					unreservedKeys = append(unreservedKeys, k)
-				}
-			}
+		hasReservedKeys := len(reservedKeys) > 0
+		if hasReservedKeys && len(unreservedKeys) > 0 {
 			return false, &mixedKeysError{
 				reservedKeys:   reservedKeys,
 				unreservedKeys: unreservedKeys,
 			}
 		}
-		return true, nil
+		return hasReservedKeys, nil
 	}
 	return false, nil
 }

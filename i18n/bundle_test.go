@@ -30,6 +30,8 @@ var everythingMessage = MustNewMessage(map[string]string{
 	"few":         "few translation",
 	"many":        "many translation",
 	"other":       "other translation",
+	"leftDelim":   "<<",
+	"rightDelim":  ">>",
 })
 
 func TestConcurrentAccess(t *testing.T) {
@@ -113,7 +115,9 @@ func TestJSON(t *testing.T) {
 		"two": "two translation",
 		"few": "few translation",
 		"many": "many translation",
-		"other": "other translation"
+		"other": "other translation",
+		"leftDelim": "<<",
+		"rightDelim": ">>"
 	}
 }`), "en-US.json")
 
@@ -143,6 +147,8 @@ everything:
   few: few translation
   many: many translation
   other: other translation
+  leftDelim: "<<"
+  rightDelim: ">>"
 `), "en-US.yaml")
 
 	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
@@ -171,6 +177,8 @@ everything:
   few: few translation
   many: many translation
   other: other translation
+  leftDelim: "<<"
+  rightDelmin: ">>"
   garbage: something
 
 description: translation
@@ -212,6 +220,8 @@ two = "two translation"
 few = "few translation"
 many = "many translation"
 other = "other translation"
+leftDelim = "<<"
+rightDelim = ">>"
 `), "en-US.toml")
 
 	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
@@ -241,9 +251,7 @@ func TestV1Format(t *testing.T) {
 `), "en-US.json")
 
 	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
-	e := *everythingMessage
-	e.Description = ""
-	expectMessage(t, bundle, language.AmericanEnglish, "everything", &e)
+	expectMessage(t, bundle, language.AmericanEnglish, "everything", newV1EverythingMessage())
 }
 
 func TestV1FlatFormat(t *testing.T) {
@@ -264,15 +272,21 @@ func TestV1FlatFormat(t *testing.T) {
 `), "en-US.json")
 
 	expectMessage(t, bundle, language.AmericanEnglish, "simple", simpleMessage)
-	e := *everythingMessage
-	e.Description = ""
-	expectMessage(t, bundle, language.AmericanEnglish, "everything", &e)
+	expectMessage(t, bundle, language.AmericanEnglish, "everything", newV1EverythingMessage())
 }
 
 func expectMessage(t *testing.T, bundle *Bundle, tag language.Tag, messageID string, message *Message) {
 	expected := NewMessageTemplate(message)
 	actual := bundle.messageTemplates[tag][messageID]
 	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("bundle.MessageTemplates[%q][%q] = %#v; want %#v", tag, messageID, actual, expected)
+		t.Errorf("bundle.MessageTemplates[%q][%q]\ngot  %#v\nwant %#v", tag, messageID, actual, expected)
 	}
+}
+
+func newV1EverythingMessage() *Message {
+	e := *everythingMessage
+	e.Description = ""
+	e.LeftDelim = ""
+	e.RightDelim = ""
+	return &e
 }
