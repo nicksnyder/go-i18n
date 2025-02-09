@@ -52,8 +52,8 @@ func TestParseMessageFileBytes(t *testing.T) {
 			file: `{"other": "world", "foo": "bar"}`,
 			path: "en.json",
 			err: &mixedKeysError{
-				reservedKeys:   []string{"other"},
-				unreservedKeys: []string{"foo"},
+				messageKeys:    []string{"other"},
+				nonMessageKeys: []string{"foo"},
 			},
 		},
 		{
@@ -122,8 +122,8 @@ func TestParseMessageFileBytes(t *testing.T) {
 			file: `{"notnested": {"description": "world", "dummy": "nothing"}}`,
 			path: "en.json",
 			err: &mixedKeysError{
-				reservedKeys:   []string{"description"},
-				unreservedKeys: []string{"dummy"},
+				messageKeys:    []string{"description"},
+				nonMessageKeys: []string{"dummy"},
 			},
 		},
 		{
@@ -225,8 +225,8 @@ some-keys:
 			path:           "en.yaml",
 			unmarshalFuncs: map[string]UnmarshalFunc{"yaml": yaml.Unmarshal},
 			err: &mixedKeysError{
-				reservedKeys:   []string{"other"},
-				unreservedKeys: []string{"2"},
+				messageKeys:    []string{"other"},
+				nonMessageKeys: []string{"2"},
 			},
 		},
 	}

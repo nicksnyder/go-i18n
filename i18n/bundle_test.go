@@ -10,6 +10,18 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+func TestTOMLBug(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustParseMessageFileBytes([]byte(`
+[config.control]
+description = "hello"
+foo = "bar"
+`), "en.toml")
+
+	_ = NewLocalizer(bundle, "en").MustLocalize(&LocalizeConfig{MessageID: "config.control.description"})
+}
+
 var simpleMessage = MustNewMessage(map[string]string{
 	"id":    "simple",
 	"other": "simple translation",
@@ -185,8 +197,8 @@ description: translation
 `), "en-US.yaml")
 
 	expectedErr := &mixedKeysError{
-		reservedKeys:   []string{"description"},
-		unreservedKeys: []string{"detail", "everything", "simple"},
+		messageKeys:    []string{"description"},
+		nonMessageKeys: []string{"detail", "everything", "simple"},
 	}
 	if err == nil {
 		t.Fatalf("expected error %#v; got nil", expectedErr)

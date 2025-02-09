@@ -176,7 +176,8 @@ func stringSubmap(k string, v interface{}, strdata map[string]string) error {
 	}
 }
 
-var reservedKeys = map[string]struct{}{
+// messageKeys are the keys allowed in a message.
+var messageKeys = map[string]struct{}{
 	"id":          {},
 	"description": {},
 	"hash":        {},
@@ -191,9 +192,9 @@ var reservedKeys = map[string]struct{}{
 	"translation": {},
 }
 
-func isReserved(key string, val any) bool {
+func isMessageKey(key string, val any) bool {
 	lk := strings.ToLower(key)
-	if _, ok := reservedKeys[lk]; ok {
+	if _, ok := messageKeys[lk]; ok {
 		if key == "translation" {
 			return true
 		}
@@ -204,66 +205,66 @@ func isReserved(key string, val any) bool {
 	return false
 }
 
-// isMessage returns true if v contains only message keys and false if it contains no message keys.
+// isMessage returns true if v contains an "id" key combined with only message keys and false if v contains only non-message keys.
 // It returns an error if v contains both message and non-message keys.
-// - {"message": {"description": "world"}} is a message
-// - {"error": {"description": "world", "foo": "bar"}} is an error
-// - {"notmessage": {"description": {"hello": "world"}}} is not a message
-// - {"notmessage": {"foo": "bar"}} is not a message
 func isMessage(v interface{}) (bool, error) {
 	switch data := v.(type) {
 	case nil, string:
 		return true, nil
 	case map[string]interface{}:
-		reservedKeys := make([]string, 0, len(reservedKeys))
-		unreservedKeys := make([]string, 0, len(data))
+		if _, ok := data["other"]; !ok {
+			return false, nil
+		}
+		messageKeys := make([]string, 0, len(messageKeys))
+		nonMessageKeys := make([]string, 0, len(data))
 		for k, v := range data {
-			if isReserved(k, v) {
-				reservedKeys = append(reservedKeys, k)
+			if isMessageKey(k, v) {
+				messageKeys = append(messageKeys, k)
 			} else {
-				unreservedKeys = append(unreservedKeys, k)
+				nonMessageKeys = append(nonMessageKeys, k)
 			}
 		}
-		hasReservedKeys := len(reservedKeys) > 0
-		if hasReservedKeys && len(unreservedKeys) > 0 {
+		if len(nonMessageKeys) > 0 {
 			return false, &mixedKeysError{
-				reservedKeys:   reservedKeys,
-				unreservedKeys: unreservedKeys,
+				messageKeys:    messageKeys,
+				nonMessageKeys: nonMessageKeys,
 			}
 		}
-		return hasReservedKeys, nil
+		return true, nil
 	case map[interface{}]interface{}:
-		reservedKeys := make([]string, 0, len(reservedKeys))
-		unreservedKeys := make([]string, 0, len(data))
+		if _, ok := data["other"]; !ok {
+			return false, nil
+		}
+		messageKeys := make([]string, 0, len(messageKeys))
+		nonMessageKeys := make([]string, 0, len(data))
 		for key, v := range data {
 			k, ok := key.(string)
 			if !ok {
-				unreservedKeys = append(unreservedKeys, fmt.Sprintf("%+v", key))
-			} else if isReserved(k, v) {
-				reservedKeys = append(reservedKeys, k)
+				nonMessageKeys = append(nonMessageKeys, fmt.Sprintf("%+v", key))
+			} else if isMessageKey(k, v) {
+				messageKeys = append(messageKeys, k)
 			} else {
-				unreservedKeys = append(unreservedKeys, k)
+				nonMessageKeys = append(nonMessageKeys, k)
 			}
 		}
-		hasReservedKeys := len(reservedKeys) > 0
-		if hasReservedKeys && len(unreservedKeys) > 0 {
+		if len(nonMessageKeys) > 0 {
 			return false, &mixedKeysError{
-				reservedKeys:   reservedKeys,
-				unreservedKeys: unreservedKeys,
+				messageKeys:    messageKeys,
+				nonMessageKeys: nonMessageKeys,
 			}
 		}
-		return hasReservedKeys, nil
+		return true, nil
 	}
 	return false, nil
 }
 
 type mixedKeysError struct {
-	reservedKeys   []string
-	unreservedKeys []string
+	messageKeys    []string
+	nonMessageKeys []string
 }
 
 func (e *mixedKeysError) Error() string {
-	sort.Strings(e.reservedKeys)
-	sort.Strings(e.unreservedKeys)
-	return fmt.Sprintf("reserved keys %v mixed with unreserved keys %v", e.reservedKeys, e.unreservedKeys)
+	sort.Strings(e.messageKeys)
+	sort.Strings(e.nonMessageKeys)
+	return fmt.Sprintf("message keys %v mixed with non-message keys %v", e.messageKeys, e.nonMessageKeys)
 }
