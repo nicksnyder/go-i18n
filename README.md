@@ -1,5 +1,5 @@
 # go-i18n
-![Build status](https://github.com/nicksnyder/go-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n/v2)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n/v2) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/graph/badge.svg?token=A9aMfR9vxG)](https://codecov.io/gh/nicksnyder/go-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/nicksnyder/go-i18n/-/badge.svg)](https://sourcegraph.com/github.com/nicksnyder/go-i18n?badge)
+![Build status](https://github.com/nicksnyder/go-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/nicksnyder/go-i18n/v2)](https://goreportcard.com/report/github.com/nicksnyder/go-i18n/v2) [![codecov](https://codecov.io/gh/nicksnyder/go-i18n/graph/badge.svg?token=A9aMfR9vxG)](https://codecov.io/gh/nicksnyder/go-i18n)
 
 go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that helps you translate Go programs into multiple languages.
 
