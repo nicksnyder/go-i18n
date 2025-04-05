@@ -26,7 +26,7 @@ type PluralGroup struct {
 // Name returns a unique name for this plural group.
 func (pg *PluralGroup) Name() string {
 	n := cases.Title(language.AmericanEnglish).String(pg.Locales)
-	return strings.Replace(n, " ", "", -1)
+	return strings.ReplaceAll(n, " ", "")
 }
 
 // SplitLocales returns all the locales in the PluralGroup as a slice.

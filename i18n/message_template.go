@@ -61,7 +61,7 @@ func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, fun
 	if t == nil {
 		return "", pluralFormNotFoundError{
 			pluralForm: pluralForm,
-			messageID:  mt.Message.ID,
+			messageID:  mt.ID,
 		}
 	}
 	parser := &template.TextParser{
@@ -75,7 +75,7 @@ func (mt *MessageTemplate) execute(pluralForm plural.Form, data interface{}, par
 	if t == nil {
 		return "", pluralFormNotFoundError{
 			pluralForm: pluralForm,
-			messageID:  mt.Message.ID,
+			messageID:  mt.ID,
 		}
 	}
 	return t.Execute(parser, data)
