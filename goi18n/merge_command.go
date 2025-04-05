@@ -99,7 +99,7 @@ func (mc *mergeCommand) execute() error {
 	}
 	for _, path := range ops.deleteFiles {
 		// Ignore error since it isn't guaranteed to exist.
-		os.Remove(path)
+		_ = os.Remove(path)
 	}
 	return nil
 }

@@ -18,7 +18,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version: '1.24'
       -
         name: Release
         uses: goreleaser/goreleaser-action@v6
