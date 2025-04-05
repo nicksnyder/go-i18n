@@ -530,9 +530,9 @@ zero = "{{.Count}} unread emails"
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			indir := mustTempDir("TestMergeCommandIn")
-			defer os.RemoveAll(indir)
+			defer mustRemoveAll(t, indir)
 			outdir := mustTempDir("TestMergeCommandOut")
-			defer os.RemoveAll(outdir)
+			defer mustRemoveAll(t, outdir)
 
 			infiles := make([]string, 0, len(testCase.inFiles))
 			for name, content := range testCase.inFiles {

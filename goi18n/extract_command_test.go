@@ -290,9 +290,9 @@ zero = "Zero translation"
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			indir := mustTempDir("TestExtractCommandIn")
-			defer os.RemoveAll(indir)
+			defer mustRemoveAll(t, indir)
 			outdir := mustTempDir("TestExtractCommandOut")
-			defer os.RemoveAll(outdir)
+			defer mustRemoveAll(t, outdir)
 
 			inpath := filepath.Join(indir, test.fileName)
 			if err := os.WriteFile(inpath, []byte(test.file), 0666); err != nil {
@@ -342,7 +342,7 @@ func TestExtractCommand(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(outdir)
+	defer mustRemoveAll(t, outdir)
 	if code := testableMain([]string{"extract", "-outdir", outdir, "../example/"}); code != 0 {
 		t.Fatalf("expected exit code 0; got %d", code)
 	}
