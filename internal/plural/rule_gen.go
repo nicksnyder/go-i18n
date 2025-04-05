@@ -33,7 +33,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"ast", "de", "en", "et", "fi", "fy", "gl", "ia", "io", "ji", "lij", "nl", "sc", "scn", "sv", "sw", "ur", "yi"}, &Rule{
+	addPluralRules(rules, []string{"ast", "de", "en", "et", "fi", "fy", "gl", "ia", "io", "ji", "lij", "nl", "sc", "sv", "sw", "ur", "yi"}, &Rule{
 		PluralForms: newPluralFormSet(One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// i = 1 and v = 0
@@ -54,7 +54,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"ak", "bho", "guw", "ln", "mg", "nso", "pa", "ti", "wa"}, &Rule{
+	addPluralRules(rules, []string{"ak", "bho", "csw", "guw", "ln", "mg", "nso", "pa", "ti", "wa"}, &Rule{
 		PluralForms: newPluralFormSet(One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// n = 0..1
@@ -162,7 +162,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"ksh"}, &Rule{
+	addPluralRules(rules, []string{"blo"}, &Rule{
 		PluralForms: newPluralFormSet(Zero, One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// n = 0
@@ -176,7 +176,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"blo"}, &Rule{
+	addPluralRules(rules, []string{"ksh"}, &Rule{
 		PluralForms: newPluralFormSet(Zero, One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// n = 0
@@ -296,7 +296,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"ca", "it", "pt_PT", "vec"}, &Rule{
+	addPluralRules(rules, []string{"ca", "it", "lld", "pt_PT", "scn", "vec"}, &Rule{
 		PluralForms: newPluralFormSet(One, Many, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// i = 1 and v = 0
