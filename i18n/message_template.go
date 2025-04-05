@@ -53,7 +53,7 @@ func (e pluralFormNotFoundError) Error() string {
 }
 
 // Execute executes the template for the plural form and template data.
-// Deprecated: This message is no longer used internally by go-i18n and it probably should not have been exported to
+// Deprecated: This method is no longer used internally by go-i18n and it probably should not have been exported to
 // begin with. Its replacement is not exported. If you depend on this method for some reason and/or have
 // a use case for exporting execute, please file an issue.
 func (mt *MessageTemplate) Execute(pluralForm plural.Form, data interface{}, funcs texttemplate.FuncMap) (string, error) {
