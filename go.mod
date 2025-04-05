@@ -1,6 +1,8 @@
 module github.com/nicksnyder/go-i18n/v2
 
-go 1.18
+go 1.23
+
+toolchain go1.24.2
 
 require (
 	github.com/BurntSushi/toml v1.5.0
