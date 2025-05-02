@@ -19,7 +19,26 @@ type MessageFile struct {
 
 // ParseMessageFileBytes returns the messages parsed from file.
 func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]UnmarshalFunc) (*MessageFile, error) {
-	lang, format := parsePath(path)
+	return ParseMessageFileBytesWithParsePathFunc(buf, path, unmarshalFuncs, parsePath)
+}
+
+// ParseMessageFileBytesWithParsePathFunc parses message files based on file content and path.
+// It uses a custom file path parsing function and a map of deserialization functions to handle different formats.
+// The main purpose of this function is to parse the file content into a MessageFile structure according to the file path and format.
+// Parameters:
+// - buf: The file content in byte slice form.
+// - path: The file path string, used to determine the language and format.
+// - unmarshalFuncs: A map containing deserialization functions for different formats.
+// - parsePathFunc: A custom function for parsing file paths, used to obtain language and format information.
+// Return values:
+// - *MessageFile: A pointer to the parsed MessageFile structure.
+// - error: Error information, if any.
+func ParseMessageFileBytesWithParsePathFunc(buf []byte, path string, unmarshalFuncs map[string]UnmarshalFunc, parsePathFunc ParsePathFunc) (*MessageFile, error) {
+	if parsePathFunc == nil {
+		parsePathFunc = parsePath
+	}
+
+	lang, format := parsePathFunc(path)
 	tag := language.Make(lang)
 	messageFile := &MessageFile{
 		Path:   path,
