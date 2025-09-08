@@ -12,6 +12,9 @@ import (
 // UnmarshalFunc unmarshals data into v.
 type UnmarshalFunc func(data []byte, v interface{}) error
 
+// ParsePathFunc parses language tag and format from path.
+type ParsePathFunc func(path string) (langTag, format string)
+
 // Bundle stores a set of messages and pluralization rules.
 // Most applications only need a single bundle
 // that is initialized early in the application's lifecycle.
@@ -24,6 +27,7 @@ type Bundle struct {
 	pluralRules      plural.Rules
 	tags             []language.Tag
 	matcher          language.Matcher
+	parsePathFunc    ParsePathFunc
 }
 
 // artTag is the language tag used for artificial languages
@@ -47,6 +51,11 @@ func (b *Bundle) RegisterUnmarshalFunc(format string, unmarshalFunc UnmarshalFun
 		b.unmarshalFuncs = make(map[string]UnmarshalFunc)
 	}
 	b.unmarshalFuncs[format] = unmarshalFunc
+}
+
+// SetParsePathFunc sets the function that parses the language tag and format from a file path.
+func (b *Bundle) SetParsePathFunc(parsePathFunc ParsePathFunc) {
+	b.parsePathFunc = parsePathFunc
 }
 
 // LoadMessageFile loads the bytes from path
@@ -73,7 +82,7 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
-	messageFile, err := ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
+	messageFile, err := ParseMessageFileBytesWithParsePathFunc(buf, path, b.unmarshalFuncs, b.parsePathFunc)
 	if err != nil {
 		return nil, err
 	}
