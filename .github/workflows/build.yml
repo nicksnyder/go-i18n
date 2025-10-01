@@ -18,7 +18,7 @@ jobs:
           version: 1.23.x
     steps:
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version.version }}
       - name: Git checkout
