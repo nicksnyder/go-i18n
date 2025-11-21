@@ -4,9 +4,10 @@ import (
 	"fmt"
 	texttemplate "text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/template"
-	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
+
+	"github.com/ValeryVerkhoturov/go-i18n/v2/i18n/template"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/internal/plural"
 )
 
 // Localizer provides Localize and MustLocalize methods that return localized messages.

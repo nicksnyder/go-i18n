@@ -9,11 +9,12 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"github.com/nicksnyder/go-i18n/v2/internal"
-	"github.com/nicksnyder/go-i18n/v2/internal/plural"
 	"golang.org/x/text/language"
-	yaml "gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v3"
+
+	"github.com/ValeryVerkhoturov/go-i18n/v2/i18n"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/internal"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/internal/plural"
 )
 
 func usageMerge() {

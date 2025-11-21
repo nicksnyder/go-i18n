@@ -15,7 +15,7 @@ go-i18n is a Go [package](#package-i18n) and a [command](#command-goi18n) that h
 The i18n package provides support for looking up messages according to a set of locale preferences.
 
 ```go
-import "github.com/nicksnyder/go-i18n/v2/i18n"
+import "github.com/ValeryVerkhoturov/go-i18n/v2/i18n"
 ```
 
 Create a Bundle to use for the lifetime of your application.
@@ -74,7 +74,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 The goi18n command manages message files used by the i18n package.
 
 ```
-go install -v github.com/nicksnyder/go-i18n/v2/goi18n@latest
+go install -v github.com/ValeryVerkhoturov/go-i18n/v2/goi18n@latest
 goi18n -help
 ```
 

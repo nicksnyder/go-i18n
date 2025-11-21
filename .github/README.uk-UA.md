@@ -15,7 +15,7 @@ go-i18n — це Go [пакет](#package-i18n) та [інструмент](#com
 Пакет i18n забезпечує підтримку пошуку повідомлень відповідно до набору мовних уподобань.
 
 ```go
-import "github.com/nicksnyder/go-i18n/v2/i18n"
+import "github.com/ValeryVerkhoturov/go-i18n/v2/i18n"
 ```
 
 Створіть Bundle, який використовуватимете протягом усього терміну служби вашої програми.
@@ -74,7 +74,7 @@ localizer.Localize(&i18n.LocalizeConfig{
 Команда goi18n управляє файлами повідомлень, що використовуються пакетом i18n.
 
 ```
-go install -v github.com/nicksnyder/go-i18n/v2/goi18n@latest
+go install -v github.com/ValeryVerkhoturov/go-i18n/v2/goi18n@latest
 goi18n -help
 ```
 

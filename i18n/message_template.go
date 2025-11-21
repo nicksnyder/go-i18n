@@ -4,9 +4,9 @@ import (
 	"fmt"
 	texttemplate "text/template"
 
-	"github.com/nicksnyder/go-i18n/v2/i18n/template"
-	"github.com/nicksnyder/go-i18n/v2/internal"
-	"github.com/nicksnyder/go-i18n/v2/internal/plural"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/i18n/template"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/internal"
+	"github.com/ValeryVerkhoturov/go-i18n/v2/internal/plural"
 )
 
 // MessageTemplate is an executable template for a message.
