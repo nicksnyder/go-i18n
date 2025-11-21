@@ -12,7 +12,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "pcm", "zu"}, &Rule{
+	addPluralRules(rules, []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "pcm", "tg", "zu"}, &Rule{
 		PluralForms: newPluralFormSet(One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// i = 0 or n = 1
