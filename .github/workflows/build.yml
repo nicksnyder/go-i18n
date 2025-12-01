@@ -22,7 +22,7 @@ jobs:
         with:
           go-version: ${{ matrix.go-version.version }}
       - name: Git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build
         uses: goreleaser/goreleaser-action@v6
         with:
