@@ -11,7 +11,7 @@ builds:
     env:
       - CGO_ENABLED=0
 archives:
-  - format: binary
+  - formats: ['binary']
     name_template: "{{ .Binary }}-{{ .Version }}-{{ .Os }}-{{ .Arch }}"
 before:
   hooks:
