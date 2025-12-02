@@ -40,4 +40,4 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         if: matrix.go-version.name == 'latest'
         with:
-          version: v2.0
+          version: v2.6
