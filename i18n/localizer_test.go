@@ -385,6 +385,197 @@ func localizerTests() []localizerTest {
 			expectedLocalized: "Hello {{.Person}}",
 		},
 		{
+			name:            "fast parser, bundle message",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:    "HelloPerson",
+					Other: "Hello {{.Person}}",
+				}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloPerson",
+				TemplateData: map[string]string{
+					"Person": "Nick",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Hello Nick",
+		},
+		{
+			name:            "fast parser, default message with plural",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "PersonCats",
+					One:   "{{.Person}} has {{.Count}} cat",
+					Other: "{{.Person}} has {{.Count}} cats",
+				},
+				TemplateData: map[string]interface{}{
+					"Person": "Nick",
+					"Count":  2,
+				},
+				PluralCount:    2,
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Nick has 2 cats",
+		},
+		{
+			name:            "fast parser, plural count one",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "PersonCats",
+					One:   "{{.Person}} has {{.Count}} cat",
+					Other: "{{.Person}} has {{.Count}} cats",
+				},
+				TemplateData: map[string]interface{}{
+					"Person": "Alice",
+					"Count":  1,
+				},
+				PluralCount:    1,
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Alice has 1 cat",
+		},
+		{
+			name:            "fast parser, plural count float",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "Weight",
+					One:   "{{.Item}} weighs {{.Weight}} kg",
+					Other: "{{.Item}} weighs {{.Weight}} kg",
+				},
+				TemplateData: map[string]interface{}{
+					"Item":   "Apple",
+					"Weight": "1.5",
+				},
+				PluralCount:    "1.5",
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Apple weighs 1.5 kg",
+		},
+		{
+			name:            "fast parser, custom delims",
+			defaultLanguage: language.English,
+			messages: map[language.Tag][]*Message{
+				language.English: {{
+					ID:         "HelloPerson",
+					Other:      "Hello <<.Person>>!",
+					LeftDelim:  "<<",
+					RightDelim: ">>",
+				}},
+			},
+			acceptLangs: []string{"en"},
+			conf: &LocalizeConfig{
+				MessageID: "HelloPerson",
+				TemplateData: map[string]interface{}{
+					"Person": "World",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Hello World!",
+		},
+		{
+			name:            "fast parser, missing key keeps placeholder",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "HelloPerson",
+					Other: "Hello {{.Person}}!",
+				},
+				TemplateData:   map[string]interface{}{},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Hello {{.Person}}!",
+		},
+		{
+			name:            "fast parser, no placeholders",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "StaticMessage",
+					Other: "This is a static message",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "This is a static message",
+		},
+		{
+			name:            "fast parser, PluralCount auto injection",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "ItemCount",
+					One:   "You have {{.PluralCount}} item",
+					Other: "You have {{.PluralCount}} items",
+				},
+				PluralCount:    5,
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "You have 5 items",
+		},
+		{
+			name:            "fast parser, multiple placeholders",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "OrderInfo",
+					Other: "Order #{{.OrderID}}: {{.Item}} x{{.Quantity}} = ${{.Total}}",
+				},
+				TemplateData: map[string]interface{}{
+					"OrderID":  12345,
+					"Item":     "Widget",
+					"Quantity": 3,
+					"Total":    "29.97",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Order #12345: Widget x3 = $29.97",
+		},
+		{
+			name:            "fast parser, map[string]string data",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "UserGreeting",
+					Other: "Welcome, {{.Username}}! Your role is {{.Role}}.",
+				},
+				TemplateData: map[string]string{
+					"Username": "john_doe",
+					"Role":     "admin",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Welcome, john_doe! Your role is admin.",
+		},
+		{
+			name:            "fast parser, without dot prefix",
+			defaultLanguage: language.English,
+			acceptLangs:     []string{"en"},
+			conf: &LocalizeConfig{
+				DefaultMessage: &Message{
+					ID:    "HelloPerson",
+					Other: "Hello {{Name}}!",
+				},
+				TemplateData: map[string]interface{}{
+					"Name": "TinyGo",
+				},
+				TemplateParser: &template.FastParser{},
+			},
+			expectedLocalized: "Hello TinyGo!",
+		},
+		{
 			name:            "identity parser, default message",
 			defaultLanguage: language.English,
 			acceptLangs:     []string{"en"},
