@@ -7,3 +7,8 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4
 	golang.org/x/text v0.32.0
 )
+
+require (
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasttemplate v1.2.2 // indirect
+)
