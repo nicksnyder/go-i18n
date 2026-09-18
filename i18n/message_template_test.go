@@ -20,6 +20,23 @@ func TestNilMessageTemplate(t *testing.T) {
 	}
 }
 
+func TestEmptyOtherMessageTemplateSkippedByDefault(t *testing.T) {
+	m, err := NewMessage("")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mt := NewMessageTemplate(m); mt != nil {
+		t.Fatal("NewMessageTemplate still skips empty other")
+	}
+	mt := newMessageTemplate(m, true)
+	if mt == nil {
+		t.Fatal("expected template for explicit empty other")
+	}
+	if src := mt.PluralTemplates[plural.Other].Src; src != "" {
+		t.Fatalf("expected empty src; got %q", src)
+	}
+}
+
 func TestMessageTemplatePluralFormMissing(t *testing.T) {
 	mt := NewMessageTemplate(&Message{ID: "HelloWorld", Other: "Hello World"})
 	s, err := mt.Execute(plural.Few, nil, nil)

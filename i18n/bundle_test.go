@@ -126,6 +126,38 @@ func TestJSON(t *testing.T) {
 	expectMessage(t, bundle, language.AmericanEnglish, "everything", everythingMessage)
 }
 
+func TestEmptyJSONStringKept(t *testing.T) {
+	bundle := NewBundle(language.English)
+	bundle.MustParseMessageFileBytes([]byte(`{
+		"application": {
+			"v1": {
+				"fields": {
+					"FirstVariableToSet": {
+						"label": "MyVariable",
+						"desc": ""
+					}
+				}
+			}
+		}
+	}`), "en.json")
+
+	loc := NewLocalizer(bundle, "en")
+	got, err := loc.Localize(&LocalizeConfig{MessageID: "application.v1.fields.FirstVariableToSet.desc"})
+	if err != nil {
+		t.Fatalf("empty translation should be found: %v", err)
+	}
+	if got != "" {
+		t.Fatalf("expected empty string; got %q", got)
+	}
+	label, err := loc.Localize(&LocalizeConfig{MessageID: "application.v1.fields.FirstVariableToSet.label"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if label != "MyVariable" {
+		t.Fatalf("expected MyVariable; got %q", label)
+	}
+}
+
 func TestYAML(t *testing.T) {
 	bundle := NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)

@@ -106,7 +106,10 @@ func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {
 		b.addTag(tag)
 	}
 	for _, m := range messages {
-		b.messageTemplates[tag][m.ID] = NewMessageTemplate(m)
+		mt := newMessageTemplate(m, true)
+		if mt != nil {
+			b.messageTemplates[tag][m.ID] = mt
+		}
 	}
 	return nil
 }
