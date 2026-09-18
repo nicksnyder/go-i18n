@@ -34,6 +34,20 @@ func TestParseMessageFileBytes(t *testing.T) {
 			},
 		},
 		{
+			name: "language from parent directory",
+			file: `{"hello": "world"}`,
+			path: "locales/en/translation.json",
+			messageFile: &MessageFile{
+				Path:   "locales/en/translation.json",
+				Tag:    language.English,
+				Format: "json",
+				Messages: []*Message{{
+					ID:    "hello",
+					Other: "world",
+				}},
+			},
+		},
+		{
 			name: "nested with reserved key",
 			file: `{"nested": {"description": {"other": "world"}}}`,
 			path: "en.json",

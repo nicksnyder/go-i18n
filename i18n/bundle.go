@@ -67,15 +67,49 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 	}
 }
 
+// LoadMessageFileWithTag is like LoadMessageFile but uses tag as the file
+// language instead of inferring it from path. Use this when files are named
+// like locales/en/translation.json.
+func (b *Bundle) LoadMessageFileWithTag(path string, tag language.Tag) (*MessageFile, error) {
+	buf, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return b.ParseMessageFileBytesWithTag(buf, path, tag)
+}
+
+// MustLoadMessageFileWithTag is similar to LoadMessageFileWithTag
+// except it panics if an error happens.
+func (b *Bundle) MustLoadMessageFileWithTag(path string, tag language.Tag) {
+	if _, err := b.LoadMessageFileWithTag(path, tag); err != nil {
+		panic(err)
+	}
+}
+
 // ParseMessageFileBytes parses the bytes in buf to add translations to the bundle.
 //
 // The format of the file is everything after the last ".".
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
+// If that name is not a well-formed language tag, a well-formed parent directory is used
+// (for example locales/en/translation.json).
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
+	return b.parseMessageFileBytes(buf, path, nil)
+}
+
+// ParseMessageFileBytesWithTag is like ParseMessageFileBytes but uses tag
+// instead of inferring the language from path.
+func (b *Bundle) ParseMessageFileBytesWithTag(buf []byte, path string, tag language.Tag) (*MessageFile, error) {
+	return b.parseMessageFileBytes(buf, path, &tag)
+}
+
+func (b *Bundle) parseMessageFileBytes(buf []byte, path string, tag *language.Tag) (*MessageFile, error) {
 	messageFile, err := ParseMessageFileBytes(buf, path, b.unmarshalFuncs)
 	if err != nil {
 		return nil, err
+	}
+	if tag != nil {
+		messageFile.Tag = *tag
 	}
 	if err := b.AddMessages(messageFile.Tag, messageFile.Messages...); err != nil {
 		return nil, err
