@@ -166,6 +166,24 @@ zero = "zero translation"
 			},
 		},
 		{
+			name:           "source message with only one plural form",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"active.en-US.toml": []byte(`
+[NewMsg]
+description = "A new message"
+one = "This is a new message"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`
+[NewMsg]
+description = "A new message"
+one = "This is a new message"
+`),
+			},
+		},
+		{
 			name:           "missing hash",
 			sourceLanguage: language.AmericanEnglish,
 			inFiles: map[string][]byte{
