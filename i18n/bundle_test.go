@@ -2,8 +2,11 @@ package i18n
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
+	"testing/fstest"
 
 	"github.com/BurntSushi/toml"
 	yaml "go.yaml.in/yaml/v3"
@@ -97,6 +100,57 @@ hello = "`+expected+`"
 		if localized != expected {
 			t.Fatalf("expected %q\ngot %q", expected, localized)
 		}
+	}
+}
+
+func TestParseMessageFileBytesWithTag(t *testing.T) {
+	bundle := NewBundle(language.English)
+	mf, err := bundle.ParseMessageFileBytesWithTag([]byte(`{"hello": "world"}`), "locales/en/translation.json", language.French)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mf.Tag != language.French {
+		t.Fatalf("expected tag %q; got %q", language.French, mf.Tag)
+	}
+	expectMessage(t, bundle, language.French, "hello", MustNewMessage(map[string]string{
+		"id":    "hello",
+		"other": "world",
+	}))
+}
+
+func TestLoadMessageFileWithTag(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "locales", "en", "translation.json")
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte(`{"hello": "world"}`), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	overridden := NewBundle(language.English)
+	mf, err := overridden.LoadMessageFileWithTag(path, language.French)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mf.Tag != language.French {
+		t.Fatalf("override tag: got %q want fr", mf.Tag)
+	}
+	expectMessage(t, overridden, language.French, "hello", MustNewMessage(map[string]string{
+		"id":    "hello",
+		"other": "world",
+	}))
+
+	fsys := fstest.MapFS{
+		"locales/de/translation.json": {Data: []byte(`{"hello": "hallo"}`)},
+	}
+	fromFS := NewBundle(language.English)
+	mf, err = fromFS.LoadMessageFileFSWithTag(fsys, "locales/de/translation.json", language.German)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if mf.Tag != language.German {
+		t.Fatalf("fs override tag: got %q want de", mf.Tag)
 	}
 }
 
