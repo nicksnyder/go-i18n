@@ -128,17 +128,8 @@ func TestLoadMessageFileWithTag(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	inferred := NewBundle(language.English)
-	mf, err := inferred.LoadMessageFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if mf.Tag != language.English {
-		t.Fatalf("inferred tag: got %q want en", mf.Tag)
-	}
-
 	overridden := NewBundle(language.English)
-	mf, err = overridden.LoadMessageFileWithTag(path, language.French)
+	mf, err := overridden.LoadMessageFileWithTag(path, language.French)
 	if err != nil {
 		t.Fatal(err)
 	}

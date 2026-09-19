@@ -68,8 +68,8 @@ func (b *Bundle) MustLoadMessageFile(path string) {
 }
 
 // LoadMessageFileWithTag is like LoadMessageFile but uses tag as the file
-// language instead of inferring it from path. Use this when files are named
-// like locales/en/translation.json.
+// language instead of inferring it from path. Use this when the filename is
+// not a language tag, for example locales/en/translation.json.
 func (b *Bundle) LoadMessageFileWithTag(path string, tag language.Tag) (*MessageFile, error) {
 	buf, err := os.ReadFile(path)
 	if err != nil {
@@ -91,8 +91,6 @@ func (b *Bundle) MustLoadMessageFileWithTag(path string, tag language.Tag) {
 // The format of the file is everything after the last ".".
 //
 // The language tag of the file is everything after the second to last "." or after the last path separator, but before the format.
-// If that name is not a well-formed language tag, a well-formed parent directory is used
-// (for example locales/en/translation.json).
 func (b *Bundle) ParseMessageFileBytes(buf []byte, path string) (*MessageFile, error) {
 	return b.parseMessageFileBytes(buf, path, nil)
 }

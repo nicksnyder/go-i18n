@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"golang.org/x/text/language"
 )
@@ -20,10 +19,11 @@ type MessageFile struct {
 
 // ParseMessageFileBytes returns the messages parsed from file.
 func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]UnmarshalFunc) (*MessageFile, error) {
-	_, format := parsePath(path)
+	lang, format := parsePath(path)
+	tag := language.Make(lang)
 	messageFile := &MessageFile{
 		Path:   path,
-		Tag:    tagFromPath(path),
+		Tag:    tag,
 		Format: format,
 	}
 	if len(buf) == 0 {
@@ -155,23 +155,6 @@ func addChildMessages(id string, data interface{}, messages []*Message) ([]*Mess
 		messages = append(messages, m)
 	}
 	return messages, nil
-}
-
-// tagFromPath infers a language tag from path.
-// It prefers a well-formed tag in the filename (active.en.json, en.toml)
-// and otherwise uses a well-formed parent directory (locales/en/translation.json).
-func tagFromPath(path string) language.Tag {
-	lang, _ := parsePath(path)
-	if tag, err := language.Parse(lang); err == nil {
-		return tag
-	}
-	parent := filepath.Base(filepath.Dir(path))
-	if parent != "" && parent != "." && parent != string(os.PathSeparator) {
-		if tag, err := language.Parse(parent); err == nil {
-			return tag
-		}
-	}
-	return language.Make(lang)
 }
 
 func parsePath(path string) (langTag, format string) {
