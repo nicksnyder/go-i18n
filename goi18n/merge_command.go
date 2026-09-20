@@ -297,6 +297,24 @@ func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active 
 func hash(t *i18n.MessageTemplate) string {
 	h := sha1.New()
 	_, _ = io.WriteString(h, t.Description)
-	_, _ = io.WriteString(h, t.PluralTemplates[plural.Other].Src)
+	_, _ = io.WriteString(h, hashSrc(t))
 	return fmt.Sprintf("sha1-%x", h.Sum(nil))
+}
+
+// hashSrc returns the source text used to fingerprint a message.
+// Prefer "other"; fall back to any present plural form so messages that only
+// define "one" (issue #235) do not panic on a nil template.
+func hashSrc(t *i18n.MessageTemplate) string {
+	if t == nil {
+		return ""
+	}
+	if other := t.PluralTemplates[plural.Other]; other != nil {
+		return other.Src
+	}
+	for _, form := range []plural.Form{plural.One, plural.Zero, plural.Two, plural.Few, plural.Many} {
+		if tmpl := t.PluralTemplates[form]; tmpl != nil {
+			return tmpl.Src
+		}
+	}
+	return ""
 }
