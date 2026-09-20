@@ -17,13 +17,17 @@ type MessageTemplate struct {
 
 // NewMessageTemplate returns a new message template.
 func NewMessageTemplate(m *Message) *MessageTemplate {
+	return newMessageTemplate(m, false)
+}
+
+func newMessageTemplate(m *Message, keepEmpty bool) *MessageTemplate {
 	pluralTemplates := map[plural.Form]*internal.Template{}
-	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero, m.LeftDelim, m.RightDelim)
-	setPluralTemplate(pluralTemplates, plural.One, m.One, m.LeftDelim, m.RightDelim)
-	setPluralTemplate(pluralTemplates, plural.Two, m.Two, m.LeftDelim, m.RightDelim)
-	setPluralTemplate(pluralTemplates, plural.Few, m.Few, m.LeftDelim, m.RightDelim)
-	setPluralTemplate(pluralTemplates, plural.Many, m.Many, m.LeftDelim, m.RightDelim)
-	setPluralTemplate(pluralTemplates, plural.Other, m.Other, m.LeftDelim, m.RightDelim)
+	setPluralTemplate(pluralTemplates, plural.Zero, m.Zero, m.LeftDelim, m.RightDelim, keepEmpty && m.zeroSet)
+	setPluralTemplate(pluralTemplates, plural.One, m.One, m.LeftDelim, m.RightDelim, keepEmpty && m.oneSet)
+	setPluralTemplate(pluralTemplates, plural.Two, m.Two, m.LeftDelim, m.RightDelim, keepEmpty && m.twoSet)
+	setPluralTemplate(pluralTemplates, plural.Few, m.Few, m.LeftDelim, m.RightDelim, keepEmpty && m.fewSet)
+	setPluralTemplate(pluralTemplates, plural.Many, m.Many, m.LeftDelim, m.RightDelim, keepEmpty && m.manySet)
+	setPluralTemplate(pluralTemplates, plural.Other, m.Other, m.LeftDelim, m.RightDelim, keepEmpty && m.otherSet)
 	if len(pluralTemplates) == 0 {
 		return nil
 	}
@@ -33,13 +37,14 @@ func NewMessageTemplate(m *Message) *MessageTemplate {
 	}
 }
 
-func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src, leftDelim, rightDelim string) {
-	if src != "" {
-		pluralTemplates[pluralForm] = &internal.Template{
-			Src:        src,
-			LeftDelim:  leftDelim,
-			RightDelim: rightDelim,
-		}
+func setPluralTemplate(pluralTemplates map[plural.Form]*internal.Template, pluralForm plural.Form, src, leftDelim, rightDelim string, present bool) {
+	if src == "" && !present {
+		return
+	}
+	pluralTemplates[pluralForm] = &internal.Template{
+		Src:        src,
+		LeftDelim:  leftDelim,
+		RightDelim: rightDelim,
 	}
 }
 

@@ -138,11 +138,21 @@ func TestNewMessage(t *testing.T) {
 			if !reflect.DeepEqual(err, test.err) {
 				t.Fatalf("expected %#v; got %#v", test.err, err)
 			}
-			if !reflect.DeepEqual(actual, test.message) {
+			if !exportedMessageEqual(actual, test.message) {
 				t.Fatalf("\nexpected\n%#v\ngot\n%#v", test.message, actual)
 			}
 		})
 	}
+}
+
+func exportedMessageEqual(a, b *Message) bool {
+	if a == nil || b == nil {
+		return a == b
+	}
+	return a.ID == b.ID && a.Hash == b.Hash && a.Description == b.Description &&
+		a.LeftDelim == b.LeftDelim && a.RightDelim == b.RightDelim &&
+		a.Zero == b.Zero && a.One == b.One && a.Two == b.Two &&
+		a.Few == b.Few && a.Many == b.Many && a.Other == b.Other
 }
 
 func TestKeyTypeErr(t *testing.T) {

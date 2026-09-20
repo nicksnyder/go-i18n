@@ -42,6 +42,10 @@ type Message struct {
 
 	// Other is the content of the message for the CLDR plural form "other".
 	Other string
+
+	// Set when the corresponding plural key was present in the source
+	// (including an explicit empty string). Distinguishes "" from omitted.
+	zeroSet, oneSet, twoSet, fewSet, manySet, otherSet bool
 }
 
 // NewMessage parses data and returns a new message.
@@ -82,16 +86,22 @@ func (m *Message) unmarshalInterface(v interface{}) error {
 			m.RightDelim = v
 		case "zero":
 			m.Zero = v
+			m.zeroSet = true
 		case "one":
 			m.One = v
+			m.oneSet = true
 		case "two":
 			m.Two = v
+			m.twoSet = true
 		case "few":
 			m.Few = v
+			m.fewSet = true
 		case "many":
 			m.Many = v
+			m.manySet = true
 		case "other":
 			m.Other = v
+			m.otherSet = true
 		}
 	}
 	return nil

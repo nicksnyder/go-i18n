@@ -2,7 +2,6 @@ package i18n
 
 import (
 	"errors"
-	"reflect"
 	"sort"
 	"testing"
 
@@ -88,6 +87,26 @@ func TestParseMessageFileBytes(t *testing.T) {
 					ID:    "nested.hello",
 					Other: "world",
 				}},
+			},
+		},
+		{
+			name: "nested empty string is kept",
+			file: `{"application":{"v1":{"fields":{"FirstVariableToSet":{"label":"MyVariable","desc":""}}}}}`,
+			path: "en.json",
+			messageFile: &MessageFile{
+				Path:   "en.json",
+				Tag:    language.English,
+				Format: "json",
+				Messages: []*Message{
+					{
+						ID:    "application.v1.fields.FirstVariableToSet.label",
+						Other: "MyVariable",
+					},
+					{
+						ID:    "application.v1.fields.FirstVariableToSet.desc",
+						Other: "",
+					},
+				},
 			},
 		},
 		{
@@ -283,7 +302,11 @@ func equalMessages(m1, m2 []*Message) bool {
 	sort.Slice(m2, less(m2))
 
 	for i, m := range m1 {
-		if !reflect.DeepEqual(m, m2[i]) {
+		o := m2[i]
+		if m.ID != o.ID || m.Hash != o.Hash || m.Description != o.Description ||
+			m.LeftDelim != o.LeftDelim || m.RightDelim != o.RightDelim ||
+			m.Zero != o.Zero || m.One != o.One || m.Two != o.Two ||
+			m.Few != o.Few || m.Many != o.Many || m.Other != o.Other {
 			return false
 		}
 	}
