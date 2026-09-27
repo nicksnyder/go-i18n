@@ -13,6 +13,8 @@ func TestExtract(t *testing.T) {
 		fileName         string
 		file             string
 		activeFile       []byte
+		i18nPackage      string
+		i18nTypes        string
 		expectedExitCode int
 		expectedErr      error
 	}{
@@ -192,6 +194,68 @@ b = "b"
 			`,
 		},
 		{
+			name:     "i18n package option matches custom import path",
+			fileName: "file.go",
+			file: `package main
+
+			import foo "example.com/my/i18n"
+
+			func main() {
+				_ := &foo.Message{
+					ID:    "a",
+					Other: "a",
+				}
+			}
+			`,
+			i18nPackage: "example.com/my/i18n",
+			activeFile: []byte(`a = "a"
+`),
+		},
+		{
+			name:     "i18n package option does not match import path",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			func main() {
+				_ := &i18n.Message{
+					ID:    "a",
+					Other: "a",
+				}
+			}
+			`,
+			i18nPackage: "example.com/my/i18n",
+		},
+		{
+			name:     "i18n types option includes Message",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			func main() {
+				_ := &i18n.Message{ID: "a", Other: "a"}
+			}
+			`,
+			i18nTypes: "Message",
+			activeFile: []byte(`a = "a"
+`),
+		},
+		{
+			name:     "i18n types option excludes Message",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			func main() {
+				_ := &i18n.Message{ID: "a", Other: "a"}
+			}
+			`,
+			i18nTypes: "LocalizeConfig",
+		},
+		{
 			name:     "exhaustive plural translation",
 			fileName: "file.go",
 			file: `package main
@@ -299,7 +363,15 @@ zero = "Zero translation"
 				t.Fatal(err)
 			}
 
-			code := testableMain([]string{"extract", "-outdir", outdir, indir})
+			args := []string{"extract", "-outdir", outdir}
+			if test.i18nPackage != "" {
+				args = append(args, "-i18nPackage", test.i18nPackage)
+			}
+			if test.i18nTypes != "" {
+				args = append(args, "-i18nTypes", test.i18nTypes)
+			}
+			args = append(args, indir)
+			code := testableMain(args)
 			if code != test.expectedExitCode {
 				t.Fatalf("expected exit code %d; got %d\n", test.expectedExitCode, code)
 			}
