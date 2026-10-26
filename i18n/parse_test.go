@@ -6,8 +6,8 @@ import (
 	"sort"
 	"testing"
 
+	yaml "go.yaml.in/yaml/v3"
 	"golang.org/x/text/language"
-	yaml "gopkg.in/yaml.v3"
 )
 
 func TestParseMessageFileBytes(t *testing.T) {

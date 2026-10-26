@@ -18,20 +18,20 @@ jobs:
           version: 1.24.x
     steps:
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version.version }}
       - name: Git checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: latest
           args: release --clean --snapshot
       - name: Test
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Upload coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         if: matrix.go-version.name == 'latest'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

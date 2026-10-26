@@ -12,7 +12,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "pcm", "zu"}, &Rule{
+	addPluralRules(rules, []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "kok", "kok_Latn", "pcm", "zu"}, &Rule{
 		PluralForms: newPluralFormSet(One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// i = 0 or n = 1
@@ -33,7 +33,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"ast", "de", "en", "et", "fi", "fy", "gl", "ia", "io", "ji", "lij", "nl", "sc", "sv", "sw", "ur", "yi"}, &Rule{
+	addPluralRules(rules, []string{"ast", "de", "en", "et", "fi", "fy", "gl", "ia", "ie", "io", "ji", "lij", "nl", "sc", "sv", "sw", "ur", "yi"}, &Rule{
 		PluralForms: newPluralFormSet(One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// i = 1 and v = 0
@@ -162,21 +162,7 @@ func DefaultRules() Rules {
 			return Other
 		},
 	})
-	addPluralRules(rules, []string{"blo"}, &Rule{
-		PluralForms: newPluralFormSet(Zero, One, Other),
-		PluralFormFunc: func(ops *Operands) Form {
-			// n = 0
-			if ops.NEqualsAny(0) {
-				return Zero
-			}
-			// n = 1
-			if ops.NEqualsAny(1) {
-				return One
-			}
-			return Other
-		},
-	})
-	addPluralRules(rules, []string{"ksh"}, &Rule{
+	addPluralRules(rules, []string{"blo", "cv", "ksh"}, &Rule{
 		PluralForms: newPluralFormSet(Zero, One, Other),
 		PluralFormFunc: func(ops *Operands) Form {
 			// n = 0
@@ -475,6 +461,28 @@ func DefaultRules() Rules {
 			if intEqualsAny(ops.V, 0) && intEqualsAny(ops.I%10, 0) ||
 				intEqualsAny(ops.V, 0) && intInRange(ops.I%10, 5, 9) ||
 				intEqualsAny(ops.V, 0) && intInRange(ops.I%100, 11, 14) {
+				return Many
+			}
+			return Other
+		},
+	})
+	addPluralRules(rules, []string{"sgs"}, &Rule{
+		PluralForms: newPluralFormSet(One, Two, Few, Many, Other),
+		PluralFormFunc: func(ops *Operands) Form {
+			// n % 10 = 1 and n % 100 != 11
+			if ops.NModEqualsAny(10, 1) && !ops.NModEqualsAny(100, 11) {
+				return One
+			}
+			// n = 2
+			if ops.NEqualsAny(2) {
+				return Two
+			}
+			// n != 2 and n % 10 = 2..9 and n % 100 != 11..19
+			if !ops.NEqualsAny(2) && ops.NModInRange(10, 2, 9) && !ops.NModInRange(100, 11, 19) {
+				return Few
+			}
+			// f != 0
+			if !intEqualsAny(ops.F, 0) {
 				return Many
 			}
 			return Other
