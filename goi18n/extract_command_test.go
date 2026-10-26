@@ -285,6 +285,37 @@ zero = "Zero translation"
 			activeFile: []byte(`id = "my const"
 `),
 		},
+		{
+			name:     "string conversion without arguments",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var m = &i18n.Message{
+				ID: string(),
+			}
+			`,
+		},
+		{
+			name:     "self-referencing declarations",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			var a = a
+			const b, c = c, b
+
+			var m = &i18n.Message{
+				ID: "id",
+				Description: a + b,
+				Other: "hello",
+			}
+			`,
+			activeFile: []byte(`id = "hello"
+`),
+		},
 	}
 
 	for _, test := range tests {

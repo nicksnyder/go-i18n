@@ -231,7 +231,7 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 		if !ok {
 			continue
 		}
-		v, ok := extractStringLiteral(kve.Value)
+		v, ok := extractStringLiteral(kve.Value, nil)
 		if !ok {
 			continue
 		}
@@ -246,7 +246,10 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 	e.messages = append(e.messages, i18n.MustNewMessage(data))
 }
 
-func extractStringLiteral(expr ast.Expr) (string, bool) {
+// extractStringLiteral returns the constant string value of expr.
+// visiting holds the identifiers currently being resolved so that
+// self-referencing declarations (e.g. var a = a) do not recurse forever.
+func extractStringLiteral(expr ast.Expr, visiting map[*ast.Object]bool) (string, bool) {
 	switch v := expr.(type) {
 	case *ast.BasicLit:
 		if v.Kind != token.STRING {
@@ -261,17 +264,17 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 		if v.Op != token.ADD {
 			return "", false
 		}
-		x, ok := extractStringLiteral(v.X)
+		x, ok := extractStringLiteral(v.X, visiting)
 		if !ok {
 			return "", false
 		}
-		y, ok := extractStringLiteral(v.Y)
+		y, ok := extractStringLiteral(v.Y, visiting)
 		if !ok {
 			return "", false
 		}
 		return x + y, true
 	case *ast.Ident:
-		if v.Obj == nil {
+		if v.Obj == nil || visiting[v.Obj] {
 			return "", false
 		}
 		switch z := v.Obj.Decl.(type) {
@@ -279,15 +282,20 @@ func extractStringLiteral(expr ast.Expr) (string, bool) {
 			if len(z.Values) == 0 {
 				return "", false
 			}
-			s, ok := extractStringLiteral(z.Values[0])
+			if visiting == nil {
+				visiting = make(map[*ast.Object]bool)
+			}
+			visiting[v.Obj] = true
+			s, ok := extractStringLiteral(z.Values[0], visiting)
+			delete(visiting, v.Obj)
 			if !ok {
 				return "", false
 			}
 			return s, true
 		}
 	case *ast.CallExpr:
-		if fun, ok := v.Fun.(*ast.Ident); ok && fun.Name == "string" {
-			return extractStringLiteral(v.Args[0])
+		if fun, ok := v.Fun.(*ast.Ident); ok && fun.Name == "string" && len(v.Args) == 1 {
+			return extractStringLiteral(v.Args[0], visiting)
 		}
 	}
 	return "", false
