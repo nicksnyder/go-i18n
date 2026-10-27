@@ -136,6 +136,8 @@ If you have added or changed messages in your program:
 
 Messages that are already translated stay in `active.*.toml` and are not repeated in `translate.*.toml`, so you never need to translate them again.
 
+The `hash` that `goi18n merge` writes for each translated message records which version of the source message it was translated from. Keep it in your `active.*.toml` files: without it, `goi18n merge` cannot tell when the source message has changed and will not ask for the translation to be updated. Hashes are only used by `goi18n merge` and have no effect at runtime. The source language's `active.*.toml` file does not need hashes, so it has none.
+
 ## For more information and examples:
 
 - Read the [documentation](https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2).
