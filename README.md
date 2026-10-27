@@ -120,12 +120,21 @@ other = "{{.Name}} has {{.Count}} cats."
 
 ### Translating new messages
 
-If you have added new messages to your program:
+If you have added or changed messages in your program:
 
 1. Run `goi18n extract` to update `active.en.toml` with the new messages.
 2. Run `goi18n merge active.*.toml` to generate updated `translate.*.toml` files.
 3. Translate all the messages in the `translate.*.toml` files.
 4. Run `goi18n merge active.*.toml translate.*.toml` to merge the translated messages into the active message files.
+5. Delete the `translate.*.toml` files. They are not needed until you add or change messages again.
+
+`translate.*.toml` files are regenerated from scratch on every merge, so they only contain the messages that still need to be translated:
+
+- messages that are new,
+- messages whose source text or description changed since they were translated (detected using `hash`), and
+- messages that are missing a translation for one of the language's [plural forms](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) (e.g. French needs `one`, `many`, and `other`).
+
+Messages that are already translated stay in `active.*.toml` and are not repeated in `translate.*.toml`, so you never need to translate them again.
 
 ## For more information and examples:
 
