@@ -4,19 +4,19 @@ package plural
 
 import "testing"
 
-func TestBmBoDzHnjIdIgIiInJaJboJvJwKdeKeaKmKoLktLoMsMyNqoOsaRootSahSesSgSuThToTpiViWoYoYueZh(t *testing.T) {
+func TestBmBoDzHnjIdIgIiInJaJboJvJwKdeKeaKmKoLktLoMsMyNqoOsaRootSahSesSgSuThToTpiWoYoYueZh(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, Other, []string{"0~15", "100", "1000", "10000", "100000", "1000000"})
 	tests = appendDecimalTests(tests, Other, []string{"0.0~1.5", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0"})
 
-	locales := []string{"bm", "bo", "dz", "hnj", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "osa", "root", "sah", "ses", "sg", "su", "th", "to", "tpi", "vi", "wo", "yo", "yue", "zh"}
+	locales := []string{"bm", "bo", "dz", "hnj", "id", "ig", "ii", "in", "ja", "jbo", "jv", "jw", "kde", "kea", "km", "ko", "lkt", "lo", "ms", "my", "nqo", "osa", "root", "sah", "ses", "sg", "su", "th", "to", "tpi", "wo", "yo", "yue", "zh"}
 	for _, locale := range locales {
 		runTests(t, locale, tests)
 	}
 }
 
-func TestAmAsBnDoiFaGuHiKnKokKok_latnPcmZu(t *testing.T) {
+func TestAmAsBnDoiFaGuHiKnKokKok_latnPcmTgViZu(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, One, []string{"0", "1"})
@@ -25,7 +25,7 @@ func TestAmAsBnDoiFaGuHiKnKokKok_latnPcmZu(t *testing.T) {
 	tests = appendIntegerTests(tests, Other, []string{"2~17", "100", "1000", "10000", "100000", "1000000"})
 	tests = appendDecimalTests(tests, Other, []string{"1.1~2.6", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0"})
 
-	locales := []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "kok", "kok_Latn", "pcm", "zu"}
+	locales := []string{"am", "as", "bn", "doi", "fa", "gu", "hi", "kn", "kok", "kok_Latn", "pcm", "tg", "vi", "zu"}
 	for _, locale := range locales {
 		runTests(t, locale, tests)
 	}
@@ -46,7 +46,7 @@ func TestFfHyKab(t *testing.T) {
 	}
 }
 
-func TestAstDeEnEtFiFyGlIaIeIoJiLijNlScSvSwUrYi(t *testing.T) {
+func TestAstDeEnEtFiFyIaIeIoJiLijNlScSvSwUrYi(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, One, []string{"1"})
@@ -54,7 +54,7 @@ func TestAstDeEnEtFiFyGlIaIeIoJiLijNlScSvSwUrYi(t *testing.T) {
 	tests = appendIntegerTests(tests, Other, []string{"0", "2~16", "100", "1000", "10000", "100000", "1000000"})
 	tests = appendDecimalTests(tests, Other, []string{"0.0~1.5", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0"})
 
-	locales := []string{"ast", "de", "en", "et", "fi", "fy", "gl", "ia", "ie", "io", "ji", "lij", "nl", "sc", "sv", "sw", "ur", "yi"}
+	locales := []string{"ast", "de", "en", "et", "fi", "fy", "ia", "ie", "io", "ji", "lij", "nl", "sc", "sv", "sw", "ur", "yi"}
 	for _, locale := range locales {
 		runTests(t, locale, tests)
 	}
@@ -321,7 +321,7 @@ func TestBsHrShSr(t *testing.T) {
 	}
 }
 
-func TestFr(t *testing.T) {
+func TestFrPt(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, One, []string{"0", "1"})
@@ -333,31 +333,13 @@ func TestFr(t *testing.T) {
 	tests = appendIntegerTests(tests, Other, []string{"2~17", "100", "1000", "10000", "100000", "1000", "2000", "3000", "4000", "5000", "6000"})
 	tests = appendDecimalTests(tests, Other, []string{"2.0~3.5", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0", "1.0001e3", "1.1e3", "2.0001e3", "2.1e3", "3.0001e3", "3.1e3"})
 
-	locales := []string{"fr"}
+	locales := []string{"fr", "pt"}
 	for _, locale := range locales {
 		runTests(t, locale, tests)
 	}
 }
 
-func TestPt(t *testing.T) {
-	var tests []pluralFormTest
-
-	tests = appendIntegerTests(tests, One, []string{"0", "1"})
-	tests = appendDecimalTests(tests, One, []string{"0.0~1.5"})
-
-	tests = appendIntegerTests(tests, Many, []string{"1000000", "1000000", "2000000", "3000000", "4000000", "5000000", "6000000"})
-	tests = appendDecimalTests(tests, Many, []string{"1.0000001e6", "1.1e6", "2.0000001e6", "2.1e6", "3.0000001e6", "3.1e6"})
-
-	tests = appendIntegerTests(tests, Other, []string{"2~17", "100", "1000", "10000", "100000", "1000", "2000", "3000", "4000", "5000", "6000"})
-	tests = appendDecimalTests(tests, Other, []string{"2.0~3.5", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0", "1.0001e3", "1.1e3", "2.0001e3", "2.1e3", "3.0001e3", "3.1e3"})
-
-	locales := []string{"pt"}
-	for _, locale := range locales {
-		runTests(t, locale, tests)
-	}
-}
-
-func TestCaItLldPt_ptScnVec(t *testing.T) {
+func TestCaGlItLldPt_ptScnVec(t *testing.T) {
 	var tests []pluralFormTest
 
 	tests = appendIntegerTests(tests, One, []string{"1"})
@@ -368,7 +350,7 @@ func TestCaItLldPt_ptScnVec(t *testing.T) {
 	tests = appendIntegerTests(tests, Other, []string{"0", "2~16", "100", "1000", "10000", "100000", "1000", "2000", "3000", "4000", "5000", "6000"})
 	tests = appendDecimalTests(tests, Other, []string{"0.0~1.5", "10.0", "100.0", "1000.0", "10000.0", "100000.0", "1000000.0", "1.0001e3", "1.1e3", "2.0001e3", "2.1e3", "3.0001e3", "3.1e3"})
 
-	locales := []string{"ca", "it", "lld", "pt_PT", "scn", "vec"}
+	locales := []string{"ca", "gl", "it", "lld", "pt_PT", "scn", "vec"}
 	for _, locale := range locales {
 		runTests(t, locale, tests)
 	}
