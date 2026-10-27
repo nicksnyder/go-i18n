@@ -286,6 +286,53 @@ zero = "Zero translation"
 `),
 		},
 		{
+			name:     "const with imported type",
+			fileName: "file.go",
+			file: `package main
+
+			import (
+				"github.com/nicksnyder/go-i18n/v2/i18n"
+				"example.com/keys"
+			)
+
+			const base keys.ID = "imported"
+			const id keys.ID = base + "ID"
+
+			func f() {
+				const other keys.Text = "local"
+				_ = &i18n.Message{
+					ID: string(id),
+					Other: string(other),
+				}
+			}
+			`,
+			activeFile: []byte(`importedID = "local"
+`),
+		},
+		{
+			name:     "var declarations",
+			fileName: "file.go",
+			file: `package main
+
+			import (
+				"github.com/nicksnyder/go-i18n/v2/i18n"
+				"example.com/keys"
+			)
+
+			var base keys.ID = "var"
+
+			func f() {
+				var id = string(base) + "ID"
+				_ = &i18n.Message{
+					ID: id,
+					Other: "from " + id,
+				}
+			}
+			`,
+			activeFile: []byte(`varID = "from varID"
+`),
+		},
+		{
 			name:     "string conversion without arguments",
 			fileName: "file.go",
 			file: `package main
@@ -413,6 +460,74 @@ other = "I have {{.PluralCount}} unread emails."
 description = "The number of unread emails a person has"
 one = "{{.Name}} has {{.UnreadEmailCount}} unread email."
 other = "{{.Name}} has {{.UnreadEmailCount}} unread emails."
+`)
+	if !bytes.Equal(actual, expected) {
+		t.Fatalf("files not equal\nactual:\n%s\nexpected:\n%s", actual, expected)
+	}
+}
+
+func TestExtractCommandConstantsInOtherFiles(t *testing.T) {
+	indir := mustTempDir("TestExtractCommandConstantsIn")
+	defer mustRemoveAll(t, indir)
+	outdir := mustTempDir("TestExtractCommandConstantsOut")
+	defer mustRemoveAll(t, outdir)
+
+	// Two directories declare the same package name and constant name with
+	// different values; each must resolve to its own package's constant.
+	files := map[string]string{
+		"a/ids.go": `package msgs
+const id = "a" + suffix
+const suffix = "ID"
+`,
+		"a/msgs.go": `package msgs
+import "github.com/nicksnyder/go-i18n/v2/i18n"
+var m = &i18n.Message{ID: id, Other: text}
+`,
+		"a/text.go": `package msgs
+const text = "A text"
+`,
+		"b/ids.go": `package msgs
+const id = "bID"
+const text = "B text"
+`,
+		"b/msgs.go": `package msgs
+import "github.com/nicksnyder/go-i18n/v2/i18n"
+var m = &i18n.Message{ID: id, Other: text}
+`,
+		// Platform-specific files may declare the same name; each file must
+		// use its own declaration.
+		"c/c_linux.go": `package msgs
+import "github.com/nicksnyder/go-i18n/v2/i18n"
+const text = "linux text"
+var m = &i18n.Message{ID: "cLinux", Other: text}
+`,
+		"c/c_windows.go": `package msgs
+import "github.com/nicksnyder/go-i18n/v2/i18n"
+const text = "windows text"
+var m = &i18n.Message{ID: "cWindows", Other: text}
+`,
+	}
+	for name, content := range files {
+		path := filepath.Join(indir, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0777); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0666); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if code := testableMain([]string{"extract", "-outdir", outdir, indir}); code != 0 {
+		t.Fatalf("expected exit code 0; got %d", code)
+	}
+	actual, err := os.ReadFile(filepath.Join(outdir, "active.en.toml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := []byte(`aID = "A text"
+bID = "B text"
+cLinux = "linux text"
+cWindows = "windows text"
 `)
 	if !bytes.Equal(actual, expected) {
 		t.Fatalf("files not equal\nactual:\n%s\nexpected:\n%s", actual, expected)
