@@ -316,6 +316,27 @@ zero = "Zero translation"
 			activeFile: []byte(`id = "hello"
 `),
 		},
+		{
+			name:     "multi-name declarations",
+			fileName: "file.go",
+			file: `package main
+
+			import "github.com/nicksnyder/go-i18n/v2/i18n"
+
+			const a, b = "x", "y"
+			const c, d = "z", c
+
+			var m = &i18n.Message{
+				ID: "id",
+				Description: d,
+				Other: b,
+			}
+			`,
+			activeFile: []byte(`[id]
+description = "z"
+other = "y"
+`),
+		},
 	}
 
 	for _, test := range tests {

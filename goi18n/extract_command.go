@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -247,9 +248,9 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 }
 
 // extractStringLiteral returns the constant string value of expr.
-// visiting holds the declarations currently being resolved so that
+// visiting holds the declared names currently being resolved so that
 // self-referencing declarations (e.g. var a = a) do not recurse forever.
-func extractStringLiteral(expr ast.Expr, visiting map[*ast.ValueSpec]bool) (string, bool) {
+func extractStringLiteral(expr ast.Expr, visiting map[*ast.Ident]bool) (string, bool) {
 	switch v := expr.(type) {
 	case *ast.BasicLit:
 		if v.Kind != token.STRING {
@@ -279,15 +280,21 @@ func extractStringLiteral(expr ast.Expr, visiting map[*ast.ValueSpec]bool) (stri
 		}
 		switch z := v.Obj.Decl.(type) {
 		case *ast.ValueSpec:
-			if len(z.Values) == 0 || visiting[z] {
+			// Each name takes the value at its own position. A spec with
+			// fewer values than names (var a, b = f()) cannot be resolved.
+			if len(z.Values) != len(z.Names) {
+				return "", false
+			}
+			i := slices.IndexFunc(z.Names, func(n *ast.Ident) bool { return n.Name == v.Name })
+			if i < 0 || visiting[z.Names[i]] {
 				return "", false
 			}
 			if visiting == nil {
-				visiting = make(map[*ast.ValueSpec]bool)
+				visiting = make(map[*ast.Ident]bool)
 			}
-			visiting[z] = true
-			s, ok := extractStringLiteral(z.Values[0], visiting)
-			delete(visiting, z)
+			visiting[z.Names[i]] = true
+			s, ok := extractStringLiteral(z.Values[i], visiting)
+			delete(visiting, z.Names[i])
 			if !ok {
 				return "", false
 			}
