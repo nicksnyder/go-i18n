@@ -91,6 +91,26 @@ func (b *Bundle) MustParseMessageFileBytes(buf []byte, path string) {
 	}
 }
 
+// ParseMessageBytes parses the messages in buf using unmarshal and adds them to the bundle for tag.
+func (b *Bundle) ParseMessageBytes(tag language.Tag, buf []byte, unmarshal UnmarshalFunc) ([]*Message, error) {
+	messages, err := ParseMessageBytes(buf, unmarshal)
+	if err != nil {
+		return nil, err
+	}
+	if err := b.AddMessages(tag, messages...); err != nil {
+		return nil, err
+	}
+	return messages, nil
+}
+
+// MustParseMessageBytes is similar to ParseMessageBytes
+// except it panics if an error happens.
+func (b *Bundle) MustParseMessageBytes(tag language.Tag, buf []byte, unmarshal UnmarshalFunc) {
+	if _, err := b.ParseMessageBytes(tag, buf, unmarshal); err != nil {
+		panic(err)
+	}
+}
+
 // AddMessages adds messages for a language.
 // It is useful if your messages are in a format not supported by ParseMessageFileBytes.
 func (b *Bundle) AddMessages(tag language.Tag, messages ...*Message) error {

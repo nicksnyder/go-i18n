@@ -37,22 +37,28 @@ func ParseMessageFileBytes(buf []byte, path string, unmarshalFuncs map[string]Un
 			return nil, fmt.Errorf("no unmarshaler registered for %s", messageFile.Format)
 		}
 	}
-	var err error
-	var raw interface{}
-	if err = unmarshalFunc(buf, &raw); err != nil {
+	messages, err := ParseMessageBytes(buf, unmarshalFunc)
+	if err != nil {
 		return nil, err
 	}
+	messageFile.Messages = messages
+	return messageFile, nil
+}
 
+// ParseMessageBytes returns the messages parsed from buf using unmarshal.
+func ParseMessageBytes(buf []byte, unmarshal UnmarshalFunc) ([]*Message, error) {
+	if len(buf) == 0 {
+		return nil, nil
+	}
+	var raw interface{}
+	if err := unmarshal(buf, &raw); err != nil {
+		return nil, err
+	}
 	m, err := isMessage(raw)
 	if err != nil {
 		return nil, err
 	}
-
-	if messageFile.Messages, err = recGetMessages(raw, m, true); err != nil {
-		return nil, err
-	}
-
-	return messageFile, nil
+	return recGetMessages(raw, m, true)
 }
 
 const nestedSeparator = "."

@@ -100,6 +100,14 @@ hello = "`+expected+`"
 	}
 }
 
+func TestBundleParseMessageBytes(t *testing.T) {
+	bundle := NewBundle(language.English)
+	if _, err := bundle.ParseMessageBytes(language.French, []byte(`hello = "bonjour"`), toml.Unmarshal); err != nil {
+		t.Fatal(err)
+	}
+	expectMessage(t, bundle, language.French, "hello", &Message{ID: "hello", Other: "bonjour"})
+}
+
 func TestJSON(t *testing.T) {
 	bundle := NewBundle(language.English)
 	bundle.MustParseMessageFileBytes([]byte(`{

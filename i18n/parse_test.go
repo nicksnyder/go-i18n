@@ -259,6 +259,17 @@ some-keys:
 	}
 }
 
+func TestParseMessageBytes(t *testing.T) {
+	messages, err := ParseMessageBytes([]byte("nested:\n  hello: bonjour\n"), yaml.Unmarshal)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected := []*Message{{ID: "nested.hello", Other: "bonjour"}}
+	if !equalMessages(messages, expected) {
+		t.Errorf("expected %#v; got %#v", deref(expected), deref(messages))
+	}
+}
+
 func deref(mptrs []*Message) []Message {
 	messages := make([]Message, len(mptrs))
 	for i, m := range mptrs {
