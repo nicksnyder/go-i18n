@@ -52,6 +52,14 @@ func TestNewOperands(t *testing.T) {
 		{"123.40e-5", &Operands{0.001234, 0, 7, 6, 12340, 1234, -5}, false},
 		{"1234.0e-6", &Operands{0.001234, 0, 7, 6, 12340, 1234, -6}, false},
 		{"12340e-7", &Operands{0.001234, 0, 7, 6, 12340, 1234, -7}, false},
+
+		{"", nil, true},
+		{"-", nil, true},
+		{"0e30", &Operands{0, 0, 0, 0, 0, 0, 30}, false},
+		{"0e31", nil, true},
+		{"0e-31", nil, true},
+		{"0e300000000", nil, true},
+		{"1e-300000000", nil, true},
 	}
 	for _, test := range tests {
 		ops, err := NewOperands(test.input)
