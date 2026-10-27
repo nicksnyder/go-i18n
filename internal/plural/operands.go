@@ -137,7 +137,15 @@ func applyExponent(s string, exponent int) string {
 	return s
 }
 
+// maxExponent bounds the exponent accepted in a number string.
+// CLDR compact decimal exponents are single digits, and larger
+// exponents would make applyExponent allocate unbounded memory.
+const maxExponent = 30
+
 func newOperandsString(s string) (*Operands, error) {
+	if s == "" {
+		return nil, fmt.Errorf("empty number string")
+	}
 	if s[0] == '-' {
 		s = s[1:]
 	}
@@ -155,6 +163,9 @@ func newOperandsString(s string) (*Operands, error) {
 		ops.C, err = strconv.ParseInt(exponent, 10, 0)
 		if err != nil {
 			return nil, err
+		}
+		if ops.C > maxExponent || ops.C < -maxExponent {
+			return nil, fmt.Errorf("exponent %d out of range [-%d, %d]", ops.C, maxExponent, maxExponent)
 		}
 	}
 	value := applyExponent(significand, int(ops.C))

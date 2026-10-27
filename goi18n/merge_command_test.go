@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"golang.org/x/text/language"
@@ -525,6 +526,63 @@ zero = "{{.Count}} unread emails"
 `),
 			},
 		},
+		{
+			name:           "missing plural form includes translated forms",
+			sourceLanguage: language.AmericanEnglish,
+			inFiles: map[string][]byte{
+				"en-US.toml": []byte(`
+GoodbyeMessage = "Goodbye"
+HelloMessage = "Hello"
+
+[UnreadEmails]
+description = "Message that tells the user how many unread emails they have"
+one = "{{.Count}} unread email"
+other = "{{.Count}} unread emails"
+`),
+				"fr-FR.toml": []byte(`
+HelloMessage = "Bonjour"
+
+[UnreadEmails]
+hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
+one = "{{.Count}} e-mail non lu"
+other = "{{.Count}} e-mails non lus"
+`),
+			},
+			outFiles: map[string][]byte{
+				"active.en-US.toml": expectFile(`
+GoodbyeMessage = "Goodbye"
+HelloMessage = "Hello"
+
+[UnreadEmails]
+description = "Message that tells the user how many unread emails they have"
+one = "{{.Count}} unread email"
+other = "{{.Count}} unread emails"
+`),
+				"active.fr-FR.toml": expectFile(`
+[HelloMessage]
+hash = "sha1-f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0"
+other = "Bonjour"
+
+[UnreadEmails]
+description = "Message that tells the user how many unread emails they have"
+hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
+one = "{{.Count}} e-mail non lu"
+other = "{{.Count}} e-mails non lus"
+`),
+				"translate.fr-FR.toml": expectFile(`
+[GoodbyeMessage]
+hash = "sha1-b5b29c53e3c71cb9c6581ab053d7758fab8ca24d"
+other = "Goodbye"
+
+[UnreadEmails]
+description = "Message that tells the user how many unread emails they have"
+hash = "sha1-5afbc91dfedb9755627655c365eb47a89e541099"
+many = "{{.Count}} unread emails"
+one = "{{.Count}} e-mail non lu"
+other = "{{.Count}} e-mails non lus"
+`),
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
@@ -592,5 +650,23 @@ zero = "{{.Count}} unread emails"
 				}
 			}
 		})
+	}
+}
+
+func TestMergeSourceMissingOther(t *testing.T) {
+	files := map[string][]byte{
+		"active.en.toml": []byte(`
+[NewMsg]
+description = "A new message"
+one = "This is a new message"
+`),
+		"active.es.toml": []byte(`
+[NewMsg]
+other = "Este es un mensaje nuevo"
+`),
+	}
+	_, err := merge(files, language.English, "", "toml")
+	if err == nil || !strings.Contains(err.Error(), `"NewMsg"`) {
+		t.Fatalf("expected error about NewMsg missing other; got %v", err)
 	}
 }

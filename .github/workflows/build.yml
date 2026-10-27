@@ -13,16 +13,17 @@ jobs:
       matrix:
         go-version:
         - name: latest
-          version: 1.25.x
+          version: 1.27.x
         - name: previous
-          version: 1.24.x
+          version: 1.26.x
     steps:
+      - name: Git checkout
+        uses: actions/checkout@v7
       - name: Install Go
         uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version.version }}
-      - name: Git checkout
-        uses: actions/checkout@v7
+          check-latest: true
       - name: Build
         uses: goreleaser/goreleaser-action@v7
         with:
@@ -31,7 +32,7 @@ jobs:
       - name: Test
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Upload coverage
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         if: matrix.go-version.name == 'latest'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -40,4 +41,4 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         if: matrix.go-version.name == 'latest'
         with:
-          version: v2.6
+          version: v2.15

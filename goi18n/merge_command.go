@@ -135,6 +135,9 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 				if sourceMessageTemplates[template.ID] != nil {
 					return nil, fmt.Errorf("multiple source translations for id %q", template.ID)
 				}
+				if template.PluralTemplates[plural.Other] == nil {
+					return nil, fmt.Errorf("source message is missing the required %q plural form in %s: %q", plural.Other, path, template.ID)
+				}
 				template.Hash = hash(template)
 				sourceMessageTemplates[template.ID] = template
 			}
@@ -251,7 +254,9 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 	return &fileSystemOp{writeFiles: writeFiles, deleteFiles: deleteFiles}, nil
 }
 
-// activeDst returns the active part of the dst and whether dst is a complete translation of src.
+// activeDst returns the active part of the dst and, if dst is not a complete translation of src,
+// the message template to translate. The template to translate also contains the plural forms
+// of dst that are already translated, so the translator has context.
 func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active *i18n.MessageTemplate, translateMessageTemplate *i18n.MessageTemplate) {
 	pluralForms := pluralRule.PluralForms
 	if len(src.PluralTemplates) == 1 {
@@ -290,6 +295,11 @@ func activeDst(src, dst *i18n.MessageTemplate, pluralRule *plural.Rule) (active 
 			}
 		}
 		active.PluralTemplates[pluralForm] = dt
+	}
+	if translateMessageTemplate != nil && active != nil {
+		for pluralForm, dt := range active.PluralTemplates {
+			translateMessageTemplate.PluralTemplates[pluralForm] = dt
+		}
 	}
 	return
 }

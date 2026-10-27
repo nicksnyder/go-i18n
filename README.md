@@ -120,12 +120,23 @@ other = "{{.Name}} has {{.Count}} cats."
 
 ### Translating new messages
 
-If you have added new messages to your program:
+If you have added or changed messages in your program:
 
 1. Run `goi18n extract` to update `active.en.toml` with the new messages.
 2. Run `goi18n merge active.*.toml` to generate updated `translate.*.toml` files.
 3. Translate all the messages in the `translate.*.toml` files.
 4. Run `goi18n merge active.*.toml translate.*.toml` to merge the translated messages into the active message files.
+5. Delete the `translate.*.toml` files. They are not needed until you add or change messages again.
+
+`translate.*.toml` files are regenerated from scratch on every merge, so they only contain the messages that still need to be translated:
+
+- messages that are new,
+- messages whose source text or description changed since they were translated (detected using `hash`), and
+- messages that are missing a translation for one of the language's [plural forms](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) (e.g. French needs `one`, `many`, and `other`). The forms that are already translated are included too, so the translator can see them for context.
+
+Messages that are already translated stay in `active.*.toml` and are not repeated in `translate.*.toml`, so you never need to translate them again.
+
+The `hash` that `goi18n merge` writes for each translated message records which version of the source message it was translated from. Keep it in your `active.*.toml` files: without it, `goi18n merge` cannot tell when the source message has changed and will not ask for the translation to be updated. Hashes are only used by `goi18n merge` and have no effect at runtime. The source language's `active.*.toml` file does not need hashes, so it has none.
 
 ## For more information and examples:
 
