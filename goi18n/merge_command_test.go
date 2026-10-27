@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"golang.org/x/text/language"
@@ -592,5 +593,23 @@ zero = "{{.Count}} unread emails"
 				}
 			}
 		})
+	}
+}
+
+func TestMergeSourceMissingOther(t *testing.T) {
+	files := map[string][]byte{
+		"active.en.toml": []byte(`
+[NewMsg]
+description = "A new message"
+one = "This is a new message"
+`),
+		"active.es.toml": []byte(`
+[NewMsg]
+other = "Este es un mensaje nuevo"
+`),
+	}
+	_, err := merge(files, language.English, "", "toml")
+	if err == nil || !strings.Contains(err.Error(), `"NewMsg"`) {
+		t.Fatalf("expected error about NewMsg missing other; got %v", err)
 	}
 }

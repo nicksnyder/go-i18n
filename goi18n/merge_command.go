@@ -135,6 +135,9 @@ func merge(messageFiles map[string][]byte, sourceLanguageTag language.Tag, outdi
 				if sourceMessageTemplates[template.ID] != nil {
 					return nil, fmt.Errorf("multiple source translations for id %q", template.ID)
 				}
+				if template.PluralTemplates[plural.Other] == nil {
+					return nil, fmt.Errorf("source message is missing the required %q plural form in %s: %q", plural.Other, path, template.ID)
+				}
 				template.Hash = hash(template)
 				sourceMessageTemplates[template.ID] = template
 			}
