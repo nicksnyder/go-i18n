@@ -247,9 +247,9 @@ func (e *extractor) extractMessage(cl *ast.CompositeLit) {
 }
 
 // extractStringLiteral returns the constant string value of expr.
-// visiting holds the identifiers currently being resolved so that
+// visiting holds the declarations currently being resolved so that
 // self-referencing declarations (e.g. var a = a) do not recurse forever.
-func extractStringLiteral(expr ast.Expr, visiting map[*ast.Object]bool) (string, bool) {
+func extractStringLiteral(expr ast.Expr, visiting map[*ast.ValueSpec]bool) (string, bool) {
 	switch v := expr.(type) {
 	case *ast.BasicLit:
 		if v.Kind != token.STRING {
@@ -274,20 +274,20 @@ func extractStringLiteral(expr ast.Expr, visiting map[*ast.Object]bool) (string,
 		}
 		return x + y, true
 	case *ast.Ident:
-		if v.Obj == nil || visiting[v.Obj] {
+		if v.Obj == nil {
 			return "", false
 		}
 		switch z := v.Obj.Decl.(type) {
 		case *ast.ValueSpec:
-			if len(z.Values) == 0 {
+			if len(z.Values) == 0 || visiting[z] {
 				return "", false
 			}
 			if visiting == nil {
-				visiting = make(map[*ast.Object]bool)
+				visiting = make(map[*ast.ValueSpec]bool)
 			}
-			visiting[v.Obj] = true
+			visiting[z] = true
 			s, ok := extractStringLiteral(z.Values[0], visiting)
-			delete(visiting, v.Obj)
+			delete(visiting, z)
 			if !ok {
 				return "", false
 			}
