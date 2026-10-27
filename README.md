@@ -132,7 +132,7 @@ If you have added or changed messages in your program:
 
 - messages that are new,
 - messages whose source text or description changed since they were translated (detected using `hash`), and
-- messages that are missing a translation for one of the language's [plural forms](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) (e.g. French needs `one`, `many`, and `other`).
+- messages that are missing a translation for one of the language's [plural forms](https://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html) (e.g. French needs `one`, `many`, and `other`). The forms that are already translated are included too, so the translator can see them for context.
 
 Messages that are already translated stay in `active.*.toml` and are not repeated in `translate.*.toml`, so you never need to translate them again.
 
