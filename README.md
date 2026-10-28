@@ -144,13 +144,6 @@ The `hash` that `goi18n merge` writes for each translated message records which 
 - Look at the [code examples](https://github.com/nicksnyder/go-i18n/blob/main/i18n/example_test.go) and [tests](https://github.com/nicksnyder/go-i18n/blob/main/i18n/localizer_test.go).
 - Look at an example [application](https://github.com/nicksnyder/go-i18n/tree/main/example).
 
-## Translations of this document
-
-Community translations of this document may be found in the [.github](.github) folder.
-
-These translations are maintained by the community, and are not maintained by the author of this project.
-They are not guaranteed to be accurate or up-to-date.
-
 ## License
 
 go-i18n is available under the MIT license. See the [LICENSE](LICENSE) file for more info.
